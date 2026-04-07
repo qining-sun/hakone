@@ -1,0 +1,24 @@
+# 启用 Rewrite 模块
+RewriteEngine On
+
+# API 代理 - 转发到 api-proxy.php
+RewriteRule ^api/ai/(.*)$ api-proxy.php [L,QSA]
+
+# 添加 CORS 头
+Header always set Access-Control-Allow-Origin "*"
+Header always set Access-Control-Allow-Methods "GET, POST, OPTIONS"
+Header always set Access-Control-Allow-Headers "Content-Type, Authorization"
+
+# 核心 JS 文件不缓存（确保版本控制和初始化逻辑始终最新）
+<FilesMatch "(css-versions|init|load-navbar)\.js$">
+    Header set Cache-Control "no-cache, no-store, must-revalidate"
+    Header set Pragma "no-cache"
+    Header set Expires "0"
+</FilesMatch>
+
+# HTML 文件不缓存，确保更新立即生效
+<FilesMatch "\.html$">
+    Header set Cache-Control "no-cache, no-store, must-revalidate"
+    Header set Pragma "no-cache"
+    Header set Expires "0"
+</FilesMatch>

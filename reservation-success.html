@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#ffffff" id="themeColor">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <!-- 防止页面缓存 -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>ご予約完了｜【公式】Trip7箱根温泉ホテル</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/modern-navbar.css?v=20251201v49">
+    <link rel="stylesheet" href="css/footer.css">
+    <link rel="stylesheet" href="css/reservation-success.css?v=20251127">
+    <link rel="icon" href="img/logo.ico" type="image/x-icon">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;600;700&family=Pixelify+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/section-title-template.css?v=20251127">
+
+    <!-- Config file must be loaded first -->
+    <script src="js/config.js"></script>
+    <script src="js/api-config.js"></script>
+</head>
+<body>
+    <!-- Navbar loaded by template -->
+    <div id="navbar-placeholder"></div>
+
+    <!-- Universal Hero Banner -->
+    <div class="universal-hero-banner height-small reservation-transparent-banner">
+        <div class="hero-background">
+            <img src="img/hero-background.jpg" alt="予約完了横幅" class="hero-bg-image">
+            <div class="hero-overlay"></div>
+        </div>
+        <div class="hero-content">
+            <h1 class="hero-title single-line">ご予約受付完了</h1>
+            <p class="hero-subtitle">Reservation Request Received</p>
+        </div>
+    </div>
+
+    <!-- Breadcrumb Navigation -->
+    <div class="breadcrumb-section">
+        <div class="container">
+            <nav class="breadcrumb">
+                <a href="index.html"><i class="fas fa-home"></i> ホーム</a>
+                <span class="separator">/</span>
+                <a href="booking.html">予約確認</a>
+                <span class="separator">/</span>
+                <span class="current">予約完了</span>
+            </nav>
+        </div>
+    </div>
+
+    <!-- Page Content -->
+    <div class="page-content">
+        <!-- Success Section -->
+        <div class="success-section">
+            <div class="container">
+                <div class="success-container">
+                    <!-- Success Message -->
+                    <div class="success-message">
+                        <div class="success-icon">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <h2 class="success-title">ご予約リクエストを受付いたしました</h2>
+                        <p class="success-subtitle">管理者による確認が完了次第、メールにてご連絡いたします</p>
+
+                        <div class="reservation-number">
+                            <span class="number-label">受付番号</span>
+                            <span class="number-value" id="reservationNumber">TMP-2025092901</span>
+                        </div>
+                    </div>
+
+                    <!-- Reservation Details -->
+                    <div class="reservation-details">
+                        <h3 class="details-title">ご予約内容</h3>
+
+                        <div class="details-grid">
+                            <div class="detail-section">
+                                <h4><i class="fas fa-user"></i> お客様情報</h4>
+                                <div class="detail-items">
+                                    <div class="detail-item">
+                                        <span class="label">お名前</span>
+                                        <span class="value" id="guestName">山田 太郎</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <span class="label">メールアドレス</span>
+                                        <span class="value" id="guestEmail">yamada@example.com</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <span class="label">電話番号</span>
+                                        <span class="value" id="guestPhone">090-1234-5678</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="detail-section">
+                                <h4><i class="fas fa-calendar"></i> 宿泊詳細</h4>
+                                <div class="detail-items">
+                                    <div class="detail-item">
+                                        <span class="label">チェックイン</span>
+                                        <span class="value" id="checkinDate">2025年9月29日（日）</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <span class="label">チェックアウト</span>
+                                        <span class="value" id="checkoutDate">2025年9月30日（月）</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <span class="label">宿泊人数</span>
+                                        <span class="value" id="guestCount">大人2名</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <span class="label">客室タイプ</span>
+                                        <span class="value" id="roomType">ツインルーム【セミダブルベッド】</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="detail-section">
+                                <h4><i class="fas fa-credit-card"></i> お支払い方法</h4>
+                                <div class="detail-items">
+                                    <div class="detail-item">
+                                        <span class="label">支払い方法</span>
+                                        <span class="value" id="paymentMethod">到店支払い</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Next Steps -->
+                    <div class="next-steps">
+                        <h3 class="steps-title">今後の流れ</h3>
+                        <div class="steps-list">
+                            <div class="step-item">
+                                <div class="step-number">1</div>
+                                <div class="step-content">
+                                    <h4>受付確認メール送信</h4>
+                                    <p>ご登録いただいたメールアドレスに受付確認メールをお送りいたします。</p>
+                                </div>
+                            </div>
+                            <div class="step-item">
+                                <div class="step-number">2</div>
+                                <div class="step-content">
+                                    <h4>管理者による確認</h4>
+                                    <p>30分以内に管理者がご予約内容を確認いたします。空室状況を確認の上、承認いたします。</p>
+                                </div>
+                            </div>
+                            <div class="step-item">
+                                <div class="step-number">3</div>
+                                <div class="step-content">
+                                    <h4>予約確定通知</h4>
+                                    <p>管理者の承認が完了しましたら、正式な予約番号とともに確定メールをお送りいたします。</p>
+                                </div>
+                            </div>
+                            <div class="step-item">
+                                <div class="step-number">4</div>
+                                <div class="step-content">
+                                    <h4>ご来館準備</h4>
+                                    <p>チェックイン日までに、必要なものをご準備ください。</p>
+                                </div>
+                            </div>
+                            <div class="step-item">
+                                <div class="step-number">5</div>
+                                <div class="step-content">
+                                    <h4>チェックイン</h4>
+                                    <p>当日15:00よりチェックインが可能です。フロントにてお手続きください。</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Action Info -->
+                    <div style="text-align: center; margin: 30px 0 20px; padding: 15px; background: #f8f9fa; border-radius: 8px;">
+                        <p style="margin: 0; color: #666; font-size: 14px;">
+                            <i class="fas fa-info-circle" style="color: #8a7a5e;"></i>
+                            予約リクエストの状態は「予約履歴を見る」から確認できます
+                        </p>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="action-buttons">
+                        <a href="reservation.html" class="btn btn-primary" style="font-size: 16px; padding: 14px 30px;">
+                            <i class="fas fa-calendar-plus"></i>
+                            新規予約する
+                        </a>
+                        <a href="user-center.html" class="btn btn-secondary">
+                            <i class="fas fa-list"></i>
+                            予約履歴を見る
+                        </a>
+                        <button onclick="window.print()" class="btn btn-outline">
+                            <i class="fas fa-print"></i>
+                            予約内容を印刷
+                        </button>
+                    </div>
+
+                    <!-- Contact Info -->
+                    <div class="contact-info">
+                        <h4>ご不明な点がございましたら</h4>
+                        <div class="contact-details">
+                            <div class="contact-item">
+                                <i class="fas fa-phone"></i>
+                                <div>
+                                    <strong>03-6404-8082</strong>
+                                    <span>受付時間：9:00～20:00</span>
+                                </div>
+                            </div>
+                            <div class="contact-item">
+                                <i class="fas fa-envelope"></i>
+                                <div>
+                                    <strong>info@softusing.co.jp</strong>
+                                    <span>メールでのお問い合わせ</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer - Loaded dynamically -->
+    <div id="footer-placeholder"></div>
+
+    <script src="js/storage-helper.js"></script>
+    <script src="js/init.js?v=20251201"></script>
+    <script src="js/session-service.js"></script>
+    <script src="js/load-navbar.js?v=20251201v21"></script>
+    <script src="js/load-footer.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/reservation-success.js?v=20251201"></script>
+</body>
+</html>

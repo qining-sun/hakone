@@ -1,0 +1,614 @@
+/**
+ * 用户中心弹出框样式
+ * User Center Modal Styles
+ */
+
+/* 用户中心模态框遮罩层 */
+.user-center-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(3px);
+}
+
+.user-center-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* 用户中心模态框 */
+.user-center-modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0.9);
+    z-index: 1001;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+    max-width: 90vw;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.user-center-modal.active {
+    opacity: 1;
+    visibility: visible;
+    transform: translate(-50%, -50%) scale(1);
+}
+
+.user-center-content {
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    width: 700px;
+    max-width: 100%;
+    font-family: 'Noto Sans JP', sans-serif;
+}
+
+/* 用户中心头部 */
+.user-center-header {
+    background: linear-gradient(135deg, #8a7a5e 0%, #9d8a6d 100%);
+    padding: 30px;
+    border-radius: 20px 20px 0 0;
+    position: relative;
+    color: white;
+}
+
+.user-center-close-btn {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    font-size: 24px;
+    color: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    padding: 8px;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.user-center-close-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: rotate(90deg);
+}
+
+.user-info-card {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.user-avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 36px;
+    color: #8a7a5e;
+    border: 3px solid rgba(255, 255, 255, 0.3);
+}
+
+.user-details h3 {
+    margin: 0 0 8px 0;
+    font-size: 24px;
+    font-weight: 600;
+}
+
+.user-email {
+    opacity: 0.9;
+    font-size: 14px;
+}
+
+/* 用户中心主体 */
+.user-center-body {
+    padding: 30px;
+}
+
+/* 标签导航 */
+.user-center-tabs {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 25px;
+    border-bottom: 2px solid #f0f0f0;
+}
+
+.user-center-tab {
+    padding: 12px 24px;
+    border: none;
+    background: transparent;
+    color: #666;
+    font-size: 15px;
+    font-weight: 600;
+    font-family: 'Noto Sans JP', sans-serif;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border-bottom: 3px solid transparent;
+    letter-spacing: 0.05em;
+    position: relative;
+    top: 2px;
+}
+
+.user-center-tab:hover {
+    color: #8a7a5e;
+}
+
+.user-center-tab.active {
+    color: #8a7a5e;
+    border-bottom-color: #8a7a5e;
+}
+
+/* 标签内容 */
+.user-center-tab-content {
+    display: none;
+}
+
+.user-center-tab-content.active {
+    display: block;
+    animation: fadeInUp 0.3s ease;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* 预约列表 */
+.booking-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.booking-item {
+    border: 2px solid #e0e0e0;
+    border-radius: 12px;
+    padding: 20px;
+    transition: all 0.3s ease;
+}
+
+.booking-item:hover {
+    border-color: #8a7a5e;
+    box-shadow: 0 4px 12px rgba(138, 122, 94, 0.1);
+}
+
+.booking-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 15px;
+}
+
+.booking-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #333;
+    margin: 0 0 5px 0;
+}
+
+.booking-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 12px;
+    border-radius: 16px;
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.booking-status i {
+    font-size: 11px;
+}
+
+/* 订单状态颜色 - 与 order-detail.css 保持一致 */
+.status-pending {
+    background: #f3e5f5;
+    color: #7b1fa2;
+}
+
+.status-confirmed {
+    background: #e8f5e9;
+    color: #2e7d32;
+}
+
+.status-completed {
+    background: #e1f5fe;
+    color: #0277bd;
+}
+
+.status-cancelled {
+    background: #ffebee;
+    color: #c62828;
+}
+
+.status-paid {
+    background: #e8f5e9;
+    color: #2e7d32;
+}
+
+.booking-details {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.booking-detail-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    color: #666;
+}
+
+.booking-detail-item i {
+    color: #8a7a5e;
+    width: 18px;
+}
+
+.booking-actions {
+    display: flex;
+    gap: 10px;
+    padding-top: 15px;
+    border-top: 1px solid #f0f0f0;
+}
+
+.booking-action-btn {
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: 2px solid;
+}
+
+.btn-detail {
+    background: white;
+    color: #8a7a5e;
+    border-color: #8a7a5e;
+}
+
+.btn-detail:hover {
+    background: #8a7a5e;
+    color: white;
+}
+
+.btn-cancel {
+    background: white;
+    color: #d32f2f;
+    border-color: #d32f2f;
+}
+
+.btn-cancel:hover {
+    background: #d32f2f;
+    color: white;
+}
+
+.btn-rebook {
+    background: #8a7a5e;
+    color: white;
+    border-color: #8a7a5e;
+}
+
+.btn-rebook:hover {
+    background: #6d5f49;
+    border-color: #6d5f49;
+}
+
+/* 空状态 */
+.empty-state {
+    text-align: center;
+    padding: 60px 20px;
+}
+
+.empty-state i {
+    font-size: 64px;
+    color: #e0e0e0;
+    margin-bottom: 20px;
+}
+
+.empty-state h4 {
+    font-size: 18px;
+    color: #666;
+    margin: 0 0 10px 0;
+}
+
+.empty-state p {
+    color: #999;
+    font-size: 14px;
+}
+
+/* 个人信息表单 */
+.profile-form {
+    max-width: 500px;
+}
+
+.form-section {
+    margin-bottom: 30px;
+}
+
+.form-section-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #f0f0f0;
+}
+
+.profile-form-group {
+    margin-bottom: 20px;
+}
+
+.profile-form-group label {
+    display: block;
+    font-size: 14px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 8px;
+}
+
+.profile-form-group input {
+    width: 100%;
+    padding: 12px 15px;
+    border: 2px solid #e0e0e0;
+    border-radius: 10px;
+    font-size: 16px;
+    font-family: 'Noto Sans JP', sans-serif;
+    transition: all 0.3s ease;
+    box-sizing: border-box;
+}
+
+.profile-form-group input:focus {
+    outline: none;
+    border-color: #8a7a5e;
+    box-shadow: 0 0 0 3px rgba(138, 122, 94, 0.1);
+}
+
+.profile-form-group input:disabled {
+    background: #f5f5f5;
+    cursor: not-allowed;
+}
+
+.form-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 25px;
+}
+
+.profile-submit-btn,
+.profile-cancel-btn {
+    padding: 12px 30px;
+    border-radius: 50px;
+    font-size: 16px;
+    font-weight: 600;
+    font-family: 'Noto Sans JP', sans-serif;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: 2px solid;
+}
+
+.profile-submit-btn {
+    background: linear-gradient(135deg, #8a7a5e 0%, #9d8a6d 100%);
+    color: white;
+    border-color: transparent;
+    flex: 1;
+}
+
+.profile-submit-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(138, 122, 94, 0.4);
+}
+
+.profile-cancel-btn {
+    background: white;
+    color: #666;
+    border-color: #e0e0e0;
+}
+
+.profile-cancel-btn:hover {
+    border-color: #8a7a5e;
+    color: #8a7a5e;
+}
+
+/* 收藏列表 */
+.favorites-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+}
+
+.favorite-item {
+    border: 2px solid #e0e0e0;
+    border-radius: 12px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.favorite-item:hover {
+    border-color: #8a7a5e;
+    box-shadow: 0 4px 12px rgba(138, 122, 94, 0.1);
+    transform: translateY(-3px);
+}
+
+.favorite-image {
+    width: 100%;
+    height: 150px;
+    object-fit: cover;
+}
+
+.favorite-info {
+    padding: 15px;
+}
+
+.favorite-name {
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+    margin: 0 0 8px 0;
+}
+
+.favorite-price {
+    font-size: 14px;
+    color: #8a7a5e;
+    font-weight: 600;
+}
+
+.favorite-remove {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: rgba(0, 0, 0, 0.6);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.favorite-remove:hover {
+    background: #d32f2f;
+}
+
+/* 退出登录按钮 */
+.logout-section {
+    text-align: center;
+    padding: 30px;
+    border-top: 2px solid #f0f0f0;
+}
+
+.logout-btn {
+    padding: 12px 40px;
+    background: white;
+    color: #d32f2f;
+    border: 2px solid #d32f2f;
+    border-radius: 50px;
+    font-size: 16px;
+    font-weight: 600;
+    font-family: 'Noto Sans JP', sans-serif;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.logout-btn:hover {
+    background: #d32f2f;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(211, 47, 47, 0.3);
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+    .user-center-content {
+        width: 95vw;
+    }
+
+    .user-center-header {
+        padding: 25px 20px;
+    }
+
+    .user-info-card {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .user-avatar {
+        width: 60px;
+        height: 60px;
+        font-size: 28px;
+    }
+
+    .user-details h3 {
+        font-size: 20px;
+    }
+
+    .user-center-body {
+        padding: 20px;
+    }
+
+    .user-center-tabs {
+        overflow-x: auto;
+        flex-wrap: nowrap;
+    }
+
+    .user-center-tab {
+        padding: 10px 16px;
+        font-size: 14px;
+        white-space: nowrap;
+    }
+
+    .booking-details {
+        grid-template-columns: 1fr;
+    }
+
+    .booking-actions {
+        flex-wrap: wrap;
+    }
+
+    .favorites-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .form-actions {
+        flex-direction: column;
+    }
+}
+
+@media (max-width: 480px) {
+    .user-center-modal {
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        transform: none;
+        max-width: none;
+        max-height: none;
+    }
+
+    .user-center-modal.active {
+        transform: none;
+    }
+
+    .user-center-content {
+        width: 100%;
+        height: 100%;
+        border-radius: 0;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .user-center-body {
+        flex: 1;
+        overflow-y: auto;
+    }
+}

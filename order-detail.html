@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#ffffff" id="themeColor">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>予約詳細｜【公式】Trip7箱根温泉ホテル</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/modern-navbar.css?v=20251201v49">
+    <link rel="stylesheet" href="css/order-detail.css?v=20251127">
+    <link rel="icon" href="img/logo.ico" type="image/x-icon">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;600;700&family=Pixelify+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Config file must be loaded first -->
+    <script src="js/config.js"></script>
+    <script src="js/api-config.js"></script>
+</head>
+<body>
+    <!-- Navbar loaded by template -->
+    <div id="navbar-placeholder"></div>
+
+    <!-- Loading Screen -->
+    <div id="loadingScreen" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.95); display: flex; align-items: center; justify-content: center; z-index: 9999; visibility: visible; opacity: 1; transition: opacity 0.3s ease;">
+        <div style="text-align: center;">
+            <div class="spinner" style="width: 50px; height: 50px; border: 4px solid #f3f3f3; border-top: 4px solid #8a7a5e; border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 20px;"></div>
+            <p style="color: #666; font-size: 16px;">予約詳細を読み込んでいます...</p>
+        </div>
+    </div>
+
+    <!-- Order Detail Content -->
+    <div class="page-content order-detail-page" id="orderDetailContent" style="display: none;">
+        <div class="container">
+            <!-- Breadcrumb -->
+            <div class="breadcrumb-section">
+                <nav class="breadcrumb">
+                    <a href="index.html"><i class="fas fa-home"></i> ホーム</a>
+                    <span class="separator">/</span>
+                    <a href="user-center.html">マイページ</a>
+                    <span class="separator">/</span>
+                    <span class="current">予約詳細</span>
+                </nav>
+            </div>
+
+            <!-- Order Detail Layout -->
+            <div class="order-detail-layout">
+                <!-- Main Content -->
+                <div class="order-detail-main">
+                    <!-- Order Header -->
+                    <div class="order-header-card">
+                        <div class="order-header-top">
+                            <div class="order-title-section">
+                                <h1 class="order-title">
+                                    <i class="fas fa-file-alt"></i>
+                                    予約詳細
+                                </h1>
+                                <p class="order-code">予約番号: <span id="orderCode">-</span></p>
+                            </div>
+                            <div class="order-status-section">
+                                <div class="status-badge" id="orderStatusBadge">
+                                    <i class="fas fa-clock"></i>
+                                    <span id="orderStatusText">確認待ち</span>
+                                </div>
+                                <div class="payment-status-badge" id="paymentStatusBadge">
+                                    <i class="fas fa-credit-card"></i>
+                                    <span id="paymentStatusText">未払い</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="order-date-info">
+                            <div class="date-item">
+                                <i class="fas fa-calendar-plus"></i>
+                                <span class="date-label">予約日時:</span>
+                                <span class="date-value" id="createdAt">-</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Booking Information -->
+                    <div class="detail-card">
+                        <div class="card-header">
+                            <h2 class="card-title">
+                                <i class="fas fa-bed"></i>
+                                ご予約情報
+                            </h2>
+                        </div>
+                        <div class="card-content">
+                            <div class="info-grid">
+                                <div class="info-item">
+                                    <span class="info-label">
+                                        <i class="fas fa-door-open"></i>
+                                        客室タイプ
+                                    </span>
+                                    <span class="info-value" id="roomTypeName">-</span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="info-label">
+                                        <i class="fas fa-calendar-check"></i>
+                                        チェックイン
+                                    </span>
+                                    <span class="info-value" id="checkinDate">-</span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="info-label">
+                                        <i class="fas fa-calendar-times"></i>
+                                        チェックアウト
+                                    </span>
+                                    <span class="info-value" id="checkoutDate">-</span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="info-label">
+                                        <i class="fas fa-moon"></i>
+                                        宿泊数
+                                    </span>
+                                    <span class="info-value" id="numNights">-</span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="info-label">
+                                        <i class="fas fa-users"></i>
+                                        ご利用人数
+                                    </span>
+                                    <span class="info-value" id="numGuests">-</span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="info-label">
+                                        <i class="fas fa-key"></i>
+                                        客室数
+                                    </span>
+                                    <span class="info-value" id="numRooms">-</span>
+                                </div>
+                            </div>
+
+                            <!-- Additional Services -->
+                            <div class="services-section" id="servicesSection">
+                                <h3 class="subsection-title">
+                                    <i class="fas fa-concierge-bell"></i>
+                                    追加サービス
+                                </h3>
+                                <div class="services-list" id="servicesList">
+                                    <!-- Will be populated by JavaScript -->
+                                </div>
+                            </div>
+
+                            <!-- Special Requests -->
+                            <div class="special-requests-section" id="specialRequestsSection" style="display: none;">
+                                <h3 class="subsection-title">
+                                    <i class="fas fa-comment-dots"></i>
+                                    特別リクエスト
+                                </h3>
+                                <p class="special-requests-text" id="specialRequestsText"></p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Guest Information -->
+                    <div class="detail-card">
+                        <div class="card-header">
+                            <h2 class="card-title">
+                                <i class="fas fa-user"></i>
+                                ゲスト情報
+                            </h2>
+                        </div>
+                        <div class="card-content">
+                            <div class="info-grid">
+                                <div class="info-item full-width">
+                                    <span class="info-label">
+                                        <i class="fas fa-id-card"></i>
+                                        お名前
+                                    </span>
+                                    <span class="info-value" id="guestName">-</span>
+                                </div>
+                                <div class="info-item full-width">
+                                    <span class="info-label">
+                                        <i class="fas fa-font"></i>
+                                        お名前（カタカナ）
+                                    </span>
+                                    <span class="info-value" id="guestNameKatakana">-</span>
+                                </div>
+                                <div class="info-item full-width">
+                                    <span class="info-label">
+                                        <i class="fas fa-envelope"></i>
+                                        メールアドレス
+                                    </span>
+                                    <span class="info-value" id="guestEmail">-</span>
+                                </div>
+                                <div class="info-item full-width">
+                                    <span class="info-label">
+                                        <i class="fas fa-phone"></i>
+                                        電話番号
+                                    </span>
+                                    <span class="info-value" id="guestPhone">-</span>
+                                </div>
+                                <div class="info-item full-width">
+                                    <span class="info-label">
+                                        <i class="fas fa-map-marker-alt"></i>
+                                        ご住所
+                                    </span>
+                                    <span class="info-value" id="guestAddress">-</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Payment Information -->
+                    <div class="detail-card">
+                        <div class="card-header">
+                            <h2 class="card-title">
+                                <i class="fas fa-receipt"></i>
+                                お支払い情報
+                            </h2>
+                        </div>
+                        <div class="card-content">
+                            <div class="payment-breakdown">
+                                <div class="payment-row total">
+                                    <span class="payment-label">合計金額</span>
+                                    <span class="payment-value" id="totalPriceDisplay">¥-</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Cancellation Policy -->
+                    <div class="detail-card policy-card">
+                        <div class="card-header">
+                            <h2 class="card-title">
+                                <i class="fas fa-exclamation-circle"></i>
+                                キャンセルポリシー
+                            </h2>
+                        </div>
+                        <div class="card-content">
+                            <div class="policy-list">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sidebar -->
+                <aside class="order-detail-sidebar">
+                    <!-- Action Card -->
+                    <div class="action-card">
+                        <h3 class="action-card-title">
+                            <i class="fas fa-tools"></i>
+                            アクション
+                        </h3>
+                        <div class="action-buttons">
+                            <button class="action-btn primary" id="printBtn">
+                                <i class="fas fa-print"></i>
+                                <span>予約を印刷</span>
+                            </button>
+                            <button class="action-btn primary" id="receiptBtn">
+                                <i class="fas fa-file-invoice"></i>
+                                <span>領収書を発行</span>
+                            </button>
+                            <button class="action-btn secondary" id="emailBtn">
+                                <i class="fas fa-envelope"></i>
+                                <span>確認メールを再送信</span>
+                            </button>
+                            <!-- 取消功能已禁用 -->
+                            <button class="action-btn danger" id="cancelBtn" disabled style="opacity: 0.4; cursor: not-allowed;">
+                                <i class="fas fa-times-circle"></i>
+                                <span>予約をキャンセル</span>
+                            </button>
+                            <div style="background: #fff8f0; border: 1px solid #f0e0d0; border-radius: 8px; padding: 12px; margin-top: 12px; text-align: center;">
+                                <p style="font-size: 13px; color: #666; margin: 0 0 8px 0;">
+                                    <i class="fas fa-info-circle" style="color: #D2691E;"></i> キャンセルをご希望の場合は<br>お電話にてお問い合わせください
+                                </p>
+                                <a href="tel:03-6404-8788" style="display: inline-flex; align-items: center; gap: 6px; color: #D2691E; font-weight: bold; font-size: 15px; text-decoration: none;">
+                                    <i class="fas fa-phone-alt"></i> 03-6404-8788
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Back to List -->
+                    <div class="back-navigation">
+                        <a href="user-center.html#bookings" class="back-btn">
+                            <i class="fas fa-arrow-left"></i>
+                            <span>予約一覧に戻る</span>
+                        </a>
+                    </div>
+                </aside>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer - Loaded dynamically -->
+    <div id="footer-placeholder"></div>
+
+    <!-- Cancel Modal -->
+    <div class="modal" id="cancelModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    予約のキャンセル
+                </h3>
+                <button class="modal-close" id="closeCancelModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p class="warning-text">この予約をキャンセルしてもよろしいですか？</p>
+                <p class="cancellation-fee-notice">
+                    キャンセル料金が発生する場合があります。詳細はキャンセルポリシーをご確認ください。
+                </p>
+                <div class="form-group">
+                    <label for="cancellationReason">キャンセル理由（任意）</label>
+                    <textarea id="cancellationReason" rows="4" placeholder="キャンセルの理由をご記入ください..."></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="modal-btn cancel" id="cancelModalCancel">やめる</button>
+                <button class="modal-btn confirm" id="confirmCancelOrder">キャンセルを確定</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Receipt Modal -->
+    <div class="modal receipt-modal" id="receiptModal">
+        <div class="modal-content receipt-modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">
+                    <i class="fas fa-file-invoice"></i>
+                    領収書プレビュー
+                </h3>
+                <button class="modal-close" id="closeReceiptModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body receipt-modal-body">
+                <!-- 领收书内容 -->
+                <div class="receipt-container" id="receiptContainer">
+                    <div class="receipt-paper">
+                        <!-- 收据编号 -->
+                        <div class="receipt-header-row">
+                            <div class="receipt-number">No. <span id="receiptNumber">-</span></div>
+                            <div class="receipt-stamp-space">
+                                <!-- 收入印纸位置（50,000円以上时显示） -->
+                                <div class="revenue-stamp-box" id="revenueStampBox" style="display: none;">
+                                    <div class="stamp-inner">収入<br>印紙</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 领收书标题 -->
+                        <h1 class="receipt-title">領　収　書</h1>
+
+                        <!-- 主体部分：左侧信息 + 右侧发行者 -->
+                        <div class="receipt-main-container">
+                            <!-- 左侧：收款人和金额 -->
+                            <div class="receipt-left-section">
+                                <!-- 収款人 -->
+                                <div class="receipt-recipient">
+                                    <span id="receiptRecipientName">-</span>
+                                    <span class="honorific">様</span>
+                                </div>
+
+                                <!-- 金額 -->
+                                <div class="receipt-amount-section">
+                                    <div class="amount-row">
+                                        <div class="amount-label">金額</div>
+                                        <div class="amount-box">
+                                            <span class="yen-mark">￥</span>
+                                            <span class="amount-value" id="receiptAmount">-</span>
+                                            <span class="amount-dash">ー</span>
+                                        </div>
+                                    </div>
+                                    <div class="amount-note">（内消費税 ￥<span id="receiptTax">-</span>）</div>
+                                </div>
+
+                                <!-- 但し書き -->
+                                <div class="receipt-purpose-section">
+                                    <div class="purpose-line">
+                                        <span class="purpose-label">但</span>
+                                        <span class="purpose-content">宿泊代として</span>
+                                    </div>
+                                    <div class="confirmation-text">上記正に領収いたしました</div>
+                                </div>
+
+                                <!-- 明細（内訳） -->
+                                <div class="receipt-breakdown">
+                                    <div class="breakdown-title">【内訳】</div>
+                                    <table class="breakdown-table">
+                                        <tr>
+                                            <td class="item-label">宿泊日</td>
+                                            <td class="item-colon">:</td>
+                                            <td class="item-value">
+                                                <span id="receiptCheckinDate">-</span> ～
+                                                <span id="receiptCheckoutDate">-</span>
+                                                （<span id="receiptNights">-</span>泊）
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="item-label">客室タイプ</td>
+                                            <td class="item-colon">:</td>
+                                            <td class="item-value" id="receiptRoomType">-</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="item-label">予約番号</td>
+                                            <td class="item-colon">:</td>
+                                            <td class="item-value" id="receiptOrderCode">-</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="item-label">宿泊料金</td>
+                                            <td class="item-colon">:</td>
+                                            <td class="item-value">￥<span id="receiptRoomPrice">-</span></td>
+                                        </tr>
+                                        <tr id="receiptServiceRow" style="display: none;">
+                                            <td class="item-label">サービス料</td>
+                                            <td class="item-colon">:</td>
+                                            <td class="item-value">￥<span id="receiptServiceCost">0</span></td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <!-- 右侧：発行者情報 -->
+                            <div class="receipt-right-section">
+                                <div class="issue-date" id="receiptIssueDate">-</div>
+
+                                <div class="issuer-box">
+                                    <div class="issuer-name">【公式】Trip7湯沢天空温泉ホテル店</div>
+                                    <div class="issuer-detail">
+                                        <div class="issuer-row">
+                                            <span class="issuer-label">住所</span>
+                                            <span class="issuer-value">〒949-6101<br>新潟県南魚沼郡湯沢町大字湯沢1920番地の1</span>
+                                        </div>
+                                        <div class="issuer-row">
+                                            <span class="issuer-label">TEL</span>
+                                            <span class="issuer-value">03-6404-8788</span>
+                                        </div>
+                                        <div class="issuer-row">
+                                            <span class="issuer-label">Email</span>
+                                            <span class="issuer-value">info@yuzawamd.com</span>
+                                        </div>
+                                    </div>
+
+                                    <!-- 印鑑 -->
+                                    <div class="issuer-seal">
+                                        <div class="seal-circle">
+                                            <div class="seal-text">Trip7<br>湯沢</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 底部备注 -->
+                        <div class="receipt-footer">
+                            <div class="footer-note">※この領収書は再発行できません。大切に保管してください。</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer receipt-modal-footer">
+                <button class="modal-btn cancel" id="closeReceiptBtn">閉じる</button>
+                <button class="modal-btn confirm" id="printReceiptBtn">
+                    <i class="fas fa-print"></i>
+                    印刷する
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        /* Loading spinner animation */
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+    <script src="js/storage-helper.js"></script>
+    <script src="js/init.js?v=20251201"></script>
+    <script src="js/session-service.js"></script>
+    <script src="js/load-navbar.js?v=20251201v21"></script>
+    <script src="js/load-footer.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/order-detail.js?v=20251201"></script>
+</body>
+</html>

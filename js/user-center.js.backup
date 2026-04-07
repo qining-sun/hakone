@@ -1,0 +1,415 @@
+/**
+ * 用户中心弹出框功能
+ * User Center Modal
+ */
+
+class UserCenter {
+    constructor() {
+        this.modal = null;
+        this.overlay = null;
+        this.currentTab = 'bookings'; // 'bookings', 'profile', 'favorites'
+        this.currentUser = null;
+        this.init();
+    }
+
+    init() {
+        this.createModal();
+        this.bindEvents();
+    }
+
+    createModal() {
+        // 创建遮罩层
+        this.overlay = document.createElement('div');
+        this.overlay.className = 'user-center-overlay';
+
+        // 创建模态框
+        this.modal = document.createElement('div');
+        this.modal.className = 'user-center-modal';
+        this.modal.innerHTML = `
+            <div class="user-center-content">
+                <!-- 头部 -->
+                <div class="user-center-header">
+                    <button class="user-center-close-btn" type="button">
+                        <i class="fas fa-times"></i>
+                    </button>
+                    <div class="user-info-card">
+                        <div class="user-avatar">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <div class="user-details">
+                            <h3 id="userDisplayName">ゲスト</h3>
+                            <p class="user-email" id="userDisplayEmail">guest@example.com</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 主体内容 -->
+                <div class="user-center-body">
+                    <!-- 标签导航 -->
+                    <div class="user-center-tabs">
+                        <button class="user-center-tab active" data-tab="bookings">
+                            <i class="fas fa-calendar-check"></i> 予約管理
+                        </button>
+                        <button class="user-center-tab" data-tab="profile">
+                            <i class="fas fa-user-edit"></i> 個人情報
+                        </button>
+                    </div>
+
+                    <!-- 我的预约 -->
+                    <div class="user-center-tab-content active" id="bookings-content">
+                        <div class="booking-list" id="bookingList">
+                            <!-- 动态加载预约列表 -->
+                        </div>
+                    </div>
+
+                    <!-- 个人信息 -->
+                    <div class="user-center-tab-content" id="profile-content">
+                        <form class="profile-form" id="profileForm">
+                            <div class="form-section">
+                                <h4 class="form-section-title">基本情報</h4>
+                                <div class="profile-form-group">
+                                    <label for="profile-name">お名前</label>
+                                    <input type="text" id="profile-name" name="name" required>
+                                </div>
+                                <div class="profile-form-group">
+                                    <label for="profile-email">メールアドレス</label>
+                                    <input type="email" id="profile-email" name="email" disabled>
+                                </div>
+                                <div class="profile-form-group">
+                                    <label for="profile-phone">電話番号</label>
+                                    <input type="tel" id="profile-phone" name="phone">
+                                </div>
+                            </div>
+
+                            <div class="form-section">
+                                <h4 class="form-section-title">パスワード変更</h4>
+                                <div class="profile-form-group">
+                                    <label for="profile-current-password">現在のパスワード</label>
+                                    <input type="password" id="profile-current-password" name="currentPassword">
+                                </div>
+                                <div class="profile-form-group">
+                                    <label for="profile-new-password">新しいパスワード</label>
+                                    <input type="password" id="profile-new-password" name="newPassword" minlength="8">
+                                </div>
+                                <div class="profile-form-group">
+                                    <label for="profile-confirm-password">パスワード確認</label>
+                                    <input type="password" id="profile-confirm-password" name="confirmPassword">
+                                </div>
+                            </div>
+
+                            <div class="form-actions">
+                                <button type="submit" class="profile-submit-btn">保存する</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- 退出登录 -->
+                <div class="logout-section">
+                    <button class="logout-btn" id="logoutBtn">
+                        <i class="fas fa-sign-out-alt"></i> ログアウト
+                    </button>
+                </div>
+            </div>
+        `;
+
+        document.body.appendChild(this.overlay);
+        document.body.appendChild(this.modal);
+    }
+
+    bindEvents() {
+        // 点击关闭按钮
+        const closeBtn = this.modal.querySelector('.user-center-close-btn');
+        closeBtn.addEventListener('click', () => {
+            this.closeModal();
+        });
+
+        // 点击遮罩层关闭
+        this.overlay.addEventListener('click', () => {
+            this.closeModal();
+        });
+
+        // 阻止模态框内容区域的点击事件冒泡
+        const modalContent = this.modal.querySelector('.user-center-content');
+        modalContent.addEventListener('click', (e) => {
+            e.stopPropagation();
+        });
+
+        // 标签切换
+        const tabs = this.modal.querySelectorAll('.user-center-tab');
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                const tabName = tab.dataset.tab;
+                this.switchTab(tabName);
+            });
+        });
+
+        // 个人信息表单提交
+        const profileForm = this.modal.querySelector('#profileForm');
+        profileForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            this.handleProfileUpdate(e);
+        });
+
+        // 退出登录
+        const logoutBtn = this.modal.querySelector('#logoutBtn');
+        logoutBtn.addEventListener('click', () => {
+            this.handleLogout();
+        });
+
+        // ESC键关闭
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && this.modal.classList.contains('active')) {
+                this.closeModal();
+            }
+        });
+    }
+
+    switchTab(tabName) {
+        // 更新标签状态
+        const tabs = this.modal.querySelectorAll('.user-center-tab');
+        tabs.forEach(tab => {
+            if (tab.dataset.tab === tabName) {
+                tab.classList.add('active');
+            } else {
+                tab.classList.remove('active');
+            }
+        });
+
+        // 更新内容区域
+        const contents = this.modal.querySelectorAll('.user-center-tab-content');
+        contents.forEach(content => {
+            content.classList.remove('active');
+        });
+
+        const targetContent = this.modal.querySelector(`#${tabName}-content`);
+        if (targetContent) {
+            targetContent.classList.add('active');
+        }
+
+        this.currentTab = tabName;
+
+        // 加载对应内容
+        if (tabName === 'bookings') {
+            this.loadBookings();
+        }
+    }
+
+    openModal(userData) {
+        this.currentUser = userData;
+        this.updateUserInfo(userData);
+        this.loadBookings();
+        this.overlay.classList.add('active');
+        this.modal.classList.add('active');
+        document.body.classList.add('auth-modal-open');
+    }
+
+    closeModal() {
+        this.overlay.classList.remove('active');
+        this.modal.classList.remove('active');
+        document.body.classList.remove('auth-modal-open');
+    }
+
+    updateUserInfo(userData) {
+        // 更新头部显示
+        const displayName = this.modal.querySelector('#userDisplayName');
+        const displayEmail = this.modal.querySelector('#userDisplayEmail');
+
+        displayName.textContent = userData.name || 'ゲスト';
+        displayEmail.textContent = userData.email || '';
+
+        // 更新个人信息表单
+        const nameInput = this.modal.querySelector('#profile-name');
+        const emailInput = this.modal.querySelector('#profile-email');
+        const phoneInput = this.modal.querySelector('#profile-phone');
+
+        nameInput.value = userData.name || '';
+        emailInput.value = userData.email || '';
+        phoneInput.value = userData.phone || '';
+    }
+
+    loadBookings() {
+        const bookingList = this.modal.querySelector('#bookingList');
+
+        // 模拟数据 - 实际应该从API获取
+        const bookings = this.getMockBookings();
+
+        if (bookings.length === 0) {
+            bookingList.innerHTML = `
+                <div class="empty-state">
+                    <i class="fas fa-calendar-times"></i>
+                    <h4>予約はありません</h4>
+                    <p>まだ予約がありません。お部屋を予約してみましょう。</p>
+                </div>
+            `;
+            return;
+        }
+
+        bookingList.innerHTML = bookings.map(booking => `
+            <div class="booking-item">
+                <div class="booking-header">
+                    <div>
+                        <h4 class="booking-title">${booking.roomName}</h4>
+                        <p style="margin: 0; font-size: 13px; color: #999;">予約番号: ${booking.id}</p>
+                    </div>
+                    <span class="booking-status status-${booking.status.toLowerCase()}">
+                        ${this.getStatusText(booking.status)}
+                    </span>
+                </div>
+                <div class="booking-details">
+                    <div class="booking-detail-item">
+                        <i class="fas fa-calendar"></i>
+                        <span>${booking.checkin} - ${booking.checkout}</span>
+                    </div>
+                    <div class="booking-detail-item">
+                        <i class="fas fa-users"></i>
+                        <span>${booking.guests}名</span>
+                    </div>
+                    <div class="booking-detail-item">
+                        <i class="fas fa-door-open"></i>
+                        <span>${booking.rooms}室</span>
+                    </div>
+                    <div class="booking-detail-item">
+                        <i class="fas fa-yen-sign"></i>
+                        <span>¥${booking.price.toLocaleString()}</span>
+                    </div>
+                </div>
+                <div class="booking-actions">
+                    <button class="booking-action-btn btn-detail" onclick="userCenter.viewBookingDetail('${booking.id}')">
+                        詳細を見る
+                    </button>
+                    ${booking.status === 'confirmed' ? `
+                        <button class="booking-action-btn btn-cancel" onclick="userCenter.cancelBooking('${booking.id}')">
+                            キャンセル
+                        </button>
+                    ` : ''}
+                    ${booking.status === 'completed' ? `
+                        <button class="booking-action-btn btn-rebook" onclick="userCenter.rebookRoom('${booking.id}')">
+                            再予約
+                        </button>
+                    ` : ''}
+                </div>
+            </div>
+        `).join('');
+    }
+
+    handleProfileUpdate(e) {
+        const formData = new FormData(e.target);
+        const newPassword = formData.get('newPassword');
+        const confirmPassword = formData.get('confirmPassword');
+
+        // 如果要修改密码，验证密码
+        if (newPassword || confirmPassword) {
+            if (newPassword !== confirmPassword) {
+                alert('新しいパスワードが一致しません。');
+                return;
+            }
+            if (!formData.get('currentPassword')) {
+                alert('現在のパスワードを入力してください。');
+                return;
+            }
+        }
+
+        const profileData = {
+            name: formData.get('name'),
+            phone: formData.get('phone'),
+            currentPassword: formData.get('currentPassword'),
+            newPassword: newPassword
+        };
+
+        console.log('プロフィール更新:', profileData);
+
+        // 这里应该调用API更新数据
+        // 模拟成功
+        alert('プロフィールを更新しました！');
+
+        // 清空密码字段
+        e.target.querySelector('#profile-current-password').value = '';
+        e.target.querySelector('#profile-new-password').value = '';
+        e.target.querySelector('#profile-confirm-password').value = '';
+
+        // 更新用户信息
+        this.currentUser.name = profileData.name;
+        this.updateUserInfo(this.currentUser);
+    }
+
+    handleLogout() {
+        if (confirm('ログアウトしますか？')) {
+            console.log('ログアウト');
+            this.closeModal();
+
+            // 清除用户数据
+            this.currentUser = null;
+
+            // 重新显示登录按钮
+            if (window.authModal) {
+                window.authModal.updateUIAfterLogout();
+            }
+
+            alert('ログアウトしました。');
+        }
+    }
+
+    viewBookingDetail(bookingId) {
+        console.log('予約詳細を表示:', bookingId);
+        alert(`予約 ${bookingId} の詳細を表示します（実装予定）`);
+    }
+
+    cancelBooking(bookingId) {
+        if (confirm('この予約をキャンセルしますか？')) {
+            console.log('予約をキャンセル:', bookingId);
+            alert('予約をキャンセルしました。');
+            this.loadBookings();
+        }
+    }
+
+    rebookRoom(bookingId) {
+        console.log('再予約:', bookingId);
+        alert('再予約画面に移動します（実装予定）');
+        this.closeModal();
+    }
+
+    getStatusText(status) {
+        const statusMap = {
+            'confirmed': '予約確定',
+            'completed': '宿泊済み',
+            'cancelled': 'キャンセル済み'
+        };
+        return statusMap[status.toLowerCase()] || status;
+    }
+
+    // 模拟数据
+    getMockBookings() {
+        return [
+            {
+                id: 'BK2024001',
+                roomName: 'ツインルーム【セミダブルベッド】',
+                checkin: '2024-12-20',
+                checkout: '2024-12-22',
+                guests: 2,
+                rooms: 1,
+                price: 36000,
+                status: 'confirmed'
+            },
+            {
+                id: 'BK2024002',
+                roomName: '和洋室　6帖和室＋洋室ツイン',
+                checkin: '2024-10-15',
+                checkout: '2024-10-17',
+                guests: 2,
+                rooms: 1,
+                price: 50000,
+                status: 'completed'
+            }
+        ];
+    }
+}
+
+// 全局实例
+let userCenter;
+
+// 页面加载完成后初始化
+document.addEventListener('DOMContentLoaded', () => {
+    userCenter = new UserCenter();
+    window.userCenter = userCenter; // 使其全局可访问
+});

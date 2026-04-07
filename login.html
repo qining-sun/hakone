@@ -1,0 +1,1561 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#ffffff" id="themeColor">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>会員ログイン・新規登録｜【公式】Trip7湯沢天空温泉ホテル</title>
+    <link rel="icon" href="img/logo.ico" type="image/x-icon">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/modern-navbar.css?v=20251201v49">
+    <script src="js/api-config.js"></script>
+    <script src="js/init.js?v=20251201v3"></script>
+    <script src="js/session-service.js?v=20251201v2"></script>
+    <script>
+        // 全局 SNS 登录处理函数
+        function handleSnsLogin(provider) {
+            console.log('=== handleSnsLogin 被调用 ===');
+            console.log('provider:', provider);
+
+            const urlParams = new URLSearchParams(window.location.search);
+            const redirect = urlParams.get('redirect');
+
+            console.log('当前URL:', window.location.href);
+            console.log('redirect参数:', redirect);
+
+            let authUrl = window.getApiUrl ? window.getApiUrl(`/auth/${provider}`) : `http://localhost:5000/api/auth/${provider}`;
+
+            // 如果有预约跳转参数，将预约信息传递给后端
+            if (redirect === 'booking') {
+                const pendingData = {
+                    redirect: 'booking',
+                    plan: urlParams.get('plan') || '',
+                    code: urlParams.get('code') || '',
+                    checkin: urlParams.get('checkin') || '',
+                    checkout: urlParams.get('checkout') || '',
+                    rooms: urlParams.get('rooms') || '',
+                    adults: urlParams.get('adults') || '',
+                    children: urlParams.get('children') || ''
+                };
+                authUrl += `?pending=${encodeURIComponent(JSON.stringify(pendingData))}`;
+                console.log('SNS登录：携带预约信息', pendingData);
+            }
+
+            console.log('最终OAuth URL:', authUrl);
+            window.location.href = authUrl;
+        }
+
+        // 页面加载后立即检查：处理登录成功后的跳转（包括SNS登录和普通登录）
+        (async function() {
+            console.log('=== LOGIN.HTML 启动检查 ===');
+            const urlParams = new URLSearchParams(window.location.search);
+
+            // ========== 检查 SNS 登录成功参数 ==========
+            const googleSuccess = urlParams.get('google_success');
+            const lineSuccess = urlParams.get('line_success');
+            const facebookSuccess = urlParams.get('facebook_success');
+            const pendingParam = urlParams.get('pending');
+            const snsSuccess = googleSuccess === '1' || lineSuccess === '1' || facebookSuccess === '1';
+
+            if (snsSuccess) {
+                const snsType = googleSuccess === '1' ? 'Google' : (lineSuccess === '1' ? 'LINE' : 'Facebook');
+                console.log(`=== ${snsType} 登录成功 ===`);
+
+                // 等待 sessionService 加载并确认登录状态
+                let attempts = 0;
+                while (!window.sessionService && attempts < 30) {
+                    await new Promise(r => setTimeout(r, 100));
+                    attempts++;
+                }
+
+                if (window.sessionService) {
+                    console.log(`${snsType}登录后，等待session确认...`);
+                    // 等待session生效（最多重试5次）
+                    let user = null;
+                    for (let i = 0; i < 5; i++) {
+                        try {
+                            user = await window.sessionService.getCurrentUser();
+                            if (user) {
+                                console.log(`${snsType}登录session已确认:`, user.email);
+                                break;
+                            }
+                        } catch (e) {
+                            console.log(`第${i+1}次检查session失败，重试...`);
+                        }
+                        await new Promise(r => setTimeout(r, 500));
+                    }
+                }
+
+                // 尝试从 URL 参数或 sessionStorage 获取预约信息
+                let reservationData = null;
+
+                // 方式1：从 URL 的 pending 参数获取（Google/Facebook）
+                if (pendingParam) {
+                    try {
+                        reservationData = JSON.parse(decodeURIComponent(pendingParam));
+                        console.log(`${snsType}登录成功，从URL获取预约信息:`, reservationData);
+                    } catch (e) {
+                        console.warn('解析pending参数失败:', e);
+                    }
+                }
+
+                // 方式2：从 sessionStorage 获取（LINE 等不支持 state 的情况）
+                if (!reservationData) {
+                    try {
+                        const storedPending = sessionStorage.getItem('pendingReservation');
+                        if (storedPending) {
+                            reservationData = JSON.parse(storedPending);
+                            console.log(`${snsType}登录成功，从sessionStorage获取预约信息:`, reservationData);
+                            sessionStorage.removeItem('pendingReservation'); // 使用后清除
+                        }
+                    } catch (e) {
+                        console.warn('从sessionStorage获取预约信息失败:', e);
+                    }
+                }
+
+                if (reservationData && reservationData.redirect === 'booking') {
+                    // 构建预约确认页面URL
+                    const params = new URLSearchParams();
+                    if (reservationData.checkin) params.append('checkin', reservationData.checkin);
+                    if (reservationData.checkout) params.append('checkout', reservationData.checkout);
+                    if (reservationData.rooms) params.append('rooms', reservationData.rooms);
+                    if (reservationData.adults) params.append('adults', reservationData.adults);
+                    if (reservationData.children) params.append('children', reservationData.children);
+                    if (reservationData.plan) params.append('plan', reservationData.plan);
+                    if (reservationData.code) params.append('code', reservationData.code);
+                    params.append('sns_login', '1');
+
+                    const bookingUrl = 'booking-user.html?' + params.toString();
+                    console.log(`>>> ${snsType}登录后跳转到预约页面:`, bookingUrl);
+                    window.location.href = bookingUrl;
+                    return;
+                }
+
+                // SNS登录成功但没有待预约信息，跳转到用户中心
+                console.log(`${snsType}登录成功，跳转到用户中心`);
+                window.location.href = 'user-center.html';
+                return;
+            }
+
+            // ========== 检查普通预约跳转（用户可能已登录）==========
+            const redirect = urlParams.get('redirect');
+            console.log('redirect参数:', redirect);
+
+            if (redirect === 'booking') {
+                console.log('检测到预约跳转，等待sessionService...');
+
+                // 等待sessionService加载
+                let attempts = 0;
+                while (!window.sessionService && attempts < 20) {
+                    await new Promise(r => setTimeout(r, 100));
+                    attempts++;
+                }
+
+                if (window.sessionService) {
+                    console.log('sessionService已加载，检查登录状态...');
+                    try {
+                        const user = await window.sessionService.getCurrentUser();
+                        console.log('用户状态:', user ? user.email : '未登录');
+
+                        if (user) {
+                            // 已登录，直接跳转到booking-user.html
+                            const bookingParams = new URLSearchParams();
+                            const plan = urlParams.get('plan');
+                            const code = urlParams.get('code');
+                            const checkin = urlParams.get('checkin');
+                            const checkout = urlParams.get('checkout');
+                            const rooms = urlParams.get('rooms');
+                            const adults = urlParams.get('adults');
+                            const children = urlParams.get('children');
+
+                            if (plan) bookingParams.append('plan', plan);
+                            if (code) bookingParams.append('code', code);
+                            if (checkin) bookingParams.append('checkin', checkin);
+                            if (checkout) bookingParams.append('checkout', checkout);
+                            if (rooms) bookingParams.append('rooms', rooms);
+                            if (adults) bookingParams.append('adults', adults);
+                            if (children) bookingParams.append('children', children);
+
+                            const bookingUrl = 'booking-user.html?' + bookingParams.toString();
+                            console.log('>>> 已登录，跳转到:', bookingUrl);
+                            window.location.href = bookingUrl;
+                            return;
+                        }
+                    } catch (e) {
+                        console.error('检查登录状态失败:', e);
+                    }
+                } else {
+                    console.log('sessionService加载超时');
+                }
+            }
+        })();
+    </script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;600;700&family=M+PLUS+Rounded+1c:wght@100;300;400;500;700;800;900&family=DotGothic16&display=swap" rel="stylesheet">
+
+    <style>
+        /* 登录页面专用样式 */
+        body {
+            background: #f8f9fa;
+        }
+
+        .login-page-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 60px 20px 80px;
+            min-height: calc(100vh - 200px);
+        }
+
+        .login-content-wrapper {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            align-items: start;
+        }
+
+        /* 左侧信息区域 */
+        .login-info-section {
+            padding: 40px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        .login-info-section h2 {
+            font-size: 28px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 20px;
+            letter-spacing: 0.05em;
+        }
+
+        .login-info-section p {
+            font-size: 16px;
+            color: #666;
+            line-height: 1.8;
+            margin-bottom: 30px;
+        }
+
+        .info-benefits {
+            margin-top: 30px;
+        }
+
+        .info-benefits h3 {
+            font-size: 20px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .info-benefits h3 i {
+            color: #8a7a5e;
+        }
+
+        .benefit-item {
+            display: flex;
+            align-items: start;
+            gap: 15px;
+            padding: 15px;
+            margin-bottom: 12px;
+            background: #f8f6f3;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .benefit-item:hover {
+            background: #f0ede8;
+            transform: translateX(5px);
+        }
+
+        .benefit-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #8a7a5e 0%, #9d8a6d 100%);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+
+        .benefit-text h4 {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .benefit-text p {
+            font-size: 14px;
+            color: #666;
+            margin: 0;
+            line-height: 1.6;
+        }
+
+        /* 右侧表单区域 */
+        .login-form-section {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+        }
+
+        .form-header {
+            text-align: center;
+            padding: 40px 40px 30px;
+            background: linear-gradient(135deg, #f8f6f3 0%, #ffffff 100%);
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .form-header h2 {
+            font-size: 26px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 10px;
+            letter-spacing: 0.05em;
+        }
+
+        .form-header p {
+            font-size: 14px;
+            color: #666;
+            margin: 0;
+        }
+
+        /* 标签切换 */
+        .auth-tabs {
+            display: flex;
+            gap: 10px;
+            margin: 30px 40px 0;
+            background: #f8f6f3;
+            padding: 5px;
+            border-radius: 12px;
+        }
+
+        .auth-tab {
+            flex: 1;
+            padding: 14px 20px;
+            border: none;
+            background: transparent;
+            color: #666;
+            font-size: 16px;
+            font-weight: 600;
+            font-family: 'Noto Sans JP', sans-serif;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-radius: 10px;
+            letter-spacing: 0.05em;
+        }
+
+        .auth-tab.active {
+            background: white;
+            color: #8a7a5e;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        /* 表单内容 */
+        .auth-form-content {
+            display: none;
+            padding: 40px;
+        }
+
+        .auth-form-content.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* 表单字段 */
+        .auth-form-group {
+            margin-bottom: 20px;
+        }
+
+        .auth-form-group label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+            letter-spacing: 0.05em;
+        }
+
+        .auth-form-group input {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            font-family: 'Noto Sans JP', sans-serif;
+            transition: all 0.3s ease;
+            background: white;
+            box-sizing: border-box;
+        }
+
+        .auth-form-group input:focus {
+            outline: none;
+            border-color: #8a7a5e;
+            box-shadow: 0 0 0 3px rgba(138, 122, 94, 0.1);
+        }
+
+        .auth-form-group small {
+            display: block;
+            margin-top: 5px;
+            color: #666;
+            font-size: 12px;
+        }
+
+        .auth-form-row {
+            display: flex;
+            gap: 15px;
+        }
+
+        .auth-form-row .auth-form-group {
+            flex: 1;
+        }
+
+        /* 复选框和链接 */
+        .auth-form-options {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            font-size: 14px;
+        }
+
+        .auth-checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #666;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .auth-checkbox-label input[type="checkbox"] {
+            width: auto;
+            cursor: pointer;
+        }
+
+        .auth-link {
+            color: #8a7a5e;
+            text-decoration: none;
+            font-size: 14px;
+            transition: color 0.3s ease;
+        }
+
+        .auth-link:hover {
+            color: #6d5f49;
+            text-decoration: underline;
+        }
+
+        /* 提交按钮 */
+        .auth-submit-btn {
+            width: 100%;
+            padding: 16px 30px;
+            border: none;
+            border-radius: 50px;
+            font-size: 17px;
+            font-weight: 600;
+            font-family: 'Noto Sans JP', sans-serif;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            letter-spacing: 0.05em;
+            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(30, 58, 138, 0.3);
+            position: relative;
+        }
+
+        .auth-submit-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(30, 58, 138, 0.4);
+        }
+
+        .auth-submit-btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+
+        .auth-submit-btn.loading {
+            color: transparent;
+        }
+
+        .auth-submit-btn.loading::after {
+            content: "";
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            top: 50%;
+            left: 50%;
+            margin-left: -10px;
+            margin-top: -10px;
+            border: 3px solid #ffffff;
+            border-radius: 50%;
+            border-top-color: transparent;
+            animation: spinner 0.8s linear infinite;
+        }
+
+        @keyframes spinner {
+            to { transform: rotate(360deg); }
+        }
+
+        /* 分隔线 */
+        .auth-divider {
+            position: relative;
+            text-align: center;
+            margin: 30px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .auth-divider::before,
+        .auth-divider::after {
+            content: "";
+            flex: 1;
+            height: 1px;
+            background: #e0e0e0;
+        }
+
+        .auth-divider::before {
+            margin-right: 15px;
+        }
+
+        .auth-divider::after {
+            margin-left: 15px;
+        }
+
+        .auth-divider span {
+            color: #999;
+            font-size: 14px;
+        }
+
+        /* 社交登录按钮 */
+        .social-auth-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .social-auth-btn {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            width: 100%;
+            padding: 14px 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 50px;
+            background: white;
+            font-size: 15px;
+            font-weight: 500;
+            font-family: 'Noto Sans JP', sans-serif;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            letter-spacing: 0.05em;
+        }
+
+        .social-auth-btn:hover {
+            border-color: #8a7a5e;
+            background: #f8f6f3;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .social-auth-btn i {
+            font-size: 18px;
+        }
+
+        .google-auth {
+            background: #4285f4;
+            color: white;
+            border-color: #4285f4;
+        }
+
+        .google-auth:hover {
+            background: #3367d6;
+            border-color: #3367d6;
+        }
+
+        .facebook-auth {
+            color: #1877F2;
+        }
+
+        .facebook-auth:hover {
+            border-color: #1877F2;
+            background: rgba(24, 119, 242, 0.05);
+        }
+
+        .line-auth {
+            background: #00B900;
+            color: white;
+            border-color: #00B900;
+        }
+
+        .line-auth:hover {
+            background: #00a000;
+            border-color: #00a000;
+        }
+
+        /* 切换文本 */
+        .auth-switch-text {
+            text-align: center;
+            margin-top: 25px;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .auth-switch-link {
+            color: #8a7a5e;
+            text-decoration: none;
+            font-weight: 600;
+            margin-left: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .auth-switch-link:hover {
+            color: #6d5f49;
+            text-decoration: underline;
+        }
+
+        /* 注册条款 */
+        .auth-terms {
+            font-size: 13px;
+            color: #666;
+            line-height: 1.6;
+        }
+
+        .auth-terms a {
+            color: #8a7a5e;
+            text-decoration: none;
+        }
+
+        .auth-terms a:hover {
+            text-decoration: underline;
+        }
+
+        .auth-info-box {
+            background: #e7f3ff;
+            border-left: 3px solid #667eea;
+            padding: 12px;
+            margin-bottom: 15px;
+            font-size: 13px;
+            color: #555;
+            border-radius: 6px;
+        }
+
+        .auth-info-box i {
+            color: #667eea;
+            margin-right: 8px;
+        }
+
+        /* 错误提示区域 */
+        .auth-error-message {
+            display: none;
+            background: #fee2e2;
+            border-left: 4px solid #ef4444;
+            padding: 14px 16px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            color: #000000;
+            border-radius: 8px;
+            animation: slideDown 0.3s ease;
+            font-weight: 500;
+        }
+
+        .auth-error-message.show {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .auth-error-message i {
+            color: #ef4444;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+
+        .auth-error-message span {
+            color: #000000;
+            line-height: 1.5;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* 表单抖动动画 */
+        .shake {
+            animation: shake 0.5s ease;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-10px); }
+            20%, 40%, 60%, 80% { transform: translateX(10px); }
+        }
+
+        /* 密码匹配提示 */
+        .password-match-indicator {
+            display: none;
+            margin-top: 8px;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 500;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .password-match-indicator.show {
+            display: flex;
+        }
+
+        .password-match-indicator.match {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .password-match-indicator.mismatch {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #f8d7da;
+        }
+
+        .password-match-indicator i {
+            font-size: 14px;
+        }
+
+        .password-match-indicator.match i {
+            color: #28a745;
+        }
+
+        .password-match-indicator.mismatch i {
+            color: #ef4444;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 968px) {
+            .login-content-wrapper {
+                grid-template-columns: 1fr;
+                gap: 30px;
+            }
+
+            .login-info-section {
+                order: 2;
+            }
+
+            .login-form-section {
+                order: 1;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .login-page-container {
+                padding: 40px 15px 60px;
+            }
+
+            .login-info-section,
+            .form-header,
+            .auth-tabs,
+            .auth-form-content {
+                padding: 30px 25px;
+            }
+
+            .form-header h2 {
+                font-size: 22px;
+            }
+
+            .auth-form-row {
+                flex-direction: column;
+                gap: 0;
+            }
+
+            .auth-form-options {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header Navigation Placeholder -->
+    <div id="navbar-placeholder"></div>
+
+    <!-- 登录页面主体内容 -->
+    <div class="login-page-container">
+        <div class="login-content-wrapper">
+            <!-- 左侧信息区域 -->
+            <div class="login-info-section">
+                <h2>会員登録で便利にご予約</h2>
+                <p>Trip7湯沢天空温泉ホテルの会員になると、様々な特典をお楽しみいただけます。</p>
+
+                <div class="info-benefits">
+                    <h3>
+                        <i class="fas fa-gift"></i>
+                        会員特典
+                    </h3>
+
+                    <div class="benefit-item">
+                        <div class="benefit-icon">
+                            <i class="fas fa-coins"></i>
+                        </div>
+                        <div class="benefit-text">
+                            <h4>ポイント還元</h4>
+                            <p>ご宿泊ごとにポイント還元（宿泊料金の1%）。貯まったポイントは次回のご予約でご利用いただけます。</p>
+                        </div>
+                    </div>
+
+                    <div class="benefit-item">
+                        <div class="benefit-icon">
+                            <i class="fas fa-calendar-check"></i>
+                        </div>
+                        <div class="benefit-text">
+                            <h4>簡単予約管理</h4>
+                            <p>予約履歴の確認、変更、キャンセルがマイページから簡単に行えます。</p>
+                        </div>
+                    </div>
+
+                    <div class="benefit-item">
+                        <div class="benefit-icon">
+                            <i class="fas fa-user-clock"></i>
+                        </div>
+                        <div class="benefit-text">
+                            <h4>会員限定プラン</h4>
+                            <p>会員様だけの特別プランや早期予約割引をご利用いただけます。</p>
+                        </div>
+                    </div>
+
+                    <div class="benefit-item">
+                        <div class="benefit-icon">
+                            <i class="fas fa-bolt"></i>
+                        </div>
+                        <div class="benefit-text">
+                            <h4>スピード予約</h4>
+                            <p>登録情報を保存することで、次回から入力の手間なく簡単にご予約いただけます。</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 右侧表单区域 -->
+            <div class="login-form-section">
+                <div class="form-header">
+                    <h2>会員ログイン・新規登録</h2>
+                    <p>アカウントにログインまたは新規登録してください</p>
+                </div>
+
+                <!-- 标签切换 (已屏蔽) -->
+                <div class="auth-tabs" style="display: none;">
+                    <button class="auth-tab active" data-tab="login">ログイン</button>
+                    <button class="auth-tab" data-tab="register">新規登録</button>
+                    <button class="auth-tab" data-tab="reset">パスワード<br>リセット</button>
+                </div>
+
+                <!-- 登录表单 -->
+                <div class="auth-form-content active" id="login-form-content">
+                    <!-- 错误提示区域 -->
+                    <div class="auth-error-message" id="login-error-message">
+                        <i class="fas fa-exclamation-circle"></i>
+                        <span id="login-error-text"></span>
+                    </div>
+
+                    <div class="social-auth-buttons">
+                        <button type="button" class="social-auth-btn google-auth" id="google-login-btn" onclick="handleSnsLogin('google')">
+                            <img src="img/login/google.svg" alt="Google" style="width: 20px; height: 20px; background: white; border-radius: 50%; padding: 2px;">
+                            <span>Googleでログイン</span>
+                        </button>
+                        <button type="button" class="social-auth-btn facebook-auth" id="facebook-login-btn" onclick="handleSnsLogin('facebook')">
+                            <i class="fab fa-facebook-f" style="background: #1877F2; color: white; border-radius: 50%; width: 20px; height: 20px; display: inline-flex; align-items: center; justify-content: center; font-size: 12px;"></i>
+                            <span>Facebookでログイン</span>
+                        </button>
+                        <button type="button" class="social-auth-btn line-auth" onclick="handleSnsLogin('line')">
+                            <i class="fab fa-line"></i>
+                            <span>LINEでログイン</span>
+                        </button>
+                    </div>
+
+                    <div class="auth-divider">
+                        <span>または</span>
+                    </div>
+
+                    <form class="auth-form" id="loginForm">
+                        <div class="auth-form-group">
+                            <label for="login-email">メールアドレス</label>
+                            <input type="email" id="login-email" name="email" placeholder="your@email.com" required>
+                        </div>
+                        <div class="auth-form-group">
+                            <label for="login-password">パスワード</label>
+                            <input type="password" id="login-password" name="password" placeholder="パスワードを入力" required>
+                        </div>
+                        <div class="auth-form-options">
+                            <label class="auth-checkbox-label">
+                                <input type="checkbox" id="remember-me">
+                                <span>ログイン状態を保持</span>
+                            </label>
+                            <a href="#" class="auth-link auth-switch-link" data-target="reset">パスワードを忘れた</a>
+                        </div>
+                        <button type="submit" class="auth-submit-btn">ログイン</button>
+                    </form>
+
+                    <div class="auth-switch-text">
+                        <span>アカウントをお持ちでない方は</span>
+                        <a href="#" class="auth-switch-link" data-target="register">新規登録</a>
+                    </div>
+                </div>
+
+                <!-- 注册表单 -->
+                <div class="auth-form-content" id="register-form-content">
+                    <!-- 错误提示区域 -->
+                    <div class="auth-error-message" id="register-error-message">
+                        <i class="fas fa-exclamation-circle"></i>
+                        <span id="register-error-text"></span>
+                    </div>
+
+                    <form class="auth-form" id="registerForm">
+                        <div class="auth-form-group">
+                            <label for="register-email">メールアドレス</label>
+                            <input type="email" id="register-email" name="email" placeholder="your@email.com" required>
+                        </div>
+                        <div class="auth-form-group">
+                            <label for="register-password">パスワード</label>
+                            <input type="password" id="register-password" name="password" placeholder="8文字以上" required minlength="8">
+                            <small>※ 8文字以上で設定してください</small>
+                        </div>
+                        <div class="auth-form-group">
+                            <label for="register-password-confirm">パスワード確認</label>
+                            <input type="password" id="register-password-confirm" name="password_confirm" placeholder="パスワードを再入力" required>
+                            <div class="password-match-indicator" id="password-match-indicator">
+                                <i class="fas fa-check-circle"></i>
+                                <span id="password-match-text"></span>
+                            </div>
+                        </div>
+                        <div class="auth-form-group">
+                            <label class="auth-checkbox-label">
+                                <input type="checkbox" id="agree-terms" required>
+                                <span class="auth-terms">
+                                    <a href="#" target="_blank">利用規約</a>と<a href="#" target="_blank">プライバシーポリシー</a>に同意します
+                                </span>
+                            </label>
+                        </div>
+                        <div class="auth-info-box">
+                            <i class="fas fa-info-circle"></i>
+                            登録後、確認メールが送信されます。メール内のリンクをクリックして登録を完了してください。
+                        </div>
+                        <button type="submit" class="auth-submit-btn">確認メールを送信</button>
+                    </form>
+
+                    <div class="auth-divider">
+                        <span>または</span>
+                    </div>
+
+                    <div class="social-auth-buttons">
+                        <button type="button" class="social-auth-btn google-auth" id="google-register-btn" onclick="handleSnsLogin('google')">
+                            <img src="img/login/google.svg" alt="Google" style="width: 20px; height: 20px; background: white; border-radius: 50%; padding: 2px;">
+                            <span>Googleで登録</span>
+                        </button>
+                        <button type="button" class="social-auth-btn facebook-auth" id="facebook-register-btn" onclick="handleSnsLogin('facebook')">
+                            <i class="fab fa-facebook-f" style="background: #1877F2; color: white; border-radius: 50%; width: 20px; height: 20px; display: inline-flex; align-items: center; justify-content: center; font-size: 12px;"></i>
+                            <span>Facebookで登録</span>
+                        </button>
+                        <button type="button" class="social-auth-btn line-auth" id="line-register-btn" onclick="handleSnsLogin('line')">
+                            <i class="fab fa-line"></i>
+                            <span>LINEで登録</span>
+                        </button>
+                    </div>
+
+                    <div class="auth-switch-text">
+                        <span>すでにアカウントをお持ちの方は</span>
+                        <a href="#" class="auth-switch-link" data-target="login">ログイン</a>
+                    </div>
+                </div>
+
+                <!-- 密码重置表单 -->
+                <div class="auth-form-content" id="reset-form-content">
+                    <!-- 错误提示区域 -->
+                    <div class="auth-error-message" id="reset-error-message">
+                        <i class="fas fa-exclamation-circle"></i>
+                        <span id="reset-error-text"></span>
+                    </div>
+
+                    <form class="auth-form" id="resetForm">
+                        <div class="auth-info-box">
+                            <i class="fas fa-info-circle"></i>
+                            登録済みのメールアドレスを入力してください。パスワード<br>再設定用のリンクをお送りします。
+                        </div>
+                        <div class="auth-form-group">
+                            <label for="reset-email">メールアドレス</label>
+                            <input type="email" id="reset-email" name="email" placeholder="your@email.com" required>
+                        </div>
+                        <button type="submit" class="auth-submit-btn">リセットメールを送信</button>
+                    </form>
+
+                    <div class="auth-switch-text">
+                        <span>ログインに戻る</span>
+                        <a href="#" class="auth-switch-link" data-target="login">ログイン</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer Placeholder -->
+    <div id="footer-placeholder"></div>
+
+    <script src="js/load-navbar.js?v=20251201v21"></script>
+    <script src="js/load-footer.js"></script>
+    <script src="js/storage-helper.js"></script>
+
+    <script>
+        // 使用动态主机名构建API地址
+        window.API_BASE_URL = window.API_BASE_URL || window.API_CONFIG?.BOOKING_API || '/api';
+
+        // 标签切换功能
+        const tabs = document.querySelectorAll('.auth-tab');
+        const contents = document.querySelectorAll('.auth-form-content');
+
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                const tabName = tab.dataset.tab;
+                switchTab(tabName);
+            });
+        });
+
+        // 切换链接功能
+        const switchLinks = document.querySelectorAll('.auth-switch-link');
+        switchLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const target = link.dataset.target;
+                switchTab(target);
+            });
+        });
+
+        function switchTab(tabName) {
+            // 更新标签状态
+            tabs.forEach(tab => {
+                if (tab.dataset.tab === tabName) {
+                    tab.classList.add('active');
+                } else {
+                    tab.classList.remove('active');
+                }
+            });
+
+            // 更新表单内容
+            contents.forEach(content => {
+                content.classList.remove('active');
+            });
+
+            const targetContent = document.querySelector(`#${tabName}-form-content`);
+            if (targetContent) {
+                targetContent.classList.add('active');
+            }
+        }
+
+        // 显示错误信息的辅助函数
+        function showError(messageElement, textElement, message, formElement) {
+            textElement.textContent = message;
+            messageElement.classList.add('show');
+            if (formElement) {
+                formElement.classList.add('shake');
+                setTimeout(() => formElement.classList.remove('shake'), 500);
+            }
+            // 5秒后自动隐藏错误信息
+            setTimeout(() => {
+                messageElement.classList.remove('show');
+            }, 5000);
+        }
+
+        // 隐藏错误信息的辅助函数
+        function hideError(messageElement) {
+            messageElement.classList.remove('show');
+        }
+
+        // 实时密码匹配验证
+        function setupPasswordMatchValidation() {
+            const passwordInput = document.getElementById('register-password');
+            const confirmInput = document.getElementById('register-password-confirm');
+            const indicator = document.getElementById('password-match-indicator');
+            const indicatorText = document.getElementById('password-match-text');
+            const indicatorIcon = indicator.querySelector('i');
+
+            function validatePasswordMatch() {
+                const password = passwordInput.value;
+                const confirm = confirmInput.value;
+
+                // 如果确认密码为空,不显示提示
+                if (confirm === '') {
+                    indicator.classList.remove('show', 'match', 'mismatch');
+                    return;
+                }
+
+                // 显示提示
+                indicator.classList.add('show');
+
+                // 检查是否匹配
+                if (password === confirm) {
+                    indicator.classList.remove('mismatch');
+                    indicator.classList.add('match');
+                    indicatorIcon.className = 'fas fa-check-circle';
+                    indicatorText.textContent = 'パスワードが一致します';
+                } else {
+                    indicator.classList.remove('match');
+                    indicator.classList.add('mismatch');
+                    indicatorIcon.className = 'fas fa-times-circle';
+                    indicatorText.textContent = 'パスワードが一致しません';
+                }
+            }
+
+            // 监听输入事件
+            passwordInput.addEventListener('input', validatePasswordMatch);
+            confirmInput.addEventListener('input', validatePasswordMatch);
+        }
+
+        // 页面加载完成后初始化密码匹配验证
+        document.addEventListener('DOMContentLoaded', function() {
+            setupPasswordMatchValidation();
+            // SNS登录成功后的跳转已在页面顶部的脚本中处理
+        });
+
+        // 登录表单提交
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const loginForm = e.target;
+            const submitBtn = loginForm.querySelector('.auth-submit-btn');
+            const errorMessage = document.getElementById('login-error-message');
+            const errorTextElement = document.getElementById('login-error-text');
+
+            // 隐藏之前的错误信息
+            hideError(errorMessage);
+
+            const formData = new FormData(e.target);
+            const loginData = {
+                email: formData.get('email'),
+                password: formData.get('password'),
+                remember: document.getElementById('remember-me').checked
+            };
+
+            console.log('开始登录...', loginData);
+
+            // 显示加载动画
+            submitBtn.disabled = true;
+            submitBtn.classList.add('loading');
+            const originalText = submitBtn.textContent;
+
+            try {
+                // 调用后端登录API（使用 session 认证）
+                const response = await fetch(window.getApiUrl('/auth/login'), {
+                    method: 'POST',
+                    credentials: 'include', // 重要：允许发送和接收cookie
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(loginData)
+                });
+
+                console.log('响应状态:', response.status);
+
+                // 处理HTTP错误状态
+                if (!response.ok) {
+                    let errorMsg = 'ログインに失敗しました';
+
+                    if (response.status === 401) {
+                        errorMsg = 'メールアドレスまたはパスワードが正しくありません';
+                    } else if (response.status === 500) {
+                        errorMsg = 'サーバーエラーが発生しました。しばらくしてからもう一度お試しください';
+                    } else if (response.status === 429) {
+                        errorMsg = 'ログイン試行回数が多すぎます。しばらくしてからもう一度お試しください';
+                    }
+
+                    console.error('HTTP错误:', response.status);
+                    showError(errorMessage, errorTextElement, errorMsg, loginForm);
+                    return;
+                }
+
+                const result = await response.json();
+                console.log('登录响应:', result);
+
+                if (!result.success) {
+                    showError(errorMessage, errorTextElement, result.message || 'メールアドレスまたはパスワードが正しくありません', loginForm);
+                    return;
+                }
+
+                // Session登录成功，现在获取用户信息
+                console.log('Session创建成功，正在获取用户信息...');
+
+                const userResponse = await fetch(window.getApiUrl('/session/me'), {
+                    method: 'GET',
+                    credentials: 'include', // 发送session cookie
+                    headers: { 'Content-Type': 'application/json' }
+                });
+
+                if (!userResponse.ok) {
+                    console.error('获取用户信息失败');
+                    showError(errorMessage, errorTextElement, 'ログインは成功しましたが、ユーザー情報の取得に失敗しました', loginForm);
+                    return;
+                }
+
+                const userResult = await userResponse.json();
+                console.log('用户信息:', userResult);
+
+                if (!userResult.success || !userResult.data) {
+                    console.error('无效的用户数据:', userResult);
+                    showError(errorMessage, errorTextElement, 'ユーザー情報が無効です', loginForm);
+                    return;
+                }
+
+                // 使用session认证，不再需要保存用户数据到localStorage
+                // 用户数据已经通过HttpOnly cookie的session ID安全存储在服务器端
+                const user = userResult.data;
+
+                let displayName = `${user.last_name || ''} ${user.first_name || ''}`.trim();
+                if (!displayName) {
+                    displayName = user.email;
+                }
+
+                console.log('登录成功！用户:', displayName);
+                console.log('Session已创建，用户数据安全存储在服务器端');
+
+                // 清理旧的localStorage数据（迁移到session）
+                try {
+                    localStorage.removeItem('currentUser');
+                    console.log('✓ 已清除旧的localStorage数据');
+                } catch (e) {
+                    console.warn('清除localStorage失败:', e);
+                }
+
+                // 检查URL参数中是否有预约信息
+                const urlParams = new URLSearchParams(window.location.search);
+                const redirect = urlParams.get('redirect');
+                console.log('=== 登录成功后检查URL参数 ===');
+                console.log('当前URL:', window.location.href);
+                console.log('redirect参数:', redirect);
+
+                if (redirect === 'booking') {
+                    // 从URL参数构建预约页面URL
+                    const bookingParams = new URLSearchParams();
+                    const plan = urlParams.get('plan');
+                    const code = urlParams.get('code');
+                    const checkin = urlParams.get('checkin');
+                    const checkout = urlParams.get('checkout');
+                    const rooms = urlParams.get('rooms');
+                    const adults = urlParams.get('adults');
+                    const children = urlParams.get('children');
+
+                    if (plan) bookingParams.append('plan', plan);
+                    if (code) bookingParams.append('code', code);
+                    if (checkin) bookingParams.append('checkin', checkin);
+                    if (checkout) bookingParams.append('checkout', checkout);
+                    if (rooms) bookingParams.append('rooms', rooms);
+                    if (adults) bookingParams.append('adults', adults);
+                    if (children) bookingParams.append('children', children);
+
+                    const bookingUrl = `booking-user.html?${bookingParams.toString()}`;
+                    console.log('登录成功，跳转到预约页面:', bookingUrl);
+                    window.location.href = bookingUrl;
+                    return;
+                }
+
+                // 没有预约信息，跳转到预约页面
+                window.location.href = 'reservation.html';
+
+            } catch (error) {
+                console.error('ログインエラー:', error);
+                showError(errorMessage, errorTextElement, 'ログインに失敗しました。もう一度お試しください。', loginForm);
+            } finally {
+                // 恢复按钮状态
+                submitBtn.disabled = false;
+                submitBtn.classList.remove('loading');
+            }
+        });
+
+        // 注册表单提交
+        document.getElementById('registerForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const registerForm = e.target;
+            const submitBtn = registerForm.querySelector('.auth-submit-btn');
+            const errorMessage = document.getElementById('register-error-message');
+            const errorTextElement = document.getElementById('register-error-text');
+
+            // 隐藏之前的错误信息
+            hideError(errorMessage);
+
+            const formData = new FormData(e.target);
+            const password = formData.get('password');
+            const passwordConfirm = formData.get('password_confirm');
+
+            // 验证密码匹配
+            if (password !== passwordConfirm) {
+                showError(errorMessage, errorTextElement, 'パスワードが一致しません。もう一度確認してください。', registerForm);
+                return;
+            }
+
+            const registerData = {
+                email: formData.get('email'),
+                password: password
+            };
+
+            console.log('开始注册流程...', registerData);
+
+            // 显示加载动画
+            submitBtn.disabled = true;
+            submitBtn.classList.add('loading');
+
+            try {
+                // 调用后端注册API（发送验证邮件）
+                const response = await fetch(window.getApiUrl('/user-registration/request'), {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        email: registerData.email,
+                        password: registerData.password
+                    })
+                });
+
+                const result = await response.json();
+
+                if (!result.success) {
+                    showError(errorMessage, errorTextElement, result.message || '登録に失敗しました', registerForm);
+                    return;
+                }
+
+                // 显示验证邮件发送成功提示（使用页面内提示）
+                const successMessage = document.createElement('div');
+                successMessage.className = 'auth-info-box';
+                successMessage.style.background = '#d4edda';
+                successMessage.style.borderLeftColor = '#28a745';
+                successMessage.style.marginBottom = '20px';
+                successMessage.innerHTML = `
+                    <i class="fas fa-check-circle" style="color: #28a745;"></i>
+                    確認メールを ${registerData.email} に送信しました！メール内のリンクをクリックして登録を完了してください。（有効期限: ${result.data.expiryMinutes}分）
+                `;
+                registerForm.insertBefore(successMessage, registerForm.firstChild);
+
+                // 清空表单
+                registerForm.reset();
+
+                console.log('验证邮件发送成功');
+            } catch (error) {
+                console.error('登録エラー:', error);
+                showError(errorMessage, errorTextElement, '登録に失敗しました。もう一度お試しください。', registerForm);
+            } finally {
+                // 恢复按钮状态
+                submitBtn.disabled = false;
+                submitBtn.classList.remove('loading');
+            }
+        });
+
+        // 密码重置表单提交
+        document.getElementById('resetForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const resetForm = e.target;
+            const submitBtn = resetForm.querySelector('.auth-submit-btn');
+            const errorMessage = document.getElementById('reset-error-message');
+            const errorTextElement = document.getElementById('reset-error-text');
+
+            // 隐藏之前的错误信息
+            hideError(errorMessage);
+
+            const formData = new FormData(e.target);
+            const resetData = {
+                email: formData.get('email')
+            };
+
+            console.log('开始密码重置流程...', resetData);
+
+            // 显示加载动画
+            submitBtn.disabled = true;
+            submitBtn.classList.add('loading');
+
+            try {
+                // 调用后端密码重置请求API
+                const response = await fetch(window.getApiUrl('/auth/password-reset/request'), {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(resetData)
+                });
+
+                const result = await response.json();
+
+                if (!result.success) {
+                    showError(errorMessage, errorTextElement, result.message || 'リセットメールの送信に失敗しました', resetForm);
+                    return;
+                }
+
+                // 显示成功提示
+                const successMessage = document.createElement('div');
+                successMessage.className = 'auth-info-box';
+                successMessage.style.background = '#d4edda';
+                successMessage.style.borderLeftColor = '#28a745';
+                successMessage.style.marginBottom = '20px';
+                successMessage.innerHTML = `
+                    <i class="fas fa-check-circle" style="color: #28a745;"></i>
+                    パスワード<br>リセット用のメールを ${resetData.email} に送信しました！メール内のリンクをクリックしてパスワードを<br>再設定してください。（有効期限: ${result.data.expiryMinutes}分）
+                `;
+                resetForm.insertBefore(successMessage, resetForm.firstChild);
+
+                // 清空表单
+                resetForm.reset();
+
+                console.log('密码重置邮件发送成功');
+            } catch (error) {
+                console.error('パスワードリセットエラー:', error);
+                showError(errorMessage, errorTextElement, 'リセットメールの送信に失敗しました。もう一度お試しください。', resetForm);
+            } finally {
+                // 恢复按钮状态
+                submitBtn.disabled = false;
+                submitBtn.classList.remove('loading');
+            }
+        });
+
+        // 辅助函数：获取带预约信息的OAuth URL
+        function getOAuthUrlWithPending(baseAuthUrl) {
+            const urlParams = new URLSearchParams(window.location.search);
+            const redirect = urlParams.get('redirect');
+
+            console.log('=== getOAuthUrlWithPending 调试 ===');
+            console.log('当前URL:', window.location.href);
+            console.log('redirect参数:', redirect);
+
+            // 如果有预约跳转参数，将预约信息传递给后端
+            if (redirect === 'booking') {
+                const pendingData = {
+                    redirect: 'booking',
+                    plan: urlParams.get('plan') || '',
+                    code: urlParams.get('code') || '',
+                    checkin: urlParams.get('checkin') || '',
+                    checkout: urlParams.get('checkout') || '',
+                    rooms: urlParams.get('rooms') || '',
+                    adults: urlParams.get('adults') || '',
+                    children: urlParams.get('children') || ''
+                };
+                const finalUrl = baseAuthUrl + `?pending=${encodeURIComponent(JSON.stringify(pendingData))}`;
+                console.log('SNS登录：携带预约信息', pendingData);
+                console.log('最终OAuth URL:', finalUrl);
+                return finalUrl;
+            }
+
+            console.log('没有预约参数，使用基础URL:', baseAuthUrl);
+            return baseAuthUrl;
+        }
+
+        // 检查是否已登录 - 使用 sessionService
+        document.addEventListener('DOMContentLoaded', async () => {
+            // 社交登录按钮事件绑定（必须在 DOMContentLoaded 内部）
+            const socialBtns = document.querySelectorAll('.social-auth-btn');
+            console.log('[登录页] 找到社交登录按钮数量:', socialBtns.length);
+            socialBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    if (btn.classList.contains('google-auth')) {
+                        // Google OAuth 登录 - 携带预约信息
+                        const googleUrl = getOAuthUrlWithPending(window.getApiUrl('/auth/google'));
+                        console.log('Google登录URL:', googleUrl);
+                        window.location.href = googleUrl;
+                    } else if (btn.classList.contains('facebook-auth')) {
+                        // Facebook Login - 携带预约信息
+                        const facebookUrl = getOAuthUrlWithPending(window.getApiUrl('/auth/facebook'));
+                        console.log('Facebook登录URL:', facebookUrl);
+                        window.location.href = facebookUrl;
+                    } else if (btn.classList.contains('line-auth')) {
+                        // LINE Login - 携带预约信息
+                        const lineUrl = getOAuthUrlWithPending(window.getApiUrl('/auth/line'));
+                        console.log('LINE登录URL:', lineUrl);
+                        window.location.href = lineUrl;
+                    }
+                });
+            });
+            console.log('[登录页] DOMContentLoaded 开始执行');
+
+            // 等待 sessionService 加载
+            if (!window.sessionService) {
+                console.log('[登录页] sessionService 未加载，等待加载...');
+                // 等待一下让 session-service.js 加载
+                await new Promise(resolve => setTimeout(resolve, 200));
+            }
+
+            console.log('[登录页] sessionService 状态:', !!window.sessionService);
+
+            if (window.sessionService) {
+                try {
+                    console.log('[登录页] 正在检查登录状态...');
+                    const currentUser = await window.sessionService.getCurrentUser();
+                    console.log('[登录页] getCurrentUser 结果:', currentUser);
+
+                    if (currentUser) {
+                        console.log('[登录页] 检测到已登录用户:', currentUser.email);
+
+                        // 检查URL参数中是否有预约信息
+                        const urlParams = new URLSearchParams(window.location.search);
+                        const redirect = urlParams.get('redirect');
+                        console.log('[登录页] URL redirect参数:', redirect);
+
+                        if (redirect === 'booking') {
+                            console.log('[登录页] >>> 即将跳转到booking-user.html <<<');
+                            // 从URL参数构建预约页面URL
+                            const bookingParams = new URLSearchParams();
+                            const plan = urlParams.get('plan');
+                            const code = urlParams.get('code');
+                            const checkin = urlParams.get('checkin');
+                            const checkout = urlParams.get('checkout');
+                            const rooms = urlParams.get('rooms');
+                            const adults = urlParams.get('adults');
+                            const children = urlParams.get('children');
+
+                            if (plan) bookingParams.append('plan', plan);
+                            if (code) bookingParams.append('code', code);
+                            if (checkin) bookingParams.append('checkin', checkin);
+                            if (checkout) bookingParams.append('checkout', checkout);
+                            if (rooms) bookingParams.append('rooms', rooms);
+                            if (adults) bookingParams.append('adults', adults);
+                            if (children) bookingParams.append('children', children);
+
+                            console.log('[登录页] 已登录，直接跳转到预约页面');
+                            window.location.href = `booking-user.html?${bookingParams.toString()}`;
+                            return;
+                        }
+
+                        // 没有预约信息，提示并跳转到用户中心
+                        if (confirm('すでにログイン済みです。マイページに移動しますか？')) {
+                            window.location.href = 'user-center.html';
+                        }
+                    } else {
+                        console.log('[登录页] 未检测到登录用户');
+                    }
+                } catch (error) {
+                    console.error('[登录页] 检查登录状态失败:', error);
+                }
+            }
+        });
+
+        // 注意: Google/LINE/Facebook 登录按钮事件已经在上方的 socialBtns.forEach 中统一处理
+        // SNS 登录成功后的跳转处理也已经在 DOMContentLoaded 事件中统一处理
+    </script>
+</body>
+</html>

@@ -1,0 +1,27 @@
+# 版本控制
+.git
+.gitignore
+
+# Docker相关
+Dockerfile
+docker-compose.yml
+.dockerignore
+
+# 文档和说明
+README.md
+DEPLOYMENT.md
+*.md
+
+# 开发工具
+.vscode
+.idea
+
+# 临时文件
+*.log
+*.tmp
+.DS_Store
+Thumbs.db
+
+# 不需要的数据库文件
+img/access/qloapps_db/
+img/access/yuzawamd/

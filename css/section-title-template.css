@@ -1,0 +1,206 @@
+/**
+ * 通用标题模板样式
+ * Universal Section Title Template
+ * 基于客室页面的优雅标题设计
+ */
+
+/* 统一标题区域 */
+.unified-section-title {
+    padding: 60px 0 20px 0;
+    background: #fff;
+    width: 100%;
+    position: relative;
+}
+
+.unified-section-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.unified-section-header {
+    text-align: center;
+    margin-bottom: 40px;
+    position: relative;
+}
+
+/* 主标题样式 - 带装饰线条 */
+.unified-section-title-text {
+    font-size: 32px;
+    font-weight: 300;
+    color: #2c2c2c;
+    margin-bottom: 8px;
+    letter-spacing: 0.1em;
+    font-family: 'Noto Sans JP', 'Microsoft YaHei', Arial, sans-serif;
+    position: relative;
+    display: inline-block;
+    background: #fff;
+    padding: 0 30px;
+    z-index: 2;
+}
+
+/* 装饰线条 */
+.unified-section-title-text::before,
+.unified-section-title-text::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    width: 350px;
+    height: 1px;
+    background: linear-gradient(to right, transparent, #d2691e, transparent);
+    z-index: 1;
+}
+
+.unified-section-title-text::before {
+    right: 100%;
+    margin-right: 20px;
+}
+
+.unified-section-title-text::after {
+    left: 100%;
+    margin-left: 20px;
+}
+
+/* 副标题样式 */
+.unified-section-subtitle {
+    font-size: 14px;
+    color: #8a7a5e;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin: 0;
+    font-weight: 400;
+    position: relative;
+    z-index: 2;
+}
+
+/* 响应式设计 */
+@media (max-width: 992px) {
+    .unified-section-title-text::before,
+    .unified-section-title-text::after {
+        width: 200px;
+    }
+
+    .unified-section-title {
+        padding: 50px 0 15px 0;
+    }
+}
+
+@media (max-width: 768px) {
+    .unified-section-title-text {
+        font-size: 28px;
+        padding: 0 20px;
+    }
+
+    .unified-section-title-text::before,
+    .unified-section-title-text::after {
+        width: 150px;
+        margin-left: 15px;
+        margin-right: 15px;
+    }
+
+    .unified-section-subtitle {
+        font-size: 12px;
+    }
+
+    .unified-section-header {
+        margin-bottom: 30px;
+    }
+
+    .unified-section-title {
+        padding: 40px 0 15px 0;
+    }
+}
+
+@media (max-width: 480px) {
+    .unified-section-title-text::before,
+    .unified-section-title-text::after {
+        width: 100px;
+        margin-left: 10px;
+        margin-right: 10px;
+    }
+
+    .unified-section-title-text {
+        padding: 0 15px;
+        font-size: 24px;
+    }
+
+    .unified-section-subtitle {
+        font-size: 11px;
+    }
+
+    .unified-section-title {
+        padding: 30px 0 10px 0;
+    }
+}
+
+/* 标题变体样式 */
+
+/* 深色背景变体 */
+.unified-section-title.dark-bg {
+    background: #2c2c2c;
+}
+
+.unified-section-title.dark-bg .unified-section-title-text {
+    color: #fff;
+    background: #2c2c2c;
+}
+
+.unified-section-title.dark-bg .unified-section-subtitle {
+    color: #d2691e;
+}
+
+/* 浅色背景变体 */
+.unified-section-title.light-bg {
+    background: #f8f6f3;
+}
+
+.unified-section-title.light-bg .unified-section-title-text {
+    background: #f8f6f3;
+}
+
+/* 紧凑版本 */
+.unified-section-title.compact {
+    padding: 40px 0 15px 0;
+}
+
+.unified-section-title.compact .unified-section-header {
+    margin-bottom: 20px;
+}
+
+/* 常用标题预设 */
+
+/* 客室相关 */
+.section-title-rooms .unified-section-title-text::before,
+.section-title-rooms .unified-section-title-text::after {
+    background: linear-gradient(to right, transparent, #4a90e2, transparent);
+}
+
+/* 料理相关 */
+.section-title-dining .unified-section-title-text::before,
+.section-title-dining .unified-section-title-text::after {
+    background: linear-gradient(to right, transparent, #e74c3c, transparent);
+}
+
+/* 温泉相关 */
+.section-title-onsen .unified-section-title-text::before,
+.section-title-onsen .unified-section-title-text::after {
+    background: linear-gradient(to right, transparent, #3498db, transparent);
+}
+
+/* 施设相关 */
+.section-title-facilities .unified-section-title-text::before,
+.section-title-facilities .unified-section-title-text::after {
+    background: linear-gradient(to right, transparent, #9b59b6, transparent);
+}
+
+/* 观光相关 */
+.section-title-area .unified-section-title-text::before,
+.section-title-area .unified-section-title-text::after {
+    background: linear-gradient(to right, transparent, #27ae60, transparent);
+}
+
+/* 交通相关 */
+.section-title-access .unified-section-title-text::before,
+.section-title-access .unified-section-title-text::after {
+    background: linear-gradient(to right, transparent, #f39c12, transparent);
+}

@@ -1,0 +1,401 @@
+<!-- 开发环境测试模式横条（仅开发环境显示） -->
+<div class="dev-mode-bar" id="devModeBar" style="display: none;">
+    <div class="dev-mode-container">
+        <span class="dev-mode-label">🔧 テストモード</span>
+        <div class="dev-mode-switches">
+            <div class="dev-switch-group">
+                <span class="dev-switch-label">🗄️ DB:</span>
+                <div class="dev-switch-buttons">
+                    <button id="dbTestBtn" class="dev-switch-btn" onclick="window.switchDbEnvironment('test')">テスト</button>
+                    <button id="dbProdBtn" class="dev-switch-btn prod" onclick="window.switchDbEnvironment('production')">本番</button>
+                </div>
+            </div>
+            <div class="dev-switch-group">
+                <span class="dev-switch-label">💳 Stripe:</span>
+                <div class="dev-switch-buttons">
+                    <button id="stripeTestBtn" class="dev-switch-btn" onclick="window.switchStripeEnvironment('test')">テスト</button>
+                    <button id="stripeProdBtn" class="dev-switch-btn prod" onclick="window.switchStripeEnvironment('production')">本番</button>
+                </div>
+            </div>
+            <div class="dev-switch-group">
+                <span class="dev-switch-label">🔗 API:</span>
+                <div class="dev-switch-buttons">
+                    <button id="apiLocalBtn" class="dev-switch-btn" onclick="window.switchApiProvider('local')">自社</button>
+                    <button id="apiTLLincolnBtn" class="dev-switch-btn" onclick="window.switchApiProvider('tl-lincoln')">TL-Lincoln</button>
+                </div>
+            </div>
+        </div>
+        <button class="dev-mode-hide-btn" id="devModeHideBtn" onclick="window.hideDevModeBar()" title="隠す（Shift+Dで再表示）">✕</button>
+    </div>
+</div>
+
+<!-- Modern Sticky Navigation Bar Template -->
+<nav class="modern-navbar single-row" id="modernNavbar">
+    <!-- Single Row: Logo, Nav Links, Actions -->
+    <div class="navbar-single">
+        <div class="navbar-container">
+            <!-- Dual Logo -->
+            <div class="navbar-logo">
+                <a href="index.html" class="dual-logo-container">
+                    <!-- Group Logo -->
+                    <div class="logo-group">
+                        <!-- <img src="img/logo.png" alt="集団ロゴ" class="logo-img logo-img-group"> -->
+                    </div>
+                    <!-- Hotel Logo -->
+                    <div class="logo-hotel">
+                        <img src="img/logo6.png" alt="Trip7箱根仙石原温泉ホテル" class="logo-img logo-img-hotel">
+                    </div>
+                </a>
+                <div class="logo-tagline">
+                    <p class="tagline-text">箱根仙石原、高原の温泉</p>
+                    <p class="tagline-sub">自然と共に味わう癒しのひととき</p>
+                </div>
+            </div>
+
+            <!-- Navigation Links (icon on top, text below) -->
+            <div class="navbar-menu" id="navbarMenu">
+                <a href="index.html" class="nav-item" data-page="home">
+                    <i class="fas fa-home"></i>
+                    <span data-i18n="nav_home">ホーム</span>
+                </a>
+                <a href="rooms.html" class="nav-item" data-page="rooms">
+                    <i class="fas fa-bed"></i>
+                    <span data-i18n="nav_rooms">客室</span>
+                </a>
+                <a href="dining.html" class="nav-item" data-page="dining">
+                    <i class="fas fa-utensils"></i>
+                    <span data-i18n="nav_dining">お食事</span>
+                </a>
+                <a href="onsen.html" class="nav-item" data-page="onsen">
+                    <img src="img/onsen.svg?v=3" alt="温泉" class="nav-icon-svg">
+                    <span data-i18n="nav_onsen">温泉</span>
+                </a>
+                <a href="facilities.html" class="nav-item" data-page="facilities">
+                    <i class="fas fa-building"></i>
+                    <span data-i18n="nav_facilities">施設</span>
+                </a>
+                <a href="area.html" class="nav-item" data-page="area">
+                    <i class="fas fa-map-marked-alt"></i>
+                    <span data-i18n="nav_area">周辺観光</span>
+                </a>
+                <a href="access.html" class="nav-item" data-page="access">
+                    <i class="fas fa-route"></i>
+                    <span data-i18n="nav_access">アクセス</span>
+                </a>
+                <!-- SHOP DISABLED FOR NOW
+                <a href="shop.html" class="nav-item" data-page="shop">
+                    <i class="fas fa-store"></i>
+                    <span data-i18n="nav_shop">ショップ</span>
+                </a>
+                -->
+                <!-- <a href="reservation.html" class="nav-item nav-item-reserve" data-page="reservation">
+                    <i class="fas fa-calendar-check"></i>
+                    <span data-i18n="nav_reservation">予約</span>
+                </a> -->
+
+                <!-- Mobile Menu Actions - Only visible on mobile -->
+                <div class="mobile-menu-actions">
+                    <div class="mobile-menu-divider"></div>
+
+                    <div class="mobile-auth-buttons">
+                        <button class="mobile-auth-btn login-nav-btn">
+                            <i class="fas fa-sign-in-alt"></i>
+                            <span data-i18n="login">ログイン/新規登録</span>
+                        </button>
+                    </div>
+
+                    <div class="mobile-menu-divider"></div>
+
+                    <a href="tel:025-788-1125" class="mobile-phone-link">
+                        <i class="fas fa-phone"></i>
+                        <span data-i18n="phone_reservation">電話予約</span>
+                        <span class="phone-number">025-788-1125</span>
+                    </a>
+
+                    <!-- Mobile Language Switcher - Compact Dropdown -->
+                    <div class="mobile-language-switcher">
+                        <div class="mobile-menu-divider"></div>
+                        <div class="mobile-language-dropdown" id="mobileLangDropdown">
+                            <button type="button" class="mobile-lang-trigger" id="mobileLangTrigger">
+                                <i class="fas fa-globe"></i>
+                                <span class="mobile-current-lang">日本語</span>
+                                <i class="fas fa-chevron-down mobile-lang-arrow"></i>
+                            </button>
+                            <div class="mobile-lang-options" id="mobileLangOptions">
+                                <button type="button" class="mobile-lang-option active" data-lang="ja">
+                                    <span class="lang-flag">🇯🇵</span>
+                                    <span>日本語</span>
+                                    <i class="fas fa-check mobile-lang-check"></i>
+                                </button>
+                                <button type="button" class="mobile-lang-option" data-lang="en">
+                                    <span class="lang-flag">🇺🇸</span>
+                                    <span>English</span>
+                                    <i class="fas fa-check mobile-lang-check"></i>
+                                </button>
+                                <button type="button" class="mobile-lang-option" data-lang="zh">
+                                    <span class="lang-flag">🇨🇳</span>
+                                    <span>中文</span>
+                                    <i class="fas fa-check mobile-lang-check"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="navbar-actions">
+                <!-- Language Switcher -->
+                <div class="language-switcher" id="languageSwitcher" style="position: relative;">
+                    <button type="button" class="language-btn" id="languageBtn" onclick="event.stopPropagation(); var dd = document.getElementById('languageDropdown'); var isOpen = dd.style.display === 'block'; dd.style.display = isOpen ? 'none' : 'block'; dd.style.opacity = isOpen ? '0' : '1'; dd.style.visibility = isOpen ? 'hidden' : 'visible';">
+                        <i class="fas fa-globe"></i>
+                        <span class="current-lang">日本語</span>
+                        <i class="fas fa-chevron-down dropdown-arrow"></i>
+                    </button>
+                    <div class="language-dropdown" id="languageDropdown" style="display: none; position: absolute; top: 100%; right: 0; min-width: 140px; background: white; border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.15); z-index: 99999; margin-top: 8px;">
+                        <button type="button" class="language-option active" data-lang="ja" onclick="event.stopPropagation(); if(window.i18n) window.i18n.setLanguage('ja'); document.getElementById('languageDropdown').style.display='none';" style="display: flex; align-items: center; gap: 10px; width: 100%; padding: 12px 16px; background: transparent; border: none; cursor: pointer;">
+                            <span class="lang-flag">🇯🇵</span>
+                            <span class="lang-name">日本語</span>
+                        </button>
+                        <button type="button" class="language-option" data-lang="en" onclick="event.stopPropagation(); if(window.i18n) window.i18n.setLanguage('en'); document.getElementById('languageDropdown').style.display='none';" style="display: flex; align-items: center; gap: 10px; width: 100%; padding: 12px 16px; background: transparent; border: none; cursor: pointer;">
+                            <span class="lang-flag">🇺🇸</span>
+                            <span class="lang-name">English</span>
+                        </button>
+                        <button type="button" class="language-option" data-lang="zh" onclick="event.stopPropagation(); if(window.i18n) window.i18n.setLanguage('zh'); document.getElementById('languageDropdown').style.display='none';" style="display: flex; align-items: center; gap: 10px; width: 100%; padding: 12px 16px; background: transparent; border: none; cursor: pointer;">
+                            <span class="lang-flag">🇨🇳</span>
+                            <span class="lang-name">中文</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="auth-buttons">
+                    <button class="auth-btn login-nav-btn">
+                        <i class="fas fa-user"></i>
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</nav>
+
+<!-- Mobile Overlay -->
+<div class="navbar-overlay" id="navbarOverlay"></div>
+
+<!-- Mobile Booking Panel (从顶部宿泊予約按钮展开) -->
+<div class="mobile-booking-panel" id="mobileBookingPanel">
+    <div class="booking-panel-header">
+        <h3 class="booking-panel-title">
+            <i class="fas fa-search"></i>
+            <span data-i18n="plan_search">プラン検索</span>
+        </h3>
+        <button type="button" class="panel-close-btn" id="panelCloseBtn">
+            <i class="fas fa-times"></i>
+        </button>
+    </div>
+    <div class="booking-panel-content">
+        <!-- 日期选择器 -->
+        <div class="booking-field">
+            <label data-i18n="search_dates">チェックイン / チェックアウト</label>
+            <div class="mobile-date-picker" id="mobileDatePicker">
+                <div class="date-display-row" id="navbarDateTrigger">
+                    <div class="date-box" id="mobileCheckinBox">
+                        <div class="date-label" data-i18n="checkin">チェックイン</div>
+                        <div class="date-value" id="mobileCheckinDisplay" data-i18n="select_date">日付を選択</div>
+                    </div>
+                    <div class="date-arrow">
+                        <i class="fas fa-arrow-right"></i>
+                    </div>
+                    <div class="date-box" id="mobileCheckoutBox">
+                        <div class="date-label" data-i18n="checkout">チェックアウト</div>
+                        <div class="date-value" id="mobileCheckoutDisplay" data-i18n="select_date">日付を選択</div>
+                    </div>
+                    <div class="nights-display" id="mobileNightsBadge" style="display: none;">
+                        <span id="mobileNightsCount">0</span><span data-i18n="nights">泊</span>
+                    </div>
+                </div>
+            </div>
+            <input type="hidden" id="mobileCheckin">
+            <input type="hidden" id="mobileCheckout">
+        </div>
+        <div class="booking-row">
+            <div class="booking-field half">
+                <label data-i18n="rooms">部屋数</label>
+                <select id="mobileRooms" class="booking-input">
+                    <option value="1" data-i18n="room_1">1室</option>
+                    <option value="2" data-i18n="room_2">2室</option>
+                    <option value="3" data-i18n="room_3">3室</option>
+                    <option value="4" data-i18n="room_4">4室</option>
+                    <option value="5" data-i18n="room_5">5室</option>
+                </select>
+            </div>
+            <div class="booking-field half">
+                <label data-i18n="adults">大人</label>
+                <select id="mobileAdults" class="booking-input">
+                    <option value="1" data-i18n="guest_1">1名</option>
+                    <option value="2" data-i18n="guest_2">2名</option>
+                    <option value="3" data-i18n="guest_3">3名</option>
+                    <option value="4" data-i18n="guest_4">4名</option>
+                    <option value="5" data-i18n="guest_5">5名</option>
+                    <option value="6" data-i18n="guest_6">6名</option>
+                </select>
+            </div>
+        </div>
+        <button type="button" class="booking-search-btn" id="mobileSearchBtn">
+            <i class="fas fa-search"></i>
+            <span data-i18n="search">検索する</span>
+        </button>
+    </div>
+</div>
+<div class="booking-panel-overlay" id="bookingPanelOverlay"></div>
+
+<!-- Full-screen Calendar Panel for Navbar -->
+<div class="navbar-calendar-overlay" id="navbarCalendarOverlay"></div>
+<div class="navbar-calendar-panel" id="navbarCalendarPanel">
+    <div class="navbar-calendar-header">
+        <h3 class="navbar-calendar-title" data-i18n="calendar_title">日付を選択</h3>
+        <button type="button" class="navbar-calendar-close" id="navbarCalendarClose">
+            <i class="fas fa-times"></i>
+        </button>
+    </div>
+    <div class="navbar-calendar-container" id="navbarCalendarContainer">
+        <!-- 月份日历将由JS动态生成 -->
+    </div>
+    <div class="navbar-calendar-footer">
+        <div class="navbar-selected-dates">
+            <div class="navbar-selected-item">
+                <span class="navbar-selected-label" data-i18n="checkin">チェックイン</span>
+                <span class="navbar-selected-value" id="navbarSelectedCheckin" data-i18n="select_date">日付を選択</span>
+            </div>
+            <div class="navbar-selected-arrow">
+                <i class="fas fa-arrow-right"></i>
+            </div>
+            <div class="navbar-selected-item">
+                <span class="navbar-selected-label" data-i18n="checkout">チェックアウト</span>
+                <span class="navbar-selected-value" id="navbarSelectedCheckout" data-i18n="select_date">日付を選択</span>
+            </div>
+            <div class="navbar-selected-nights" id="navbarSelectedNights" style="display: none;">
+                <span id="navbarSelectedNightsCount">0</span><span data-i18n="nights">泊</span>
+            </div>
+        </div>
+        <button type="button" class="navbar-calendar-confirm" id="navbarCalendarConfirm">
+            <i class="fas fa-check"></i>
+            <span data-i18n="calendar_confirm">日付を確定</span>
+        </button>
+    </div>
+</div>
+
+<!-- Mobile Bottom Navigation Bar -->
+<nav class="mobile-bottom-nav" id="mobileBottomNav">
+    <button type="button" class="bottom-nav-btn reserve-btn" id="bottomReserveBtn">
+        <div class="reserve-default">
+            <i class="fas fa-calendar-check"></i>
+            <span data-i18n="nav_reservation">宿泊予約</span>
+        </div>
+        <div class="reserve-close">
+            <i class="fas fa-times"></i>
+            <span data-i18n="nav_close">閉じる</span>
+        </div>
+    </button>
+    <button type="button" class="bottom-nav-btn ai-btn" id="bottomAiBtn">
+        <div class="ai-default">
+            <img src="img/logo.ico" alt="Trip7 AI" class="bottom-nav-icon">
+            <span>Trip7 AI</span>
+        </div>
+        <div class="ai-close">
+            <i class="fas fa-times"></i>
+            <span data-i18n="bottom_close">閉じる</span>
+        </div>
+    </button>
+    <button type="button" class="bottom-nav-btn menu-btn" id="bottomMenuBtn">
+        <div class="menu-default">
+            <i class="fas fa-bars"></i>
+            <span data-i18n="bottom_menu">メニュー</span>
+        </div>
+        <div class="menu-close">
+            <i class="fas fa-times"></i>
+            <span data-i18n="bottom_close">閉じる</span>
+        </div>
+    </button>
+    <!-- 滚动时显示的logo行 -->
+    <div class="bottom-nav-logo-row" id="bottomNavLogoRow">
+        <a href="index.html" class="bottom-nav-logos">
+            <img src="img/logo.png" alt="Trip7" class="bottom-nav-logo">
+            <img src="img/logo2.png" alt="箱根仙石原温泉ホテル" class="bottom-nav-logo-hotel">
+        </a>
+    </div>
+</nav>
+
+<!-- AI Chat Panel -->
+<div class="ai-chat-overlay" id="aiChatOverlay"></div>
+<div class="ai-chat-panel" id="aiChatPanel">
+    <div class="ai-chat-header">
+        <div class="ai-chat-header-left">
+            <img src="img/logo.ico" alt="Trip7 AI" class="ai-chat-avatar">
+            <div class="ai-chat-header-info">
+                <h3 class="ai-chat-title">Trip7 AI</h3>
+                <span class="ai-chat-status">
+                    <span class="status-dot"></span>
+                    <span data-i18n="ai_online">オンライン</span>
+                </span>
+            </div>
+        </div>
+        <button type="button" class="ai-chat-close" id="aiChatClose">
+            <i class="fas fa-times"></i>
+        </button>
+    </div>
+    <div class="ai-chat-messages" id="aiChatMessages">
+        <div class="ai-message">
+            <div class="ai-message-avatar">
+                <img src="img/logo.ico" alt="AI">
+            </div>
+            <div class="ai-message-content">
+                <div class="ai-message-bubble" data-i18n-html="ai_welcome">
+                    こんにちは！Trip7 AI です。<br>
+                    箱根仙石原温泉ホテルへのご予約やお問い合わせをお手伝いします。<br><br>
+                    お気軽にご質問ください。
+                </div>
+                <div class="ai-message-time">今</div>
+            </div>
+        </div>
+        <div class="ai-quick-actions">
+            <button class="ai-quick-btn" data-action="reservation">
+                <i class="fas fa-calendar-check"></i>
+                <span data-i18n="ai_about_reservation">予約について</span>
+            </button>
+            <button class="ai-quick-btn" data-action="rooms">
+                <i class="fas fa-bed"></i>
+                <span data-i18n="ai_view_rooms">客室を見る</span>
+            </button>
+            <button class="ai-quick-btn" data-action="onsen">
+                <i class="fas fa-hot-tub"></i>
+                <span data-i18n="ai_about_onsen">温泉について</span>
+            </button>
+            <button class="ai-quick-btn" data-action="access">
+                <i class="fas fa-map-marker-alt"></i>
+                <span data-i18n="ai_access">アクセス</span>
+            </button>
+        </div>
+    </div>
+    <div class="ai-chat-input-area">
+        <div class="ai-chat-input-wrapper">
+            <button type="button" class="ai-chat-voice" id="aiChatVoice" title="音声入力">
+                <i class="fas fa-microphone"></i>
+            </button>
+            <textarea
+                id="aiChatInput"
+                class="ai-chat-input"
+                data-i18n-placeholder="ai_input_placeholder"
+                placeholder="メッセージを入力..."
+                rows="1"
+            ></textarea>
+            <button type="button" class="ai-chat-send" id="aiChatSend">
+                <i class="fas fa-paper-plane"></i>
+            </button>
+        </div>
+        <div class="ai-chat-disclaimer">
+            <i class="fas fa-info-circle"></i>
+            <span data-i18n="ai_disclaimer">AI による自動応答です。詳細は直接お問い合わせください。</span>
+        </div>
+    </div>
+</div>

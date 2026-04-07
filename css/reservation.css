@@ -1,0 +1,1205 @@
+/* Reservation Page Styles */
+
+/* Header Navigation Override for Reservation Page */
+/* Removed forced white background to allow transparent navigation on page load */
+/* body .header-top-container {
+    background: rgba(255, 255, 255, 0.95) !important;
+    backdrop-filter: blur(10px) !important;
+    box-shadow: none !important;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1) !important;
+} */
+
+body .header-top-container .main-navigation a {
+    color: #333 !important;
+    text-shadow: none !important;
+}
+
+body .header-top-container .main-navigation a:hover {
+    color: #D2691E !important;
+    text-shadow: none !important;
+}
+
+body .header-top-container .main-navigation a.active {
+    color: #D2691E !important;
+    text-shadow: none !important;
+}
+
+/* Transparent Hero Banner for Reservation Page */
+.reservation-transparent-banner {
+    background: transparent !important;
+}
+
+.reservation-transparent-banner .hero-background {
+    display: none;
+}
+
+.reservation-transparent-banner .hero-overlay {
+    display: none;
+}
+
+.reservation-transparent-banner .hero-content {
+    color: #333 !important;
+}
+
+.reservation-transparent-banner .hero-title {
+    color: #333 !important;
+    text-shadow: none !important;
+}
+
+.reservation-transparent-banner .hero-subtitle {
+    color: #666 !important;
+    text-shadow: none !important;
+    opacity: 1 !important;
+}
+
+/* Breadcrumb Section */
+.breadcrumb-section {
+    background: transparent;
+    padding: 15px 0;
+    border-bottom: 1px solid rgba(225, 225, 225, 0.3);
+}
+
+.breadcrumb {
+    display: flex;
+    align-items: center;
+    font-family: 'Noto Sans JP', 'Microsoft YaHei', Arial, sans-serif;
+    font-size: 14px;
+    color: #666;
+}
+
+.breadcrumb a {
+    color: #666;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.breadcrumb a:hover {
+    color: #D2691E;
+}
+
+.breadcrumb .separator {
+    margin: 0 8px;
+    color: #999;
+}
+
+.breadcrumb .current {
+    color: #D2691E;
+    font-weight: 500;
+}
+
+/* Search Plans Section */
+.search-plans-section {
+    padding: 60px 0 40px;
+    background: #f8f9fa;
+    background-image:
+        radial-gradient(circle at 25% 25%, rgba(139, 124, 90, 0.03) 0%, transparent 50%),
+        radial-gradient(circle at 75% 75%, rgba(139, 124, 90, 0.03) 0%, transparent 50%);
+    background-size: 200px 200px, 200px 200px;
+    background-position: 0 0, 100px 100px;
+}
+
+.search-plans-container {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 15px;
+    padding: 40px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(210, 105, 30, 0.2);
+}
+
+.search-title {
+    font-family: 'Noto Sans JP', 'Microsoft YaHei', Arial, sans-serif;
+    font-size: 2rem;
+    font-weight: 500;
+    color: #333;
+    margin-bottom: 30px;
+    text-align: center;
+    letter-spacing: 0.1em;
+}
+
+.search-title i {
+    color: #D2691E;
+    margin-right: 10px;
+}
+
+.search-plans-form {
+    max-width: 100%;
+}
+
+.search-row {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 25px;
+    align-items: end;
+}
+
+.search-row.search-button-row {
+    justify-content: center;
+    margin-bottom: 0;
+}
+
+.search-group {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.search-group label {
+    font-family: 'Noto Sans JP', 'Microsoft YaHei', Arial, sans-serif;
+    font-weight: 500;
+    color: #555;
+    margin-bottom: 8px;
+    font-size: 14px;
+}
+
+.search-group input,
+.search-group select {
+    padding: 12px 15px;
+    border: 2px solid #e1e1e1;
+    border-radius: 8px;
+    font-family: 'Noto Sans JP', 'Microsoft YaHei', Arial, sans-serif;
+    font-size: 14px;
+    background: #fff;
+    transition: all 0.3s ease;
+}
+
+.search-group input:focus,
+.search-group select:focus {
+    outline: none;
+    border-color: #D2691E;
+    box-shadow: 0 0 10px rgba(210, 105, 30, 0.2);
+}
+
+.search-button-group {
+    align-self: end;
+}
+
+.search-plans-btn {
+    background: linear-gradient(135deg, #D2691E 0%, #FF8C42 100%);
+    color: #fff;
+    border: none;
+    padding: 16px 50px;
+    border-radius: 50px;
+    font-family: 'Noto Sans JP', 'Microsoft YaHei', Arial, sans-serif;
+    font-weight: 600;
+    font-size: 18px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    letter-spacing: 0.1em;
+    box-shadow: 0 4px 15px rgba(210, 105, 30, 0.3);
+    min-width: 250px;
+}
+
+.search-plans-btn:hover {
+    background: linear-gradient(135deg, #B8621E 0%, #E07B38 100%);
+    box-shadow: 0 8px 25px rgba(210, 105, 30, 0.5);
+}
+
+.search-plans-btn:active {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 15px rgba(210, 105, 30, 0.4);
+}
+
+.search-plans-btn i {
+    margin-right: 10px;
+    font-size: 16px;
+}
+
+/* Results Section */
+.plans-results-section {
+    padding: 40px 0 60px;
+    background: #fff;
+}
+
+.results-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 40px;
+    padding-bottom: 20px;
+    border-bottom: 2px solid #f0f0f0;
+}
+
+.results-title {
+    font-family: 'Noto Sans JP', 'Microsoft YaHei', Arial, sans-serif;
+    font-size: 1.8rem;
+    font-weight: 500;
+    color: #333;
+    letter-spacing: 0.1em;
+}
+
+.results-count {
+    font-family: 'Noto Sans JP', 'Microsoft YaHei', Arial, sans-serif;
+    font-size: 14px;
+    color: #666;
+    background: #f8f9fa;
+    padding: 8px 16px;
+    border-radius: 20px;
+}
+
+.results-count span {
+    color: #D2691E;
+    font-weight: 600;
+}
+
+/* Plan Cards */
+.plans-list {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+
+.plan-card {
+    display: flex;
+    background: #fff;
+    border-radius: 0;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    transition: all 0.3s ease;
+    border: 1px solid #f0f0f0;
+}
+
+.plan-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+    border-color: #D2691E;
+}
+
+.plan-image {
+    position: relative;
+    width: 300px;
+    min-height: 100%;
+    overflow: hidden;
+    flex-shrink: 0;
+    border-radius: 0;
+}
+
+.room-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    transition: transform 0.3s ease;
+    opacity: 1 !important;
+    position: static !important;
+}
+
+.plan-card:hover .room-image {
+    transform: scale(1.05);
+}
+
+.plan-badge {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    background: #D2691E;
+    color: #fff;
+    padding: 5px 12px;
+    border-radius: 15px;
+    font-size: 12px;
+    font-weight: 600;
+    font-family: 'Noto Sans JP', 'Microsoft YaHei', Arial, sans-serif;
+}
+
+.plan-badge.premium {
+    background: linear-gradient(135deg, #8B4513 0%, #A0522D 100%);
+}
+
+.plan-badge.special {
+    background: linear-gradient(135deg, #DC143C 0%, #B91C3C 100%);
+}
+
+.plan-details {
+    flex: 1;
+    padding: 25px;
+    display: flex;
+    flex-direction: column;
+}
+
+.plan-header {
+    margin-bottom: 15px;
+}
+
+.plan-name {
+    font-family: 'Noto Sans JP', 'Microsoft YaHei', Arial, sans-serif;
+    font-size: 1.5rem;
+    font-weight: 500;
+    color: #333;
+    margin-bottom: 5px;
+    letter-spacing: 0.05em;
+}
+
+.plan-size {
+    font-family: 'Noto Sans JP', 'Microsoft YaHei', Arial, sans-serif;
+    font-size: 14px;
+    color: #666;
+    font-weight: 500;
+}
+
+.plan-description {
+    font-family: 'Noto Sans JP', 'Microsoft YaHei', Arial, sans-serif;
+    font-size: 14px;
+    color: #555;
+    line-height: 1.6;
+    margin-bottom: 20px;
+}
+
+.plan-features {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.feature-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-family: 'Noto Sans JP', 'Microsoft YaHei', Arial, sans-serif;
+    font-size: 13px;
+    color: #555;
+}
+
+.feature-item i {
+    color: #D2691E;
+    font-size: 14px;
+}
+
+.plan-times {
+    margin-top: auto;
+    padding-top: 15px;
+    border-top: 1px solid #f0f0f0;
+}
+
+.time-info {
+    display: flex;
+    margin-bottom: 5px;
+    font-family: 'Noto Sans JP', 'Microsoft YaHei', Arial, sans-serif;
+    font-size: 13px;
+}
+
+.time-label {
+    color: #666;
+    width: 120px;
+}
+
+.plan-pricing {
+    width: 220px;
+    padding: 25px;
+    background: #f8f9fa;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    border-left: 1px solid #f0f0f0;
+}
+
+.price-section {
+    text-align: center;
+    margin-bottom: 25px;
+}
+
+.price-per-person {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.price-label {
+    font-family: 'Noto Sans JP', 'Microsoft YaHei', Arial, sans-serif;
+    font-size: 12px;
+    color: #666;
+    margin-bottom: 5px;
+}
+
+.price-amount {
+    font-family: 'Noto Sans JP', 'Microsoft YaHei', Arial, sans-serif;
+    font-size: 1.2rem;
+    font-weight: 500;
+    color: #666;
+}
+
+.price-unit {
+    font-family: 'Noto Sans JP', 'Microsoft YaHei', Arial, sans-serif;
+    font-size: 14px;
+    color: #666;
+    margin-left: 2px;
+}
+
+.total-price {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 15px;
+    border-top: 1px solid #e0e0e0;
+}
+
+.total-label {
+    font-family: 'Noto Sans JP', 'Microsoft YaHei', Arial, sans-serif;
+    font-size: 13px;
+    color: #666;
+    margin-bottom: 8px;
+    font-weight: 600;
+}
+
+.total-amount {
+    font-family: 'Noto Sans JP', 'Microsoft YaHei', Arial, sans-serif;
+    font-size: 2rem;
+    font-weight: 700;
+    color: #D2691E;
+}
+
+.total-unit {
+    font-family: 'Noto Sans JP', 'Microsoft YaHei', Arial, sans-serif;
+    font-size: 12px;
+    color: #666;
+    margin-left: 2px;
+}
+
+.plan-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.plan-detail-btn,
+.plan-reserve-btn {
+    padding: 12px 20px;
+    border-radius: 8px;
+    font-family: 'Noto Sans JP', 'Microsoft YaHei', Arial, sans-serif;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: center;
+    border: none;
+}
+
+.plan-detail-btn {
+    background: transparent;
+    color: #D2691E;
+    border: 2px solid #D2691E;
+}
+
+.plan-detail-btn:hover {
+    background: #D2691E;
+    color: #fff;
+    transform: translateY(-1px);
+}
+
+.plan-reserve-btn {
+    background: linear-gradient(135deg, #D2691E 0%, #B8621E 100%);
+    color: #fff;
+}
+
+.plan-reserve-btn:hover {
+    background: linear-gradient(135deg, #B8621E 0%, #A0561A 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 5px 15px rgba(210, 105, 30, 0.3);
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+    .plan-image {
+        width: 250px;
+        height: 200px;
+    }
+
+    .plan-pricing {
+        width: 200px;
+    }
+}
+
+@media (max-width: 992px) {
+    .search-row {
+        flex-wrap: wrap;
+    }
+
+    .search-group {
+        min-width: 200px;
+    }
+
+    .plan-card {
+        flex-direction: column;
+    }
+
+    .plan-image {
+        width: 100%;
+        height: 200px;
+    }
+
+    .plan-pricing {
+        width: 100%;
+        border-left: none;
+        border-top: 1px solid #f0f0f0;
+    }
+
+    .plan-actions {
+        flex-direction: row;
+    }
+}
+
+@media (max-width: 768px) {
+    .search-plans-container {
+        padding: 25px;
+    }
+
+    .search-row {
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .search-group {
+        min-width: auto;
+    }
+
+    .results-header {
+        flex-direction: column;
+        gap: 15px;
+        text-align: center;
+    }
+
+    .plan-details {
+        padding: 20px;
+    }
+
+    .plan-pricing {
+        padding: 20px;
+    }
+
+    .plan-features {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    /* Mobile button optimization */
+    .plan-actions {
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .plan-detail-btn,
+    .plan-reserve-btn {
+        padding: 14px 24px;
+        font-size: 15px;
+        width: 100%;
+        min-height: 48px;
+    }
+}
+
+@media (max-width: 480px) {
+    .search-plans-section {
+        padding: 40px 0 30px;
+    }
+
+    .search-title {
+        font-size: 1.5rem;
+    }
+
+    .plan-name {
+        font-size: 1.3rem;
+    }
+
+    .price-amount {
+        font-size: 1rem;
+    }
+
+    .total-amount {
+        font-size: 1.6rem;
+    }
+
+    /* Extra small screen button optimization */
+    .plan-pricing {
+        padding: 16px;
+    }
+
+    .plan-actions {
+        gap: 10px;
+    }
+
+    .plan-detail-btn,
+    .plan-reserve-btn {
+        padding: 12px 20px;
+        font-size: 14px;
+        min-height: 44px;
+        border-radius: 10px;
+    }
+
+    .plan-reserve-btn {
+        font-size: 15px;
+        font-weight: 700;
+    }
+}
+
+/* Date Range Picker Styles */
+.date-range-group {
+    flex: 2.5 !important;
+    position: relative;
+}
+
+.date-range-group input[type="text"] {
+    cursor: pointer;
+    background: #fff url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="%23D2691E" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>') no-repeat right 12px center;
+    padding-right: 45px;
+    font-weight: 500;
+    color: #333;
+}
+
+.date-range-group input[type="text"]::placeholder {
+    color: #999;
+    font-weight: 400;
+}
+
+/* Flatpickr custom styles - 融合项目设计风格 */
+.flatpickr-calendar {
+    font-family: 'Noto Sans JP', 'Microsoft YaHei', Arial, sans-serif;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(210, 105, 30, 0.3);
+    border-radius: 15px;
+    background: #fff;
+    overflow: hidden;
+}
+
+/* 日历头部 - 使用渐变背景，与floating-booking按钮一致 */
+.flatpickr-months {
+    background: linear-gradient(135deg, #D2691E 0%, #FF8C42 100%);
+    border-top-left-radius: 15px;
+    border-top-right-radius: 15px;
+    padding: 15px 10px;
+}
+
+.flatpickr-current-month {
+    color: #fff;
+    font-weight: 600;
+    font-size: 16px;
+    letter-spacing: 0.05em;
+}
+
+.flatpickr-monthDropdown-months {
+    background: rgba(255, 255, 255, 0.2);
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    padding: 5px 10px;
+    font-weight: 600;
+}
+
+.flatpickr-monthDropdown-months:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+.numInputWrapper {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 6px;
+    padding: 2px;
+}
+
+.numInputWrapper input {
+    color: #fff;
+    font-weight: 600;
+}
+
+.numInputWrapper:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+/* 箭头按钮 */
+.flatpickr-prev-month,
+.flatpickr-next-month {
+    padding: 8px;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+}
+
+.flatpickr-prev-month:hover,
+.flatpickr-next-month:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.flatpickr-prev-month:hover svg,
+.flatpickr-next-month:hover svg {
+    fill: #fff;
+}
+
+.flatpickr-prev-month svg,
+.flatpickr-next-month svg {
+    fill: rgba(255, 255, 255, 0.9);
+    transition: fill 0.3s ease;
+}
+
+/* 星期标题 */
+.flatpickr-weekdays {
+    background: linear-gradient(to bottom, #faf9f7 0%, #f8f6f3 100%);
+    border-bottom: 2px solid rgba(210, 105, 30, 0.1);
+}
+
+.flatpickr-weekday {
+    color: #D2691E;
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: 0.05em;
+}
+
+/* 日期单元格 */
+.flatpickr-days {
+    background: #fff;
+}
+
+.flatpickr-day {
+    border-radius: 10px;
+    transition: all 0.3s ease;
+    font-weight: 500;
+    border: 2px solid transparent;
+    margin: 2px;
+    color: #333;
+}
+
+.flatpickr-day:hover:not(.flatpickr-disabled):not(.selected):not(.startRange):not(.endRange) {
+    background: rgba(210, 105, 30, 0.08);
+    border-color: rgba(210, 105, 30, 0.2);
+    transform: scale(1.05);
+}
+
+/* 选中的日期 - 使用渐变 */
+.flatpickr-day.selected,
+.flatpickr-day.startRange,
+.flatpickr-day.endRange {
+    background: linear-gradient(135deg, #D2691E 0%, #FF8C42 100%);
+    border-color: transparent;
+    color: #fff;
+    font-weight: 700;
+    box-shadow: 0 4px 15px rgba(210, 105, 30, 0.3);
+}
+
+.flatpickr-day.selected:hover,
+.flatpickr-day.startRange:hover,
+.flatpickr-day.endRange:hover {
+    background: linear-gradient(135deg, #B8621E 0%, #E07B38 100%);
+    box-shadow: 0 6px 20px rgba(210, 105, 30, 0.4);
+}
+
+/* 范围内的日期 */
+.flatpickr-day.inRange {
+    background: linear-gradient(to bottom, rgba(210, 105, 30, 0.12) 0%, rgba(210, 105, 30, 0.08) 100%);
+    border-color: rgba(210, 105, 30, 0.05);
+    box-shadow: inset 0 1px 3px rgba(210, 105, 30, 0.1);
+    border-radius: 0;
+}
+
+/* 今天 */
+.flatpickr-day.today {
+    border-color: #D2691E;
+    background: rgba(210, 105, 30, 0.05);
+    font-weight: 700;
+}
+
+.flatpickr-day.today:not(.selected):hover {
+    background: rgba(210, 105, 30, 0.15);
+    border-color: #D2691E;
+}
+
+/* 禁用的日期 */
+.flatpickr-day.flatpickr-disabled {
+    color: #e1e1e1;
+}
+
+.flatpickr-day.flatpickr-disabled:hover {
+    background: transparent;
+    border-color: transparent;
+    cursor: not-allowed;
+}
+
+/* 动画效果 */
+.flatpickr-calendar.open {
+    animation: fadeInDown 0.3s ease;
+}
+
+@keyframes fadeInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@media (max-width: 1024px) {
+    .search-row:not(.search-button-row) {
+        flex-wrap: wrap;
+    }
+
+    .date-range-group {
+        flex: 1 1 100% !important;
+        min-width: 100%;
+    }
+
+    .search-group {
+        flex: 1 1 calc(33.333% - 14px);
+        min-width: 150px;
+    }
+}
+
+@media (max-width: 768px) {
+    .search-row:not(.search-button-row) {
+        flex-direction: column;
+    }
+
+    .date-range-group {
+        flex: 1 !important;
+        width: 100%;
+    }
+
+    .search-row .search-group {
+        width: 100%;
+    }
+
+    .search-plans-btn {
+        width: 100%;
+        min-width: auto;
+        padding: 14px 30px;
+        font-size: 16px;
+    }
+
+    .search-button-row {
+        margin-top: 10px;
+    }
+}
+
+/* Tax Included Text */
+.tax-included-text {
+    font-size: 12px;
+    color: #666;
+    margin-left: 4px;
+    font-weight: 400;
+    white-space: nowrap;
+}
+
+.tax-included-label {
+    font-size: 11px;
+    color: #999;
+    margin-left: 4px;
+    font-weight: 400;
+    white-space: nowrap;
+}
+
+.price-amount,
+.total-amount {
+    white-space: nowrap;
+}
+
+/* Calendar Confirm Button & Header - Hidden on Desktop */
+.calendar-confirm-section,
+.calendar-panel-header {
+    display: none;
+}
+
+/* Mobile Full-Screen Bottom Sheet Calendar */
+@media (max-width: 768px) {
+    /* Overlay for mobile calendar */
+    .calendar-popup-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 9998;
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.3s ease, visibility 0.3s ease;
+    }
+
+    .calendar-popup-overlay.active {
+        opacity: 1;
+        visibility: visible;
+    }
+
+    /* Full-screen bottom sheet */
+    .calendar-popup.mobile-open {
+        display: flex !important;
+        position: fixed !important;
+        top: auto !important;
+        left: 0 !important;
+        right: 0 !important;
+        bottom: 0 !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        height: 90vh !important;
+        max-height: 90vh !important;
+        border-radius: 20px 20px 0 0 !important;
+        box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.3) !important;
+        z-index: 9999 !important;
+        transform: translateY(0);
+        overflow: hidden;
+        flex-direction: column;
+        animation: slideUpCalendar 0.3s ease;
+    }
+
+    @keyframes slideUpCalendar {
+        from {
+            transform: translateY(100%);
+        }
+        to {
+            transform: translateY(0);
+        }
+    }
+
+    /* Mobile Panel Header */
+    .calendar-popup.mobile-open .calendar-panel-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 18px 20px 12px;
+        background: #fff;
+        border-bottom: 1px solid #eee;
+        position: sticky;
+        top: 0;
+        z-index: 10;
+    }
+
+    .calendar-panel-title {
+        font-size: 18px;
+        font-weight: 600;
+        color: #333;
+        margin: 0;
+        font-family: 'Noto Sans JP', sans-serif;
+    }
+
+    .calendar-close-btn {
+        width: 36px;
+        height: 36px;
+        border: none;
+        background: #f5f5f5;
+        border-radius: 50%;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #666;
+        font-size: 16px;
+        transition: all 0.2s ease;
+    }
+
+    .calendar-close-btn:hover {
+        background: #eee;
+        color: #333;
+    }
+
+    .calendar-close-btn:active {
+        transform: scale(0.95);
+    }
+
+    /* Hide handle bar since we have header now */
+    .calendar-popup.mobile-open::before {
+        display: none;
+    }
+
+    /* Handle bar at top - desktop only */
+    .calendar-popup::before {
+        content: '';
+        position: absolute;
+        top: 8px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 40px;
+        height: 4px;
+        background: #ddd;
+        border-radius: 2px;
+        z-index: 1;
+    }
+
+    /* Calendar container adjustments */
+    .calendar-popup.mobile-open .calendar-dual-container {
+        flex-direction: column !important;
+        gap: 0 !important;
+        overflow-y: scroll;
+        -webkit-overflow-scrolling: touch;
+        flex: 1;
+        padding: 20px 15px 0 20px;
+        max-height: calc(90vh - 100px);
+    }
+
+    /* Custom scroll track for mobile */
+    .calendar-scroll-track {
+        position: absolute;
+        right: 6px;
+        top: 70px;
+        bottom: 120px;
+        width: 4px;
+        background: #e0e0e0;
+        border-radius: 2px;
+        z-index: 20;
+    }
+
+    .calendar-scroll-thumb {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 60px;
+        background: linear-gradient(180deg, #D2691E 0%, #FF8C42 100%);
+        border-radius: 2px;
+        transition: top 0.1s ease;
+    }
+
+    /* Scroll hint indicator */
+    .calendar-scroll-hint {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 10px;
+        color: #999;
+        font-size: 12px;
+        gap: 6px;
+        animation: bounceDown 1.5s ease infinite;
+    }
+
+    .calendar-scroll-hint i {
+        font-size: 14px;
+    }
+
+    @keyframes bounceDown {
+        0%, 100% {
+            transform: translateY(0);
+        }
+        50% {
+            transform: translateY(5px);
+        }
+    }
+
+    .calendar-popup.mobile-open .calendar-month-panel {
+        width: 100% !important;
+        margin-bottom: 20px;
+    }
+
+    .calendar-popup.mobile-open .calendar-header {
+        padding: 8px 15px !important;
+        margin-bottom: 5px;
+    }
+
+    .calendar-popup.mobile-open .calendar-title {
+        font-size: 16px !important;
+    }
+
+    .calendar-popup.mobile-open .calendar-weekdays {
+        padding: 8px 10px !important;
+    }
+
+    .calendar-popup.mobile-open .calendar-weekday {
+        font-size: 12px !important;
+    }
+
+    .calendar-popup.mobile-open .calendar-days {
+        padding: 5px 10px !important;
+    }
+
+    .calendar-popup.mobile-open .calendar-day {
+        min-height: 50px !important;
+        font-size: 14px !important;
+    }
+
+    .calendar-popup.mobile-open .day-price {
+        font-size: 9px !important;
+    }
+
+    /* Show confirm button on mobile */
+    .calendar-confirm-section {
+        display: block;
+        padding: 15px 20px 25px;
+        background: #fff;
+        border-top: 1px solid #eee;
+        position: sticky;
+        bottom: 0;
+    }
+
+    /* Selected dates display */
+    .calendar-selected-dates {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+        margin-bottom: 15px;
+        padding: 12px 15px;
+        background: linear-gradient(135deg, #faf8f5 0%, #f5f2ed 100%);
+        border-radius: 10px;
+        border: 1px solid rgba(210, 105, 30, 0.15);
+    }
+
+    .selected-date-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 2px;
+    }
+
+    .selected-label {
+        font-size: 10px;
+        color: #888;
+        font-weight: 500;
+    }
+
+    .selected-value {
+        font-size: 14px;
+        font-weight: 600;
+        color: #333;
+    }
+
+    .selected-value.has-date {
+        color: #D2691E;
+    }
+
+    .selected-date-arrow {
+        color: #D2691E;
+        font-size: 12px;
+    }
+
+    .selected-nights {
+        background: linear-gradient(135deg, #D2691E 0%, #FF8C42 100%);
+        color: #fff;
+        padding: 4px 10px;
+        border-radius: 15px;
+        font-size: 12px;
+        font-weight: 600;
+        margin-left: 5px;
+    }
+
+    .calendar-confirm-btn {
+        width: 100%;
+        padding: 16px 30px;
+        background: linear-gradient(135deg, #D2691E 0%, #FF8C42 100%);
+        color: #fff;
+        border: none;
+        border-radius: 12px;
+        font-family: 'Noto Sans JP', sans-serif;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        box-shadow: 0 4px 15px rgba(210, 105, 30, 0.3);
+        transition: all 0.3s ease;
+    }
+
+    .calendar-confirm-btn:hover {
+        background: linear-gradient(135deg, #B8621E 0%, #E07B38 100%);
+        box-shadow: 0 6px 20px rgba(210, 105, 30, 0.4);
+    }
+
+    .calendar-confirm-btn:active {
+        transform: scale(0.98);
+    }
+
+    .calendar-confirm-btn i {
+        font-size: 18px;
+    }
+
+    /* Prevent body scroll when calendar is open */
+    body.calendar-open {
+        overflow: hidden;
+        position: fixed;
+        width: 100%;
+    }
+}

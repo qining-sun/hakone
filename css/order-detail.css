@@ -1,0 +1,2040 @@
+/**
+ * 订单详情页面样式
+ * Order Detail Page Styles
+ */
+
+/* 页面布局 */
+.order-detail-page {
+    padding: 100px 0 80px;
+    background: #f8f9fa;
+    min-height: calc(100vh - 200px);
+}
+
+/* 面包屑导航 */
+.breadcrumb-section {
+    margin-bottom: 30px;
+}
+
+.breadcrumb {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    font-size: 14px;
+    color: #666;
+}
+
+.breadcrumb a {
+    color: #8a7a5e;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.breadcrumb a:hover {
+    color: #6d5e48;
+}
+
+.breadcrumb .separator {
+    color: #ccc;
+}
+
+.breadcrumb .current {
+    color: #333;
+    font-weight: 500;
+}
+
+/* 订单详情布局 */
+.order-detail-layout {
+    display: grid;
+    grid-template-columns: 1fr 350px;
+    gap: 30px;
+    align-items: start;
+}
+
+/* 主内容区域 */
+.order-detail-main {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* 订单头部卡片 */
+.order-header-card {
+    background: linear-gradient(135deg, #8a7a5e 0%, #9d8a6d 100%);
+    border-radius: 16px;
+    padding: 30px;
+    color: white;
+    box-shadow: 0 4px 16px rgba(138, 122, 94, 0.2);
+}
+
+.order-header-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 20px;
+    gap: 20px;
+}
+
+.order-title-section {
+    flex: 1;
+}
+
+.order-title {
+    font-size: 28px;
+    font-weight: 600;
+    margin: 0 0 10px 0;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.order-title i {
+    font-size: 24px;
+}
+
+.order-code {
+    font-size: 16px;
+    opacity: 0.95;
+    margin: 0;
+    font-weight: 500;
+}
+
+.order-code span {
+    font-family: 'Courier New', monospace;
+    font-weight: 600;
+}
+
+.order-status-section {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: flex-end;
+}
+
+/* 订单状态标签样式 - 与user-center-page.css保持一致 */
+.status-badge,
+.payment-status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 12px;
+    border-radius: 16px;
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.status-badge i,
+.payment-status-badge i {
+    font-size: 11px;
+}
+
+/* 订单状态颜色 */
+.status-badge.pending {
+    background: #f3e5f5;
+    color: #7b1fa2;
+}
+
+.status-badge.confirmed {
+    background: #e8f5e9;
+    color: #2e7d32;
+}
+
+.status-badge.completed {
+    background: #e1f5fe;
+    color: #0277bd;
+}
+
+.status-badge.cancelled {
+    background: #ffebee;
+    color: #c62828;
+}
+
+.status-badge.paid {
+    background: #e8f5e9;
+    color: #2e7d32;
+}
+
+/* 支付状态颜色 */
+.payment-status-badge.unpaid {
+    background: #fff3e0;
+    color: #f57c00;
+}
+
+.payment-status-badge.paid {
+    background: #e8f5e9;
+    color: #2e7d32;
+}
+
+.payment-status-badge.refunded {
+    background: #e3f2fd;
+    color: #1565c0;
+}
+
+.payment-status-badge.pending {
+    background: #fce4ec;
+    color: #c2185b;
+}
+
+.order-date-info {
+    display: flex;
+    gap: 20px;
+    padding-top: 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.date-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+}
+
+.date-item i {
+    opacity: 0.8;
+}
+
+.date-label {
+    opacity: 0.9;
+}
+
+.date-value {
+    font-weight: 600;
+}
+
+/* 详情卡片 */
+.detail-card {
+    background: white;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.card-header {
+    background: #f8f6f3;
+    padding: 20px 30px;
+    border-bottom: 2px solid #e8e4dc;
+}
+
+.card-title {
+    font-size: 20px;
+    font-weight: 600;
+    color: #333;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.card-title i {
+    color: #8a7a5e;
+    font-size: 18px;
+}
+
+.card-content {
+    padding: 30px;
+}
+
+/* 信息网格 */
+.info-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+}
+
+.info-item {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.info-item.full-width {
+    grid-column: 1 / -1;
+}
+
+.info-label {
+    font-size: 13px;
+    color: #666;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.info-label i {
+    color: #8a7a5e;
+    width: 16px;
+    font-size: 14px;
+}
+
+.info-value {
+    font-size: 16px;
+    color: #333;
+    font-weight: 600;
+}
+
+/* 子区域 */
+.subsection-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+    margin: 30px 0 15px 0;
+    padding-top: 30px;
+    border-top: 1px solid #f0f0f0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.subsection-title i {
+    color: #8a7a5e;
+}
+
+/* 服务列表 */
+.services-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.service-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    background: #f8f6f3;
+    border-radius: 8px;
+}
+
+.service-item i {
+    color: #8a7a5e;
+    font-size: 18px;
+    width: 24px;
+    text-align: center;
+}
+
+.service-item span {
+    flex: 1;
+    font-size: 14px;
+    color: #333;
+    font-weight: 500;
+}
+
+.service-price {
+    font-size: 14px;
+    color: #8a7a5e;
+    font-weight: 600;
+}
+
+/* 特殊请求 */
+.special-requests-text {
+    padding: 15px;
+    background: #f8f6f3;
+    border-left: 4px solid #8a7a5e;
+    border-radius: 4px;
+    color: #333;
+    font-size: 14px;
+    line-height: 1.6;
+    margin: 0;
+}
+
+/* 支付明细 */
+.payment-breakdown {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.payment-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.payment-row:last-child {
+    border-bottom: none;
+}
+
+.payment-label {
+    font-size: 14px;
+    color: #666;
+}
+
+.payment-value {
+    font-size: 16px;
+    color: #333;
+    font-weight: 600;
+}
+
+.payment-row.subtotal {
+    padding-top: 15px;
+    border-top: 2px solid #e0e0e0;
+}
+
+.payment-row.total {
+    background: linear-gradient(90deg, rgba(138, 122, 94, 0.08) 0%, rgba(138, 122, 94, 0.03) 100%);
+    padding: 15px;
+    margin: 15px -30px -30px -30px;
+    border-top: 2px solid #8a7a5e;
+    border-bottom: none;
+}
+
+.payment-row.total .payment-label {
+    font-size: 16px;
+    color: #333;
+    font-weight: 600;
+}
+
+.payment-row.total .payment-value {
+    font-size: 24px;
+    color: #8a7a5e;
+    font-weight: 700;
+}
+
+.payment-method-info {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid #f0f0f0;
+}
+
+.payment-method-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.payment-method-label {
+    font-size: 14px;
+    color: #666;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.payment-method-label i {
+    color: #8a7a5e;
+}
+
+.payment-method-value {
+    font-size: 15px;
+    color: #333;
+    font-weight: 600;
+}
+
+/* 政策卡片 */
+.policy-card .card-content {
+    background: #fffbf5;
+}
+
+.policy-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.policy-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    font-size: 14px;
+    color: #666;
+    line-height: 1.6;
+}
+
+.policy-item i {
+    color: #8a7a5e;
+    margin-top: 3px;
+    font-size: 12px;
+}
+
+/* 侧边栏 */
+.order-detail-sidebar {
+    position: sticky;
+    top: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* 操作卡片 */
+.action-card {
+    background: white;
+    border-radius: 16px;
+    padding: 25px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.action-card-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #333;
+    margin: 0 0 20px 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.action-card-title i {
+    color: #8a7a5e;
+}
+
+.action-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.action-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: center;
+}
+
+.action-btn i {
+    font-size: 16px;
+}
+
+.action-btn.primary {
+    background: linear-gradient(135deg, #8a7a5e 0%, #9d8a6d 100%);
+    color: white;
+}
+
+.action-btn.primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(138, 122, 94, 0.3);
+}
+
+.action-btn.secondary {
+    background: #f8f6f3;
+    color: #8a7a5e;
+    border: 2px solid #8a7a5e;
+}
+
+.action-btn.secondary:hover {
+    background: #8a7a5e;
+    color: white;
+}
+
+.action-btn.warning {
+    background: #fff9e6;
+    color: #ff9800;
+    border: 2px solid #ff9800;
+}
+
+.action-btn.warning:hover {
+    background: #ff9800;
+    color: white;
+}
+
+.action-btn.danger {
+    background: #ffebee;
+    color: #f44336;
+    border: 2px solid #f44336;
+}
+
+.action-btn.danger:hover {
+    background: #f44336;
+    color: white;
+}
+
+.action-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none !important;
+}
+
+/* 联系卡片 */
+.contact-card {
+    background: white;
+    border-radius: 16px;
+    padding: 25px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.contact-card-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #333;
+    margin: 0 0 15px 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.contact-card-title i {
+    color: #8a7a5e;
+}
+
+.contact-info {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.contact-text {
+    font-size: 14px;
+    color: #666;
+    line-height: 1.6;
+    margin: 0 0 10px 0;
+}
+
+.contact-item {
+    display: flex;
+    gap: 12px;
+    padding: 12px;
+    background: #f8f6f3;
+    border-radius: 8px;
+}
+
+.contact-item i {
+    color: #8a7a5e;
+    font-size: 18px;
+    margin-top: 2px;
+}
+
+.contact-detail {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.contact-detail strong {
+    font-size: 13px;
+    color: #666;
+    font-weight: 600;
+}
+
+.contact-detail a {
+    color: #8a7a5e;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.contact-detail a:hover {
+    text-decoration: underline;
+}
+
+.contact-detail small {
+    font-size: 12px;
+    color: #999;
+}
+
+/* 返回导航 */
+.back-navigation {
+    background: white;
+    border-radius: 16px;
+    padding: 15px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.back-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 12px 20px;
+    background: #f8f6f3;
+    color: #8a7a5e;
+    text-decoration: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.back-btn:hover {
+    background: #8a7a5e;
+    color: white;
+}
+
+/* 取消模态框 */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(5px);
+    z-index: 10000;
+    align-items: center;
+    justify-content: center;
+    animation: fadeIn 0.3s ease;
+}
+
+.modal.active {
+    display: flex;
+}
+
+.modal-content {
+    background: white;
+    border-radius: 16px;
+    max-width: 500px;
+    width: 90%;
+    max-height: 90vh;
+    overflow: auto;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 25px 30px;
+    border-bottom: 2px solid #f0f0f0;
+}
+
+.modal-title {
+    font-size: 20px;
+    font-weight: 600;
+    color: #333;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.modal-title i {
+    color: #f44336;
+}
+
+.modal-close {
+    background: none;
+    border: none;
+    font-size: 24px;
+    color: #999;
+    cursor: pointer;
+    padding: 5px;
+    line-height: 1;
+    transition: color 0.3s ease;
+}
+
+.modal-close:hover {
+    color: #333;
+}
+
+.modal-body {
+    padding: 30px;
+}
+
+.warning-text {
+    font-size: 16px;
+    color: #333;
+    font-weight: 600;
+    margin: 0 0 15px 0;
+}
+
+.cancellation-fee-notice {
+    font-size: 14px;
+    color: #f44336;
+    background: #ffebee;
+    padding: 12px;
+    border-radius: 8px;
+    margin: 0 0 20px 0;
+    border-left: 4px solid #f44336;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    font-size: 14px;
+    color: #666;
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+.form-group textarea {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 14px;
+    font-family: inherit;
+    resize: vertical;
+    transition: border-color 0.3s ease;
+}
+
+.form-group textarea:focus {
+    outline: none;
+    border-color: #8a7a5e;
+}
+
+.modal-footer {
+    display: flex;
+    gap: 12px;
+    padding: 20px 30px;
+    border-top: 2px solid #f0f0f0;
+    background: #f8f9fa;
+}
+
+.modal-btn {
+    flex: 1;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.modal-btn.cancel {
+    background: #e0e0e0;
+    color: #666;
+}
+
+.modal-btn.cancel:hover {
+    background: #d0d0d0;
+}
+
+.modal-btn.confirm {
+    background: #f44336;
+    color: white;
+}
+
+.modal-btn.confirm:hover {
+    background: #d32f2f;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(244, 67, 54, 0.3);
+}
+
+/* 领收书模态框 */
+.receipt-modal .modal-content {
+    max-width: 1000px;
+    max-height: 95vh;
+}
+
+.receipt-modal-body {
+    padding: 20px;
+    background: #e8e8e8;
+    max-height: calc(95vh - 160px);
+    overflow-y: auto;
+}
+
+.receipt-container {
+    display: flex;
+    justify-content: center;
+    padding: 20px;
+}
+
+/* 领收书纸张 - A4 横向 */
+.receipt-paper {
+    width: 750px; /* 减小宽度以更好适配A4横向 */
+    background: white;
+    padding: 25px 35px; /* 减小padding */
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    font-family: 'Noto Sans JP', 'MS PGothic', 'MS Gothic', sans-serif;
+    position: relative;
+    border: 1px solid #000;
+}
+
+/* 顶部行：收据编号 + 收入印纸 */
+.receipt-header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 8px; /* 减小间距 */
+}
+
+.receipt-number {
+    font-size: 12px;
+    color: #333;
+}
+
+.receipt-stamp-space {
+    display: none; /* 屏蔽收入印纸区域 */
+    width: 80px;
+    height: 60px;
+}
+
+.revenue-stamp-box {
+    width: 80px;
+    height: 60px;
+    border: 2px dashed #999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #fafafa;
+}
+
+.stamp-inner {
+    font-size: 11px;
+    color: #666;
+    text-align: center;
+    line-height: 1.4;
+}
+
+/* 领收书标题 */
+.receipt-title {
+    font-size: 28px; /* 减小字体 */
+    font-weight: 700;
+    text-align: center;
+    margin: 0 0 15px 0; /* 减小间距 */
+    letter-spacing: 16px; /* 减小字间距 */
+    color: #000;
+    padding-left: 16px;
+}
+
+/* 主容器：左右分栏 */
+.receipt-main-container {
+    display: flex;
+    gap: 30px; /* 减小间距 */
+    margin-bottom: 20px; /* 减小间距 */
+}
+
+.receipt-left-section {
+    flex: 1;
+}
+
+.receipt-right-section {
+    width: 280px;
+    flex-shrink: 0;
+}
+
+/* 收款人 */
+.receipt-recipient {
+    font-size: 20px; /* 减小字体 */
+    font-weight: 600;
+    margin-bottom: 18px; /* 减小间距 */
+    border-bottom: 2px solid #000;
+    padding-bottom: 6px; /* 减小间距 */
+}
+
+.honorific {
+    margin-left: 6px;
+    font-size: 16px; /* 减小字体 */
+}
+
+/* 金额部分 */
+.receipt-amount-section {
+    margin-bottom: 18px; /* 减小间距 */
+}
+
+.amount-row {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.amount-label {
+    font-size: 16px;
+    font-weight: 600;
+    width: 60px;
+}
+
+.amount-box {
+    flex: 1;
+    border: 3px double #000;
+    padding: 12px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    background: white;
+    min-height: 50px;
+}
+
+.yen-mark {
+    font-size: 24px;
+    font-weight: 400;
+    margin-right: 10px;
+}
+
+.amount-value {
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: 3px;
+}
+
+.amount-dash {
+    font-size: 24px;
+    margin-left: 5px;
+}
+
+.amount-note {
+    font-size: 11px;
+    color: #666;
+    text-align: right;
+    margin-top: 5px;
+    padding-right: 5px;
+}
+
+/* 但し書き */
+.receipt-purpose-section {
+    margin-bottom: 15px; /* 减小间距 */
+}
+
+.purpose-line {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px; /* 减小间距 */
+}
+
+.purpose-label {
+    font-size: 14px;
+    font-weight: 600;
+    width: 30px;
+    flex-shrink: 0;
+}
+
+.purpose-content {
+    flex: 1;
+    border-bottom: 1px solid #000;
+    padding-bottom: 4px;
+    font-size: 14px;
+}
+
+.confirmation-text {
+    font-size: 14px;
+    text-align: center;
+    margin-top: 10px;
+}
+
+/* 明细表 */
+.receipt-breakdown {
+    border: 1px solid #999;
+    padding: 10px; /* 减小padding */
+    background: #fafafa;
+}
+
+.breakdown-title {
+    font-size: 12px; /* 减小字体 */
+    font-weight: 600;
+    margin-bottom: 6px; /* 减小间距 */
+}
+
+.breakdown-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.breakdown-table tr {
+    border-bottom: 1px dotted #ccc;
+}
+
+.breakdown-table tr:last-child {
+    border-bottom: none;
+}
+
+.breakdown-table td {
+    padding: 6px 4px;
+    font-size: 11px;
+    vertical-align: top;
+}
+
+.item-label {
+    width: 90px;
+    font-weight: 600;
+    color: #333;
+}
+
+.item-colon {
+    width: 10px;
+    text-align: center;
+}
+
+.item-value {
+    color: #333;
+}
+
+/* 右侧：发行者信息 */
+.issue-date {
+    font-size: 13px; /* 减小字体 */
+    text-align: right;
+    margin-bottom: 12px; /* 减小间距 */
+    font-weight: 500;
+}
+
+.issuer-box {
+    border: 2px solid #000;
+    padding: 15px; /* 减小padding */
+    background: white;
+    position: relative;
+}
+
+.issuer-name {
+    font-size: 14px; /* 减小字体 */
+    font-weight: 700;
+    margin-bottom: 10px; /* 减小间距 */
+    text-align: center;
+    border-bottom: 1px solid #333;
+    padding-bottom: 8px; /* 减小间距 */
+}
+
+.issuer-detail {
+    margin-bottom: 10px; /* 减小间距 */
+}
+
+.issuer-row {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 8px;
+    font-size: 11px;
+}
+
+.issuer-label {
+    font-weight: 600;
+    width: 50px;
+    flex-shrink: 0;
+    color: #666;
+}
+
+.issuer-value {
+    flex: 1;
+    color: #333;
+    line-height: 1.6;
+}
+
+/* 印鑑 */
+.issuer-seal {
+    display: none; /* 屏蔽印章 */
+    justify-content: flex-end;
+    margin-top: 10px; /* 减小间距 */
+}
+
+.seal-circle {
+    width: 60px; /* 减小大小 */
+    height: 60px; /* 减小大小 */
+    border: 3px solid #c00; /* 减小边框 */
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: white;
+    transform: rotate(-8deg);
+    box-shadow: 0 2px 6px rgba(192, 0, 0, 0.2);
+}
+
+.seal-text {
+    font-size: 10px; /* 减小字体 */
+    font-weight: 700;
+    color: #c00;
+    text-align: center;
+    line-height: 1.3;
+    letter-spacing: 0.5px;
+}
+
+/* 底部备注 */
+.receipt-footer {
+    display: none; /* 屏蔽底部备注 */
+    border-top: 1px solid #ddd;
+    padding-top: 10px; /* 减小间距 */
+}
+
+.footer-note {
+    font-size: 10px;
+    color: #666;
+    text-align: center;
+}
+
+/* 领收书模态框footer */
+.receipt-modal-footer .modal-btn.confirm {
+    background: #8a7a5e;
+}
+
+.receipt-modal-footer .modal-btn.confirm:hover {
+    background: #6d5e48;
+    box-shadow: 0 4px 12px rgba(138, 122, 94, 0.3);
+}
+
+/* 打印样式 */
+/* 打印专用头部和页脚 - 屏幕上隐藏 */
+.print-only-header,
+.print-only-footer {
+    display: none;
+}
+
+/* PDF生成时的样式 - 确保receipt-container即使在模态框隐藏时也能渲染 */
+.receipt-container {
+    position: relative;
+}
+
+.receipt-modal:not(.active) .receipt-container {
+    position: fixed;
+    left: -9999px;
+    top: -9999px;
+}
+
+/* ==========================================
+   打印样式 - 现代酒店入住确认书设计
+   Modern Hotel Check-in Confirmation Print Layout
+   完全参考新模板设计
+   ========================================== */
+
+@media print {
+    * {
+        box-sizing: border-box !important;
+        font-family: 'Noto Sans JP', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif !important;
+    }
+    /* 隐藏不需要打印的元素 */
+    .header-top-container,
+    .breadcrumb-section,
+    .order-detail-sidebar,
+    .footer-container,
+    .modal-header,
+    .modal-footer,
+    .receipt-modal-body,
+    .action-buttons,
+    .back-navigation {
+        display: none !important;
+    }
+
+    /* 页面基础设置 */
+    @page {
+        size: A4;
+        margin: 15mm;
+    }
+
+    body {
+        background: #ffffff !important;
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+
+    .order-detail-page {
+        background: #ffffff !important;
+        padding: 24px !important;
+        min-height: auto !important;
+    }
+
+    .container {
+        max-width: 800px !important;
+        margin: 0 auto !important;
+        padding: 32px 28px 24px !important;
+        background: #ffffff !important;
+        border-radius: 0 !important;
+        box-shadow: none !important;
+    }
+
+    .order-detail-layout {
+        display: block !important;
+    }
+
+    .order-detail-main {
+        display: block !important;
+        width: 100% !important;
+    }
+
+    /* ==================== Header 头部 ==================== */
+
+    .order-header-card {
+        background: white !important;
+        border: none !important;
+        border-radius: 0 !important;
+        padding: 0 !important;
+        margin-bottom: 0 !important;
+        box-shadow: none !important;
+        page-break-inside: avoid !important;
+    }
+
+    /* 酒店名称和LOGO */
+    .order-header-top {
+        display: flex !important;
+        justify-content: space-between !important;
+        align-items: center !important;
+        border-bottom: 2px solid #e5e7eb !important;
+        padding-bottom: 16px !important;
+        margin-bottom: 20px !important;
+    }
+
+    .order-title-section {
+        flex: 1 !important;
+    }
+
+    .order-title-section::before {
+        content: 'Trip7湯沢天空温泉ホテル' !important;
+        display: block !important;
+        font-size: 24px !important;
+        font-weight: 700 !important;
+        letter-spacing: 0.08em !important;
+        color: #000 !important;
+        line-height: 1.2 !important;
+    }
+
+    .order-code {
+        font-size: 12px !important;
+        color: #6b7280 !important;
+        font-weight: 400 !important;
+        background: transparent !important;
+        padding: 0 !important;
+        margin: 4px 0 0 0 !important;
+        display: block !important;
+    }
+
+    .order-code::before {
+        content: 'Trip7 Yuzawa Sky Onsen Hotel' !important;
+        display: block !important;
+    }
+
+    .order-code span {
+        display: none !important;
+    }
+
+    /* LOGO */
+    .order-status-section {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        font-size: 20px !important;
+        font-weight: 700 !important;
+        padding: 10px 16px !important;
+        border-radius: 999px !important;
+        border: 1px solid #e5e7eb !important;
+        background: white !important;
+        color: #000 !important;
+        width: auto !important;
+        height: auto !important;
+    }
+
+    .order-status-section::before {
+        content: 'HOTEL' !important;
+    }
+
+    .status-badge,
+    .payment-status-badge {
+        display: none !important;
+    }
+
+    .order-date-info {
+        display: none !important;
+    }
+
+    /* 确认书标题 */
+    .order-title {
+        font-size: 22px !important;
+        font-weight: 600 !important;
+        text-align: center !important;
+        margin: 0 0 6px 0 !important;
+        letter-spacing: 0.2em !important;
+        color: #000 !important;
+        padding-left: 0.2em !important;
+        display: block !important;
+    }
+
+    .order-title i {
+        display: none !important;
+    }
+
+    .order-title::after {
+        content: 'Hotel Reservation & Check-in Confirmation' !important;
+        display: block !important;
+        margin-top: 6px !important;
+        font-size: 13px !important;
+        color: #6b7280 !important;
+        font-weight: 400 !important;
+        letter-spacing: 0 !important;
+    }
+
+    /* ==================== 基本信息网格 ==================== */
+
+    .order-detail-main {
+        display: block !important;
+        width: 100% !important;
+        margin-bottom: 22px !important;
+    }
+
+    .detail-card {
+        background: white !important;
+        border: none !important;
+        border-radius: 0 !important;
+        box-shadow: none !important;
+        margin-bottom: 0 !important;
+        page-break-inside: avoid !important;
+    }
+
+    .detail-card .card-header {
+        display: none !important;
+    }
+
+    .detail-card .card-content {
+        padding: 0 !important;
+        background: white !important;
+    }
+
+    /* 信息网格 */
+    .info-grid {
+        display: grid !important;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)) !important;
+        gap: 12px 24px !important;
+        margin-bottom: 18px !important;
+    }
+
+    .info-item {
+        font-size: 14px !important;
+        display: block !important;
+        border: none !important;
+        background: transparent !important;
+        padding: 0 !important;
+    }
+
+    .info-label {
+        color: #6b7280 !important;
+        font-size: 12px !important;
+        margin-bottom: 2px !important;
+        display: block !important;
+        font-weight: 400 !important;
+        letter-spacing: 0 !important;
+    }
+
+    .info-label::after {
+        content: none !important;
+    }
+
+    .info-value {
+        font-weight: 500 !important;
+        display: block !important;
+        font-size: 14px !important;
+        color: #000 !important;
+        padding: 0 !important;
+    }
+
+    /* 第1个卡片：基本信息，预约编号蓝色高亮 */
+    .detail-card:nth-child(1) .info-item:first-child .info-value {
+        color: #2563eb !important;
+        font-weight: 600 !important;
+    }
+
+    /* ==================== Section 分节 ==================== */
+
+    .detail-card:nth-child(n+2) {
+        margin-top: 16px !important;
+        padding-top: 12px !important;
+        border-top: 1px dashed #e5e7eb !important;
+    }
+
+    .detail-card .card-header {
+        display: block !important;
+        background: none !important;
+        border: none !important;
+        padding: 0 !important;
+        margin-bottom: 10px !important;
+    }
+
+    .card-title {
+        font-size: 15px !important;
+        font-weight: 600 !important;
+        color: #000 !important;
+        letter-spacing: 0 !important;
+    }
+
+    .card-title i {
+        display: none !important;
+    }
+
+    /* 特别要求等文本内容 */
+    .special-requests-text {
+        font-size: 14px !important;
+        line-height: 1.6 !important;
+        background: transparent !important;
+        padding: 0 !important;
+        border: none !important;
+        color: #000 !important;
+    }
+
+    /* 服务列表 */
+    .services-list {
+        display: block !important;
+    }
+
+    .service-item {
+        font-size: 14px !important;
+        padding: 0 !important;
+        border: none !important;
+        background: transparent !important;
+        border-radius: 0 !important;
+        font-weight: 400 !important;
+        display: block !important;
+        margin-bottom: 4px !important;
+        color: #000 !important;
+        line-height: 1.6 !important;
+    }
+
+    .service-item::before {
+        content: '・' !important;
+        margin-right: 4px !important;
+    }
+
+    .service-price {
+        font-weight: 600 !important;
+        color: #2563eb !important;
+    }
+
+    /* ==================== 支付信息 ==================== */
+
+    .payment-breakdown {
+        border: none !important;
+        padding: 0 !important;
+        background: white !important;
+        margin: 0 !important;
+    }
+
+    .payment-row {
+        display: flex !important;
+        justify-content: space-between !important;
+        padding: 10px 8px !important;
+        font-size: 14px !important;
+        color: #000 !important;
+        border-bottom: 1px solid #e5e7eb !important;
+    }
+
+    .payment-row:last-of-type:not(.total) {
+        border-bottom: 1px solid #e5e7eb !important;
+    }
+
+    .payment-label {
+        color: #6b7280 !important;
+        font-weight: 400 !important;
+    }
+
+    .payment-value {
+        font-weight: 500 !important;
+        color: #000 !important;
+        font-size: 14px !important;
+    }
+
+    /* 总金额行 */
+    .payment-row.total {
+        padding: 10px 8px !important;
+        font-size: 14px !important;
+        font-weight: 600 !important;
+        border-bottom: none !important;
+    }
+
+    .payment-row.total .payment-label {
+        font-weight: 600 !important;
+        color: #000 !important;
+    }
+
+    .payment-row.total .payment-value {
+        color: #2563eb !important;
+        font-weight: 600 !important;
+    }
+
+    /* Note备注 */
+    .payment-method-info,
+    .note {
+        font-size: 12px !important;
+        color: #6b7280 !important;
+        line-height: 1.6 !important;
+        margin-top: 4px !important;
+        background: transparent !important;
+        padding: 0 !important;
+        border: none !important;
+    }
+
+    /* ==================== 政策列表 ==================== */
+
+    .policy-list {
+        display: block !important;
+    }
+
+    .policy-item {
+        font-size: 12px !important;
+        color: #6b7280 !important;
+        line-height: 1.6 !important;
+        padding: 0 !important;
+        background: transparent !important;
+        border: none !important;
+        margin-bottom: 4px !important;
+    }
+
+    .policy-item i {
+        display: none !important;
+    }
+
+    .policy-item::before {
+        content: none !important;
+    }
+
+    /* ==================== Footer 底部 ==================== */
+
+    .order-detail-sidebar {
+        display: flex !important;
+        justify-content: space-between !important;
+        flex-wrap: wrap !important;
+        gap: 8px !important;
+        margin-top: 24px !important;
+        padding-top: 16px !important;
+        font-size: 12px !important;
+        color: #6b7280 !important;
+        border-top: 1px dashed #e5e7eb !important;
+        page-break-inside: avoid !important;
+    }
+
+    .order-detail-sidebar::before {
+        content: '本确认书仅用于确认您的预订信息，并不构成签证或担保文件。' !important;
+        flex: 1 1 100% !important;
+        order: 1 !important;
+    }
+
+    .order-detail-sidebar::after {
+        content: 'Trip7湯沢天空温泉ホテル · Trip7 Yuzawa Sky Onsen Hotel' !important;
+        font-weight: 700 !important;
+        color: #111827 !important;
+        order: 2 !important;
+    }
+
+    .order-detail-sidebar .action-card,
+    .order-detail-sidebar .contact-card,
+    .order-detail-sidebar .action-buttons,
+    .order-detail-sidebar .contact-info {
+        display: none !important;
+    }
+
+    /* 隐藏所有图标 */
+    .info-label i,
+    .date-item i {
+        display: none !important;
+    }
+
+    /* 领收书模态框打印 */
+    .receipt-modal,
+    .receipt-modal.active {
+        display: block !important;
+        position: static !important;
+        background: none !important;
+    }
+
+    .receipt-modal-content {
+        max-width: none !important;
+        box-shadow: none !important;
+        border-radius: 0 !important;
+        max-height: none !important;
+    }
+
+    .receipt-container {
+        padding: 0 !important;
+        background: none !important;
+    }
+
+    .receipt-paper {
+        width: 100% !important;
+        box-shadow: none !important;
+        border: 1px solid #000 !important;
+        page-break-after: avoid !important;
+        margin: 0 !important;
+        padding: 30px 40px !important;
+    }
+
+    /* 页面底部 */
+    body::after {
+        content: '本書は予約確認書であり、領収書ではありません。' !important;
+        display: block !important;
+        text-align: center !important;
+        font-size: 8px !important;
+        color: #999 !important;
+        margin-top: 20px !important;
+        padding-top: 10px !important;
+        border-top: 1px solid #eee !important;
+    }
+}
+
+/* 响应式设计 */
+@media (max-width: 1024px) {
+    .order-detail-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .order-detail-sidebar {
+        position: static;
+    }
+}
+
+@media (max-width: 768px) {
+    .order-detail-page {
+        padding: 80px 0 60px;
+    }
+
+    .order-header-top {
+        flex-direction: column;
+    }
+
+    .order-status-section {
+        align-items: flex-start;
+    }
+
+    .order-title {
+        font-size: 22px;
+    }
+
+    .info-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .card-content {
+        padding: 20px;
+    }
+
+    .payment-row.total {
+        margin: 15px -20px -20px -20px;
+    }
+}
+
+@media (max-width: 480px) {
+    .order-header-card {
+        padding: 20px;
+    }
+
+    .order-title {
+        font-size: 20px;
+    }
+
+    .order-code {
+        font-size: 14px;
+    }
+
+    .card-header {
+        padding: 15px 20px;
+    }
+
+    .card-title {
+        font-size: 18px;
+    }
+
+    .action-card,
+    .contact-card {
+        padding: 20px;
+    }
+
+    .modal-content {
+        width: 95%;
+    }
+
+    .modal-header,
+    .modal-body,
+    .modal-footer {
+        padding: 20px;
+    }
+}
+
+/* Tax Included Text */
+.tax-included-text {
+    font-size: 12px;
+    color: #666;
+    margin-left: 4px;
+    font-weight: 400;
+    white-space: nowrap;
+}
+
+.payment-value {
+    white-space: nowrap;
+}
+
+/* ==========================================
+   PDF预约确认书专用样式
+   PDF Booking Confirmation Styles - Optimized
+   ========================================== */
+
+.pdf-booking-confirmation {
+    background: #ffffff;
+    padding: 25mm 20mm;
+    font-family: 'Noto Sans JP', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    color: #333;
+    box-sizing: border-box;
+}
+
+/* PDF头部 - 优雅设计 */
+.pdf-header {
+    text-align: center;
+    padding-bottom: 20px;
+    margin-bottom: 30px;
+    border-bottom: 3px double #8a7a5e;
+    position: relative;
+}
+
+.pdf-hotel-logo {
+    margin-bottom: 20px;
+}
+
+.pdf-hotel-name {
+    font-size: 22px;
+    font-weight: 700;
+    color: #8a7a5e;
+    letter-spacing: 0.1em;
+    margin-bottom: 5px;
+}
+
+.pdf-hotel-subtitle {
+    font-size: 11px;
+    color: #999;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 15px;
+}
+
+.pdf-document-title {
+    font-size: 26px;
+    font-weight: 700;
+    color: #2c2c2c;
+    margin-bottom: 5px;
+    letter-spacing: 0.08em;
+}
+
+.pdf-document-subtitle {
+    font-size: 11px;
+    color: #999;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 15px;
+}
+
+.pdf-hotel-info {
+    font-size: 10px;
+    color: #666;
+    line-height: 1.8;
+}
+
+.pdf-hotel-info p {
+    margin: 3px 0;
+}
+
+/* PDF内容主体 */
+.pdf-content {
+    padding: 0;
+}
+
+/* PDF区块 */
+.pdf-section {
+    margin-bottom: 25px;
+    page-break-inside: avoid;
+}
+
+.pdf-section-header {
+    background: linear-gradient(135deg, #8a7a5e 0%, #6d5e48 100%);
+    padding: 10px 15px;
+    margin-bottom: 15px;
+    border-radius: 4px;
+}
+
+.pdf-section-header h2 {
+    font-size: 16px;
+    font-weight: 600;
+    color: #ffffff;
+    margin: 0;
+    letter-spacing: 0.05em;
+}
+
+/* 信息网格 */
+.pdf-info-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px 20px;
+}
+
+.pdf-info-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 12px;
+    background: #f9fafb;
+    border-radius: 4px;
+    border-left: 3px solid #e5e7eb;
+}
+
+.pdf-info-row.highlight {
+    background: #fef8ed;
+    border-left-color: #8a7a5e;
+}
+
+.pdf-label {
+    font-size: 11px;
+    color: #666;
+    font-weight: 500;
+    letter-spacing: 0.03em;
+}
+
+.pdf-value {
+    font-size: 13px;
+    color: #2c2c2c;
+    font-weight: 600;
+    text-align: right;
+}
+
+.pdf-status {
+    padding: 4px 10px;
+    background: #fff;
+    border-radius: 3px;
+    font-size: 11px;
+    border: 1px solid #e5e7eb;
+}
+
+/* 子标题 */
+.pdf-subsection-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: #333;
+    margin: 18px 0 10px 0;
+    padding-bottom: 6px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+/* 服务列表 */
+.pdf-services {
+    margin-top: 15px;
+}
+
+.pdf-service-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 12px;
+    background: #f0f4f8;
+    border-radius: 4px;
+    margin-bottom: 6px;
+}
+
+.pdf-service-item .service-name {
+    font-size: 12px;
+    color: #333;
+    font-weight: 500;
+}
+
+.pdf-service-item .service-price {
+    font-size: 13px;
+    color: #8a7a5e;
+    font-weight: 600;
+}
+
+/* 特别请求 */
+.pdf-special-requests {
+    margin-top: 15px;
+    padding: 12px;
+    background: #fffbf0;
+    border-left: 3px solid #ffd700;
+    border-radius: 4px;
+}
+
+.pdf-special-requests p {
+    font-size: 12px;
+    color: #333;
+    line-height: 1.6;
+    margin: 5px 0 0 0;
+}
+
+/* 支付信息 */
+.pdf-payment-total {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 18px 20px;
+    background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
+    border-radius: 6px;
+    border: 2px solid #8a7a5e;
+    margin-bottom: 8px;
+}
+
+.pdf-payment-label {
+    font-size: 15px;
+    font-weight: 600;
+    color: #333;
+}
+
+.pdf-payment-amount {
+    font-size: 24px;
+    font-weight: 700;
+    color: #8a7a5e;
+    letter-spacing: 0.02em;
+}
+
+.pdf-tax-note {
+    font-size: 10px;
+    color: #666;
+    text-align: right;
+    padding-right: 5px;
+}
+
+/* 重要提示区域 */
+.pdf-notice {
+    margin-top: 25px;
+    padding: 15px 18px;
+    background: #f0f9ff;
+    border: 1px solid #bae6fd;
+    border-radius: 6px;
+    border-left: 4px solid #0284c7;
+}
+
+.pdf-notice-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: #0c4a6e;
+    margin-bottom: 10px;
+}
+
+.pdf-notice ul {
+    margin: 0;
+    padding-left: 20px;
+    list-style: none;
+}
+
+.pdf-notice ul li {
+    font-size: 11px;
+    color: #333;
+    line-height: 1.8;
+    margin-bottom: 4px;
+    position: relative;
+    padding-left: 12px;
+}
+
+.pdf-notice ul li:before {
+    content: '✓';
+    position: absolute;
+    left: 0;
+    color: #0284c7;
+    font-weight: bold;
+}
+
+/* PDF页脚 */
+.pdf-footer {
+    margin-top: 35px;
+    padding-top: 15px;
+    text-align: center;
+}
+
+.pdf-footer-line {
+    height: 2px;
+    background: linear-gradient(to right, transparent 0%, #8a7a5e 50%, transparent 100%);
+    margin-bottom: 12px;
+}
+
+.pdf-footer-date {
+    font-size: 10px;
+    color: #666;
+    margin: 5px 0;
+}
+
+.pdf-footer-note {
+    font-size: 11px;
+    color: #999;
+    margin: 5px 0;
+    font-style: italic;
+}

@@ -1,0 +1,414 @@
+/* Facilities Page Specific Styles */
+
+/* Page Layout */
+.page-content {
+    margin-top: 70px;
+}
+
+/* Hero Banner */
+.custom-hero-banner {
+    position: relative;
+    width: 100vw;
+    left: 50%;
+    right: 50%;
+    margin-left: -50vw;
+    margin-right: -50vw;
+    margin-top: -70px;
+    min-width: 100vw;
+    height: 40vh;
+    min-height: 300px;
+    max-height: 400px;
+    overflow: hidden;
+    z-index: 1;
+}
+
+.hero-bg-img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center center;
+    z-index: 1;
+    transition: transform 1s cubic-bezier(0.4,0,0.2,1);
+    filter: brightness(1.0);
+}
+
+.custom-hero-banner:hover .hero-bg-img {
+    transform: scale(1.05);
+}
+
+.hero-banner-content {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    text-shadow: 0 2px 8px rgba(0,0,0,0.4);
+    z-index: 2;
+    font-family: 'Noto Sans JP', 'Microsoft YaHei', Arial, sans-serif;
+    background: rgba(0,0,0,0.15);
+}
+
+.hero-banner-content h1 {
+    font-size: 60px;
+    font-weight: bold;
+    margin-bottom: 24px;
+    letter-spacing: 0.1em;
+}
+
+.hero-banner-content p {
+    font-size: 28px;
+    opacity: 0.95;
+}
+
+/* Facilities Section */
+.facilities-section {
+    padding: 60px 0;
+    background: #f8f8f8;
+}
+
+.facilities-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 40px;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.facility-item {
+    background: white;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.facility-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
+}
+
+.facility-image {
+    position: relative;
+    height: 250px;
+    overflow: hidden;
+}
+
+.facility-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+}
+
+.facility-item:hover .facility-img {
+    transform: scale(1.05);
+}
+
+.facility-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(210, 105, 30, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.facility-item:hover .facility-overlay {
+    opacity: 1;
+}
+
+.facility-icon {
+    font-size: 40px;
+    color: white;
+}
+
+.facility-content {
+    padding: 30px;
+}
+
+.facility-content h3 {
+    font-size: 22px;
+    color: #333;
+    margin-bottom: 8px;
+    font-weight: 500;
+}
+
+.facility-subtitle {
+    font-size: 12px;
+    color: #999;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 15px;
+}
+
+.facility-description {
+    font-size: 14px;
+    color: #666;
+    line-height: 1.7;
+    margin-bottom: 20px;
+}
+
+.facility-features {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.feature-tag {
+    background: rgba(210, 105, 30, 0.1);
+    color: #D2691E;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+/* Services Section */
+.services-section {
+    padding: 80px 0;
+    background: white;
+}
+
+.services-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 50px;
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.service-category {
+    background: #f8f8f8;
+    padding: 30px;
+    border-radius: 15px;
+    transition: transform 0.3s ease;
+}
+
+.service-category:hover {
+    transform: translateY(-5px);
+}
+
+.service-category h4 {
+    font-size: 18px;
+    color: #333;
+    margin-bottom: 25px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #D2691E;
+}
+
+.service-category h4 i {
+    color: #D2691E;
+    font-size: 20px;
+}
+
+.service-category ul {
+    list-style: none;
+}
+
+.service-category ul li {
+    margin-bottom: 12px;
+    font-size: 14px;
+    color: #666;
+    position: relative;
+    padding-left: 20px;
+    line-height: 1.6;
+}
+
+.service-category ul li:before {
+    content: "•";
+    color: #D2691E;
+    position: absolute;
+    left: 0;
+    font-weight: bold;
+}
+
+/* Operating Hours Section */
+.hours-section {
+    padding: 80px 0;
+    background: #f8f8f8;
+}
+
+.hours-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 30px;
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.hours-card {
+    background: white;
+    padding: 30px;
+    border-radius: 15px;
+    text-align: center;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+    transition: transform 0.3s ease;
+}
+
+.hours-card:hover {
+    transform: translateY(-5px);
+}
+
+.hours-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, #D2691E, #CD853F);
+    color: white;
+    border-radius: 50%;
+    margin: 0 auto 20px;
+    font-size: 24px;
+}
+
+.hours-card h4 {
+    font-size: 18px;
+    color: #333;
+    margin-bottom: 20px;
+    font-weight: 600;
+}
+
+.hours-details p {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 8px;
+    line-height: 1.6;
+}
+
+.hours-details strong {
+    color: #333;
+    font-weight: 600;
+}
+
+/* Active navigation link */
+.main-navigation a.active {
+    color: #D2691E;
+}
+
+/* Responsive Design */
+@media (max-width: 992px) {
+    .facilities-grid {
+        grid-template-columns: 1fr;
+        gap: 30px;
+    }
+
+    .services-grid {
+        grid-template-columns: 1fr;
+        gap: 30px;
+    }
+
+    .hours-grid {
+        grid-template-columns: 1fr;
+        gap: 25px;
+    }
+}
+
+@media (max-width: 768px) {
+    .custom-hero-banner {
+        min-height: 250px;
+        height: 50vh;
+    }
+
+    .hero-banner-content h1 {
+        font-size: 32px;
+    }
+
+    .hero-banner-content p {
+        font-size: 18px;
+    }
+
+    .facilities-section {
+        padding: 40px 0;
+    }
+
+    .facilities-grid {
+        padding: 0 15px;
+        gap: 25px;
+    }
+
+    .facility-image {
+        height: 200px;
+    }
+
+    .facility-content {
+        padding: 25px;
+    }
+
+    .facility-content h3 {
+        font-size: 20px;
+    }
+
+    .facility-description {
+        font-size: 13px;
+    }
+
+    .services-section {
+        padding: 60px 0;
+    }
+
+    .services-grid {
+        padding: 0 15px;
+        gap: 25px;
+    }
+
+    .service-category {
+        padding: 25px;
+    }
+
+    .service-category h4 {
+        font-size: 16px;
+    }
+
+    .service-category ul li {
+        font-size: 13px;
+        margin-bottom: 10px;
+    }
+
+    .hours-section {
+        padding: 60px 0;
+    }
+
+    .hours-grid {
+        padding: 0 15px;
+        gap: 20px;
+    }
+
+    .hours-card {
+        padding: 25px;
+    }
+
+    .hours-icon {
+        width: 50px;
+        height: 50px;
+        font-size: 20px;
+    }
+
+    .hours-card h4 {
+        font-size: 16px;
+    }
+
+    .hours-details p {
+        font-size: 13px;
+    }
+}

@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>会員登録確認｜Trip7箱根温泉ホテル</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            max-width: 500px;
+            width: 100%;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .loading-state,
+        .success-state,
+        .error-state {
+            display: none;
+        }
+
+        .loading-state.active,
+        .success-state.active,
+        .error-state.active {
+            display: block;
+        }
+
+        .icon {
+            font-size: 64px;
+            margin-bottom: 24px;
+        }
+
+        .loading-state .icon {
+            color: #667eea;
+            animation: spin 1s linear infinite;
+        }
+
+        .success-state .icon {
+            color: #28a745;
+        }
+
+        .error-state .icon {
+            color: #dc3545;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        h1 {
+            font-size: 24px;
+            color: #2c2c2c;
+            margin-bottom: 16px;
+        }
+
+        p {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 24px;
+        }
+
+        .email-display {
+            background: #f8f9fa;
+            padding: 12px 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            font-weight: 500;
+            color: #667eea;
+        }
+
+        .btn {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            padding: 14px 32px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .btn:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            margin-left: 10px;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+
+        .error-details {
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            border-radius: 8px;
+            padding: 16px;
+            margin: 20px 0;
+            color: #856404;
+            font-size: 14px;
+        }
+
+        .logo {
+            font-size: 20px;
+            color: #667eea;
+            margin-bottom: 30px;
+            font-weight: 600;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 30px 20px;
+            }
+
+            h1 {
+                font-size: 20px;
+            }
+
+            .icon {
+                font-size: 48px;
+            }
+
+            .btn {
+                display: block;
+                margin: 10px 0;
+            }
+
+            .btn-secondary {
+                margin-left: 0;
+            }
+        }
+    </style>
+    <script src="js/api-config.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">Trip7湯沢天空温泉ホテル</div>
+
+        <!-- Loading State -->
+        <div class="loading-state active" id="loadingState">
+            <div class="icon">
+                <i class="fas fa-spinner fa-spin"></i>
+            </div>
+            <h1>確認中...</h1>
+            <p>メールアドレスを確認しています。<br>少々お待ちください。</p>
+        </div>
+
+        <!-- Success State -->
+        <div class="success-state" id="successState">
+            <div class="icon">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <h1>登録が完了しました！</h1>
+            <p>メールアドレスが確認されました。</p>
+            <div class="email-display" id="emailDisplay"></div>
+            <p>ログインして、ご予約をお楽しみください。</p>
+            <a href="reservation.html" class="btn">
+                <i class="fas fa-sign-in-alt"></i>
+                ログインページへ
+            </a>
+        </div>
+
+        <!-- Error State -->
+        <div class="error-state" id="errorState">
+            <div class="icon">
+                <i class="fas fa-exclamation-triangle"></i>
+            </div>
+            <h1>エラーが発生しました</h1>
+            <p id="errorMessage">登録の確認に失敗しました。</p>
+            <div class="error-details" id="errorDetails" style="display: none;"></div>
+            <div>
+                <a href="reservation.html" class="btn">
+                    <i class="fas fa-home"></i>
+                    ホームへ
+                </a>
+                <a href="reservation.html" class="btn btn-secondary">
+                    <i class="fas fa-redo"></i>
+                    再登録
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', async function() {
+            // Get token from URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const token = urlParams.get('token');
+
+            if (!token) {
+                showError('無効なリンクです', 'トークンが見つかりません。');
+                return;
+            }
+
+            try {
+                // Verify token with backend - 使用相对路径通过nginx代理
+                const response = await fetch(`/api/user-registration/verify/${token}`);
+                const result = await response.json();
+
+                if (response.ok && result.success) {
+                    // Success
+                    showSuccess(result.data.email);
+                } else {
+                    // Error
+                    showError(result.message || '登録の確認に失敗しました', null);
+                }
+            } catch (error) {
+                console.error('Verification error:', error);
+                showError('通信エラーが発生しました', 'サーバーとの通信に失敗しました。インターネット接続を確認してください。');
+            }
+        });
+
+        function showSuccess(email) {
+            document.getElementById('loadingState').classList.remove('active');
+            document.getElementById('successState').classList.add('active');
+            document.getElementById('emailDisplay').textContent = email;
+        }
+
+        function showError(message, details) {
+            document.getElementById('loadingState').classList.remove('active');
+            document.getElementById('errorState').classList.add('active');
+            document.getElementById('errorMessage').textContent = message;
+
+            if (details) {
+                document.getElementById('errorDetails').textContent = details;
+                document.getElementById('errorDetails').style.display = 'block';
+            }
+        }
+    </script>
+</body>
+</html>

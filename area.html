@@ -1,0 +1,949 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>箱根周辺観光｜【公式】Trip7箱根温泉ホテル</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/modern-navbar.css?v=20251201v50">
+
+    <link rel="stylesheet" href="css/area.css?v=20251127">
+    <link rel="icon" href="img/logo.ico" type="image/x-icon">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;600;700&family=M+PLUS+Rounded+1c:wght@100;300;400;500;700;800;900&family=DotGothic16&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="css/section-title-template.css">
+    <style>
+        /* Page Content Styles */
+        .page-content {
+            margin-top: 0;
+        }
+
+        /* Spring layout: cards on left, text on right */
+        .spring-layout,
+        .autumn-layout {
+            display: flex;
+            gap: 60px;
+            align-items: center;
+            margin-top: 40px;
+        }
+
+        .spring-cards-grid,
+        .autumn-cards-grid {
+            flex: 1;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        .spring-text-content,
+        .autumn-text-content {
+            flex: 0 0 350px;
+            padding: 30px;
+        }
+
+        /* Summer and Winter layout: text on left, cards on right */
+        .summer-layout,
+        .winter-layout {
+            display: flex;
+            gap: 60px;
+            align-items: center;
+            margin-top: 40px;
+        }
+
+        .summer-cards-grid,
+        .winter-cards-grid {
+            flex: 1;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        .summer-text-content,
+        .winter-text-content {
+            flex: 0 0 350px;
+            padding: 30px;
+        }
+
+        @media (max-width: 1200px) {
+
+            .spring-layout,
+            .summer-layout,
+            .autumn-layout,
+            .winter-layout {
+                flex-direction: column;
+            }
+
+            .spring-text-content,
+            .summer-text-content,
+            .autumn-text-content,
+            .winter-text-content {
+                flex: 1;
+                width: 100%;
+                text-align: center;
+            }
+        }
+
+        @media (max-width: 768px) {
+
+            .spring-cards-grid,
+            .summer-cards-grid,
+            .autumn-cards-grid,
+            .winter-cards-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Breadcrumb Navigation Styles */
+        .breadcrumb-section {
+            background: #f8f9fa;
+            padding: 15px 0;
+            border-bottom: 1px solid #e1e1e1;
+        }
+
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            font-family: 'Noto Sans JP', 'Microsoft YaHei', Arial, sans-serif;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .breadcrumb a {
+            color: #666;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .breadcrumb a:hover {
+            color: #D2691E;
+        }
+
+        .breadcrumb .separator {
+            margin: 0 8px;
+            color: #999;
+        }
+
+        .breadcrumb .current {
+            color: #D2691E;
+            font-weight: 500;
+        }
+    </style>
+    <link rel="stylesheet" href="css/ai-chat-styles.css?v=20251201v6">
+
+    <!-- 导航栏加载器 -->
+    <script src="js/api-config.js"></script>
+</head>
+
+<body>
+    <!-- Header Navigation -->
+    <!-- Header Navigation Placeholder -->
+    <div id="navbar-placeholder"></div>
+    </div>
+    </div>
+    </div>
+    </div>
+
+    <!-- Universal Hero Banner -->
+    <div class="universal-hero-banner height-small">
+        <div class="hero-background">
+            <img src="img/area/area1.jpg" alt="周辺観光" class="hero-bg-image">
+            <div class="hero-overlay"></div>
+        </div>
+        <div class="hero-content">
+            <h1 class="hero-title single-line">箱根周辺の魅力</h1>
+            <p class="hero-subtitle">Hakone Area Attractions</p>
+        </div>
+    </div>
+
+    <!-- Breadcrumb Navigation -->
+    <div class="breadcrumb-section">
+        <div class="container">
+            <nav class="breadcrumb">
+                <a href="index.html" class="logo-container"><i class="fas fa-home"></i> ホーム</a>
+                <span class="separator">/</span>
+                <span class="current">周辺観光</span>
+            </nav>
+        </div>
+    </div>
+
+    <!-- Page Content -->
+    <div class="page-content">
+
+        <!-- Section Title -->
+        <div class="unified-section-title section-title-area">
+            <div class="unified-section-container">
+                <div class="unified-section-header">
+                    <h2 class="unified-section-title-text">箱根山周辺の見どころ</h2>
+                    <p class="unified-section-subtitle">HAKONE AREA HIGHLIGHTS</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Museums Section -->
+        <div class="container signature-dish-container museums-container">
+            <div class="museums-layout">
+                <!-- Section Text Content -->
+                <div class="section-text-content">
+                    <h2 class="dish-title">美術館・博物館</h2>
+                    <div class="dish-subtitle">Museums & Art Galleries</div>
+                    <div class="seasonal-description">
+                        <p>箱根は芸術と文化の宝庫。世界的なアートコレクションを誇る美術館が点在しています。</p>
+                        <p>自然と芸術が調和する箱根で、心豊かなひとときをお過ごしください。</p>
+                    </div>
+                </div>
+
+                <!-- Museum Cards -->
+                <div class="dish-highlights museums-cards-grid">
+                    <div class="dish-highlight-item" data-url="https://www.hakone-oam.or.jp/">
+                        <div class="highlight-image">
+                            <img src="img/area/area1.jpg" alt="箱根彫刻の森美術館" class="highlight-img">
+                            <div class="hover-overlay">
+                                <h3 class="hover-title">箱根彫刻の森美術館</h3>
+                                <p class="hover-description">国内初の野外美術館。約7万㎡の敷地に、近現代を代表する彫刻家の作品約120点を常設展示しています。</p>
+                                <div class="hover-info-item">
+                                    <span class="hover-label">営業時間：</span>
+                                    <span>9:00～17:00</span>
+                                </div>
+                                <div class="hover-info-item">
+                                    <span class="hover-label">アクセス：</span>
+                                    <span>ホテルから車で約15分</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="highlight-content">
+                            <h3 class="highlight-title">箱根彫刻の森美術館</h3>
+                        </div>
+                    </div>
+                    <div class="dish-highlight-item" data-url="https://www.polamuseum.or.jp/">
+                        <div class="highlight-image">
+                            <img src="img/area/area2.jpg" alt="ポーラ美術館" class="highlight-img">
+                            <div class="hover-overlay"> 
+                                <h3 class="hover-title">ポーラ美術館</h3>
+                                <p class="hover-description">印象派や西洋近代絵画を中心に、国内外の名品約1万点を収蔵。森の中に佇む美しい建築も魅力です。</p>
+                                <div class="hover-info-item">
+                                    <span class="hover-label">営業時間：</span>
+                                    <span>9:00～17:00</span>
+                                </div>
+                                <div class="hover-info-item">
+                                    <span class="hover-label">アクセス：</span>
+                                    <span>ホテルから車で約8分</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="highlight-content">
+                            <h3 class="highlight-title">ポーラ美術館</h3>
+                        </div>
+                    </div>
+                    <div class="dish-highlight-item" data-url="https://www.lalique-museum.com/">
+                        <div class="highlight-image">
+                            <img src="img/area/area3.jpg" alt="箱根ラリック美術館" class="highlight-img">
+                            <div class="hover-overlay">
+                                <h3 class="hover-title">箱根ラリック美術館</h3>
+                                <p class="hover-description">アール・ヌーヴォー、アール・デコの時代を駆け抜けた宝飾とガラス工芸作家、ルネ・ラリックの作品を展示。</p>
+                                <div class="hover-info-item">
+                                    <span class="hover-label">営業時間：</span>
+                                    <span>9:00～16:00</span>
+                                </div>
+                                <div class="hover-info-item">
+                                    <span class="hover-label">アクセス：</span>
+                                    <span>ホテルから車で約6分</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="highlight-content">
+                            <h3 class="highlight-title">箱根ラリック美術館</h3>
+                        </div>
+                    </div>
+                    <div class="dish-highlight-item" data-url="https://www.ciao3.com/">
+                        <div class="highlight-image">
+                            <img src="img/area/area4.jpg" alt="箱根ガラスの森美術館" class="highlight-img">
+                            <div class="hover-overlay">
+                                <h3 class="hover-title">箱根ガラスの森美術館</h3>
+                                <p class="hover-description">ヴェネチアン・グラスを中心に、貴重なガラス工芸品を展示。美しい庭園と共にお楽しみいただけます。</p>
+                                <div class="hover-info-item">
+                                    <span class="hover-label">営業時間：</span>
+                                    <span>10:00～17:30</span>
+                                </div>
+                                <div class="hover-info-item">
+                                    <span class="hover-label">アクセス：</span>
+                                    <span>ホテルから車で約7分</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="highlight-content">
+                            <h3 class="highlight-title">箱根ガラスの森美術館</h3>
+                        </div>
+                    </div>
+                    <div class="dish-highlight-item" data-url="http://www.narukawamuseum.co.jp/">
+                        <div class="highlight-image">
+                            <img src="img/hakone/img119.jpg" alt="成川美術館" class="highlight-img">
+                            <div class="hover-overlay">
+                                <h3 class="hover-title">成川美術館</h3>
+                                <p class="hover-description">現代日本画を中心に、4,000点以上の作品を収蔵。山本丘人や平山郁夫など、現代美術界を牽引する日本画家の作品を展示。幅約50mのガラス張りの展望ロビーから色鮮やかな芦ノ湖を一望できます。</p>
+                                <div class="hover-info-item">
+                                    <span class="hover-label">営業時間：</span>
+                                    <span>9:00～17:00</span>
+                                </div>
+                                <div class="hover-info-item">
+                                    <span class="hover-label">アクセス：</span>
+                                    <span>ホテルから車で約20分</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="highlight-content">
+                            <h3 class="highlight-title">成川美術館</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Nature Section -->
+        <div class="container signature-dish-container nature-container">
+            <div class="nature-layout">
+                <!-- Nature Text Content -->
+                <div class="section-text-content">
+                    <h2 class="dish-title">自然・景観</h2>
+                    <div class="dish-subtitle">Nature & Scenery</div>
+                    <div class="seasonal-description">
+                        <p>雄大な自然に抱かれた箱根。芦ノ湖の美しい景観、大涌谷の迫力ある火山活動。</p>
+                        <p>神秘的な箱根神社で、心を清め自然の力を感じてください。</p>
+                    </div>
+                </div>
+
+                <!-- Nature Cards -->
+                <div class="dish-highlights nature-cards-grid">
+                    <div class="dish-highlight-item" data-url="https://www.hakone-kankosen.co.jp/">
+                        <div class="highlight-image">
+                            <img src="img/area/area5.jpg" alt="芦ノ湖" class="highlight-img">
+                            <div class="hover-overlay">
+                                <h3 class="hover-title">芦ノ湖</h3>
+                                <p class="hover-description">箱根を代表する美しい湖。遊覧船に乗って富士山を眺める絶景クルーズが人気です。四季折々の自然美をお楽しみいただけます。
+                                </p>
+                                <div class="hover-info-item">
+                                    <span class="hover-label">営業時間：</span>
+                                    <span>遊覧船 9:00～17:00</span>
+                                </div>
+                                <div class="hover-info-item">
+                                    <span class="hover-label">アクセス：</span>
+                                    <span>ホテルから車で約5分</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="highlight-content">
+                            <h3 class="highlight-title">芦ノ湖</h3>
+                        </div>
+                    </div>
+                    <div class="dish-highlight-item" data-url="https://www.hakone.or.jp/">
+                        <div class="highlight-image">
+                            <img src="img/area/area6.jpg" alt="大涌谷" class="highlight-img">
+                            <div class="hover-overlay">
+                                <h3 class="hover-title">大涌谷</h3>
+                                <p class="hover-description">箱根の火山活動を間近で体感できる観光スポット。名物の黒たまごは、1個食べると7年寿命が延びると言われています。</p>
+                                <div class="hover-info-item">
+                                    <span class="hover-label">営業時間：</span>
+                                    <span>9:00～17:00</span>
+                                </div>
+                                <div class="hover-info-item">
+                                    <span class="hover-label">アクセス：</span>
+                                    <span>ホテルから車で約10分</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="highlight-content">
+                            <h3 class="highlight-title">大涌谷</h3>
+                        </div>
+                    </div>
+                    <div class="dish-highlight-item" data-url="https://hakonejinja.or.jp/">
+                        <div class="highlight-image">
+                            <img src="img/area/area7.jpg" alt="箱根神社" class="highlight-img">
+                            <div class="hover-overlay">
+                                <h3 class="hover-title">箱根神社</h3>
+                                <p class="hover-description">芦ノ湖畔に鎮座する関東屈指のパワースポット。湖に浮かぶ平和の鳥居が幻想的な景観を作り出しています。</p>
+                                <div class="hover-info-item">
+                                    <span class="hover-label">参拝時間：</span>
+                                    <span>終日開放</span>
+                                </div>
+                                <div class="hover-info-item">
+                                    <span class="hover-label">アクセス：</span>
+                                    <span>ホテルから車で約19分</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="highlight-content">
+                            <h3 class="highlight-title">箱根神社</h3>
+                        </div>
+                    </div>
+                    <div class="dish-highlight-item" data-url="https://www.hakone.or.jp/">
+                        <div class="highlight-image">
+                            <img src="img/hakone/img111.jpg" alt="箱根湯本温泉街" class="highlight-img">
+                            <div class="hover-overlay">
+                                <h3 class="hover-title">箱根湯本温泉街</h3>
+                                <p class="hover-description">観光客が箱根に足を踏み入れる最初の駅で、最も賑やかで歴史的な温泉地域の一つ。寄木細工や箱根特産品を販売する30店舗以上の店が立ち並び、山芋そばや温泉まんじゅうなど、様々な箱根特産のスイーツを味わえます。</p>
+                                <div class="hover-info-item">
+                                    <span class="hover-label">営業時間：</span>
+                                    <span>店舗により異なる</span>
+                                </div>
+                                <div class="hover-info-item">
+                                    <span class="hover-label">アクセス：</span>
+                                    <span>ホテルから車で約30分</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="highlight-content">
+                            <h3 class="highlight-title">箱根湯本温泉街</h3>
+                        </div>
+                    </div>
+                    <div class="dish-highlight-item" data-url="https://www.hakone.or.jp/">
+                        <div class="highlight-image">
+                            <img src="img/hakone/img107.jpg" alt="旧街道石畳" class="highlight-img">
+                            <div class="hover-overlay">
+                                <h3 class="hover-title">旧街道石畳</h3>
+                                <p class="hover-description">江戸時代に国家の官道として整備された道路。東京と京都を結ぶ東海道の一部で、泥沼地を歩きやすくするために石を敷いたもの。畑宿から芦ノ湖まで歩くと、400本以上の大木を通過し、当時の旅人の苦労を体験できます。</p>
+                                <div class="hover-info-item">
+                                    <span class="hover-label">見学時間：</span>
+                                    <span>終日開放</span>
+                                </div>
+                                <div class="hover-info-item">
+                                    <span class="hover-label">アクセス：</span>
+                                    <span>ホテルから車で約20分</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="highlight-content">
+                            <h3 class="highlight-title">旧街道石畳</h3>
+                        </div>
+                    </div>
+                    <div class="dish-highlight-item" data-url="https://www.kanagawa-kankou.or.jp/spot/6005">
+                        <div class="highlight-image">
+                            <img src="img/hakone/img103.jpg" alt="仙石原芒草原" class="highlight-img">
+                            <div class="hover-overlay">
+                                <h3 class="hover-title">仙石原芒草原</h3>
+                                <p class="hover-description">黄金色の芒草が波のように輝く絶景スポット。人の身長と同じくらいの高さの芒草が迫力満点。散策途中の丘からは金時山の山々と湿地帯、芒草原の調和した景色を一望できます。最適な季節は9月下旬から11月上旬。3月中旬から下旬には「焼山」活動が行われ、草原が炎に包まれる壮観な光景が見られます。</p>
+                                <div class="hover-info-item">
+                                    <span class="hover-label">見学時間：</span>
+                                    <span>終日開放</span>
+                                </div>
+                                <div class="hover-info-item">
+                                    <span class="hover-label">アクセス：</span>
+                                    <span>ホテルから車で約3分</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="highlight-content">
+                            <h3 class="highlight-title">仙石原芒草原</h3>
+                        </div>
+                    </div>
+                    <div class="dish-highlight-item" data-url="https://www.hakonenavi.jp/gorapark/">
+                        <div class="highlight-image">
+                            <img src="img/hakone/img137.jpg" alt="箱根強羅公園" class="highlight-img">
+                            <div class="hover-overlay">
+                                <h3 class="hover-title">箱根強羅公園</h3>
+                                <p class="hover-description">1914年に開園した日本最古のフランス式整形庭園。3〜4月は桜とツツジ、6〜7月は紫陽花、バラ園では5〜6月と10〜11月に約140品種、1,000本のバラが咲き誇り、ほぼ一年中美しい花を楽しめます。ガラスアートや陶芸などの体験コースもあり、子供連れに最適です。</p>
+                                <div class="hover-info-item">
+                                    <span class="hover-label">営業時間：</span>
+                                    <span>9:00～17:00</span>
+                                </div>
+                                <div class="hover-info-item">
+                                    <span class="hover-label">アクセス：</span>
+                                    <span>ホテルから車で約12分</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="highlight-content">
+                            <h3 class="highlight-title">箱根強羅公園</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Hotel Surroundings Section -->
+        <div class="container signature-dish-container hotel-surroundings-container">
+            <div class="hotel-surroundings-layout">
+                <!-- Section Text Content -->
+                <div class="section-text-content">
+                    <h2 class="dish-title">ホテル周辺の風景</h2>
+                    <div class="dish-subtitle">Hotel Surroundings</div>
+                    <div class="seasonal-description">
+                        <p>ホテル周辺には美しい自然と歴史的な景観が広がっています。</p>
+                        <p>散策しながら、箱根の魅力を身近に感じてください。</p>
+                    </div>
+                </div>
+
+                <!-- Hotel Surroundings Cards -->
+                <div class="dish-highlights hotel-surroundings-cards-grid">
+                    <div class="dish-highlight-item">
+                        <div class="highlight-image">
+                            <img src="img/hakone/img157.jpg" alt="ホテル周辺風景1" class="highlight-img">
+                        </div>
+                        <div class="highlight-content">
+                            <h3 class="highlight-title">周辺風景</h3>
+                        </div>
+                    </div>
+                    <div class="dish-highlight-item">
+                        <div class="highlight-image">
+                            <img src="img/hakone/img156.jpg" alt="ホテル周辺風景2" class="highlight-img">
+                        </div>
+                        <div class="highlight-content">
+                            <h3 class="highlight-title">周辺風景</h3>
+                        </div>
+                    </div>
+                    <div class="dish-highlight-item">
+                        <div class="highlight-image">
+                            <img src="img/hakone/img152.jpg" alt="ホテル周辺風景3" class="highlight-img">
+                        </div>
+                        <div class="highlight-content">
+                            <h3 class="highlight-title">周辺風景</h3>
+                        </div>
+                    </div>
+                    <div class="dish-highlight-item">
+                        <div class="highlight-image">
+                            <img src="img/hakone/img153.jpg" alt="ホテル周辺風景4" class="highlight-img">
+                        </div>
+                        <div class="highlight-content">
+                            <h3 class="highlight-title">周辺風景</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Transportation Section -->
+        <div class="container signature-dish-container transportation-container">
+            <div class="transportation-layout">
+                <!-- Section Text Content -->
+                <div class="section-text-content">
+                    <h2 class="dish-title">体験豊富な観光交通機関</h2>
+                    <div class="dish-subtitle">Scenic Transportation</div>
+                    <div class="seasonal-description">
+                        <p>箱根の観光交通機関は、移動手段としてだけでなく、</p>
+                        <p>美しい景色を楽しめる体験型の観光ツールです。</p>
+                    </div>
+                </div>
+
+                <!-- Transportation Cards -->
+                <div class="dish-highlights transportation-cards-grid">
+                    <div class="dish-highlight-item">
+                        <div class="highlight-image">
+                            <img src="img/hakone/img149.jpg" alt="観光交通機関1" class="highlight-img">
+                        </div>
+                        <div class="highlight-content">
+                            <h3 class="highlight-title">観光交通機関</h3>
+                        </div>
+                    </div>
+                    <div class="dish-highlight-item">
+                        <div class="highlight-image">
+                            <img src="img/hakone/img148.jpg" alt="観光交通機関2" class="highlight-img">
+                        </div>
+                        <div class="highlight-content">
+                            <h3 class="highlight-title">観光交通機関</h3>
+                        </div>
+                    </div>
+                    <div class="dish-highlight-item">
+                        <div class="highlight-image">
+                            <img src="img/hakone/img147.jpg" alt="観光交通機関3" class="highlight-img">
+                        </div>
+                        <div class="highlight-content">
+                            <h3 class="highlight-title">観光交通機関</h3>
+                        </div>
+                    </div>
+                    <div class="dish-highlight-item">
+                        <div class="highlight-image">
+                            <img src="img/hakone/img146.jpg" alt="観光交通機関4" class="highlight-img">
+                        </div>
+                        <div class="highlight-content">
+                            <h3 class="highlight-title">観光交通機関</h3>
+                        </div>
+                    </div>
+                    <div class="dish-highlight-item">
+                        <div class="highlight-image">
+                            <img src="img/hakone/img145.jpg" alt="観光交通機関5" class="highlight-img">
+                        </div>
+                        <div class="highlight-content">
+                            <h3 class="highlight-title">観光交通機関</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- AI聊天机器人容器 -->
+        <div id="ai-chat-container"></div>
+
+        <div style="display:none;">
+        </div>
+
+        <style>
+            /* Hide floating booking button on area page */
+            .floating-booking-btn {
+                display: none !important;
+            }
+        </style>
+
+        <script src="js/main.js"></script>
+        <script src="js/area.js"></script>
+        <script src="js/ai-chat-service.js"></script>
+        <script>
+            // 初始化AI聊天机器人
+            document.addEventListener('DOMContentLoaded', function () {
+                window.aiFrontdesk = initAIFrontdesk({
+                    container: '#ai-chat-container',
+                    // 使用默认的 /hotel/api-proxy.php
+                });
+                console.log('✅ AI聊天机器人已初始化');
+            });
+        </script>
+
+        <!-- Card Hover Effect Styles -->
+        <style>
+            /* Card hover effect */
+            .dish-highlight-item {
+                position: relative;
+                transition: transform 0.3s ease, box-shadow 0.3s ease;
+                cursor: pointer;
+            }
+
+            .dish-highlight-item[data-url] {
+                cursor: pointer;
+            }
+
+            .dish-highlight-item[data-url]:hover {
+                transform: translateY(-8px) scale(1.02);
+            }
+
+            .dish-highlight-item:hover {
+                transform: translateY(-8px);
+                box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
+            }
+
+            /* Image container for overlay */
+            .highlight-image {
+                position: relative;
+                overflow: hidden;
+            }
+
+            /* Hover overlay */
+            .hover-overlay {
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: rgba(0, 0, 0, 0.85);
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                padding: 20px;
+                color: white;
+                opacity: 0;
+                transition: opacity 0.3s ease;
+            }
+
+            .dish-highlight-item:hover .hover-overlay {
+                opacity: 1;
+            }
+
+            .hover-title {
+                font-size: 18px;
+                font-weight: 600;
+                margin-bottom: 12px;
+                font-family: 'Noto Sans JP', 'Microsoft YaHei', Arial, sans-serif;
+                color: white;
+            }
+
+            .hover-description {
+                font-size: 14px;
+                line-height: 1.6;
+                margin-bottom: 15px;
+                font-family: 'Noto Sans JP', 'Microsoft YaHei', Arial, sans-serif;
+                color: #f0f0f0;
+            }
+
+            .hover-info-item {
+                font-size: 13px;
+                margin-bottom: 6px;
+                font-family: 'Noto Sans JP', 'Microsoft YaHei', Arial, sans-serif;
+                color: #e0e0e0;
+            }
+
+            .hover-label {
+                font-weight: 600;
+                color: #ffd700;
+            }
+
+            /* Image zoom effect on hover */
+            .highlight-img {
+                transition: transform 0.3s ease;
+            }
+
+            .dish-highlight-item:hover .highlight-img {
+                transform: scale(1.05);
+            }
+        </style>
+
+        <!-- Card Click Handler Script -->
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                // Add click handlers to all cards with data-url
+                const cards = document.querySelectorAll('.dish-highlight-item[data-url]');
+
+                cards.forEach(card => {
+                    card.addEventListener('click', function (e) {
+                        const url = this.getAttribute('data-url');
+                        if (url) {
+                            window.open(url, '_blank');
+                        }
+                    });
+                });
+            });
+
+        </script>
+
+    </div>
+
+    <!-- Footer Placeholder -->
+    <div id="footer-placeholder"></div>
+
+    <script src="js/load-navbar.js"></script>
+    <script src="js/load-footer.js"></script>
+</body>
+
+</html>           
+    </script>
+
+    <!-- Card Hover Effect Styles -->
+    <style>
+        /* Card hover effect */
+        .dish-highlight-item {
+            position: relative;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+        }
+
+        .dish-highlight-item[data-url] {
+            cursor: pointer;
+        }
+
+        .dish-highlight-item[data-url]:hover {
+            transform: translateY(-8px) scale(1.02);
+        }
+
+        .dish-highlight-item:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Image container for overlay */
+        .highlight-image {
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Hover overlay */
+        .hover-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.85);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 20px;
+            color: white;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .dish-highlight-item:hover .hover-overlay {
+            opacity: 1;
+        }
+
+        .hover-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            font-family: 'Noto Sans JP', 'Microsoft YaHei', Arial, sans-serif;
+            color: white;
+        }
+
+        .hover-description {
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 15px;
+            font-family: 'Noto Sans JP', 'Microsoft YaHei', Arial, sans-serif;
+            color: #f0f0f0;
+        }
+
+        .hover-info-item {
+            font-size: 13px;
+            margin-bottom: 6px;
+            font-family: 'Noto Sans JP', 'Microsoft YaHei', Arial, sans-serif;
+            color: #e0e0e0;
+        }
+
+        .hover-label {
+            font-weight: 600;
+            color: #ffd700;
+        }
+
+        /* Image zoom effect on hover */
+        .highlight-img {
+            transition: transform 0.3s ease;
+        }
+
+        .dish-highlight-item:hover .highlight-img {
+            transform: scale(1.05);
+        }
+
+        /* Map Section Styles */
+        .map-section {
+            width: 100%;
+            padding: 0;
+            margin: 0;
+            background: #f8f9fa;
+        }
+
+        /* Map Introduction */
+        .map-introduction {
+            text-align: center;
+            padding: 50px 20px 30px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .map-introduction h2 {
+            font-size: 32px;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 16px;
+            font-family: 'Noto Sans JP', sans-serif;
+        }
+
+        .map-introduction p {
+            font-size: 16px;
+            line-height: 1.8;
+            color: #555;
+            margin: 0;
+            font-family: 'Noto Sans JP', sans-serif;
+        }
+
+        /* Season Filter Buttons - Simple Style */
+        .season-filter-container {
+            display: flex;
+            justify-content: center;
+            gap: 0;
+            padding: 20px;
+            background: #ffffff;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .season-filter-btn {
+            padding: 12px 28px;
+            background: transparent;
+            border: none;
+            border-bottom: 2px solid transparent;
+            cursor: pointer;
+            font-family: 'Noto Sans JP', sans-serif;
+            font-size: 15px;
+            color: #666;
+            transition: all 0.2s ease;
+        }
+
+        .season-filter-btn:hover {
+            color: #333;
+        }
+
+        .season-filter-btn.active {
+            color: #2c3e50;
+            border-bottom-color: #2c3e50;
+            font-weight: 600;
+        }
+
+        .map-container-full {
+            width: 100%;
+            height: 600px;
+            position: relative;
+        }
+
+        #attractions-map {
+            width: 100%;
+            height: 100%;
+        }
+
+        @media (max-width: 768px) {
+            .season-filter-container {
+                gap: 10px;
+                padding: 15px;
+            }
+
+            .season-filter-btn {
+                padding: 10px 15px;
+            }
+
+            .filter-icon {
+                font-size: 20px;
+            }
+
+            .filter-text {
+                font-size: 12px;
+            }
+
+            .map-container-full {
+                height: 400px;
+            }
+        }
+
+        /* Google Maps Label Styles */
+        .google-map-label {
+            background: rgba(255, 255, 255, 0.95) !important;
+            border: 2px solid #667eea !important;
+            border-radius: 6px !important;
+            padding: 4px 10px !important;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15) !important;
+            white-space: nowrap !important;
+        }
+
+        /* Customize Google Maps info window */
+        .gm-style .gm-style-iw-c {
+            border-radius: 12px !important;
+            padding: 0 !important;
+        }
+
+        .gm-style .gm-style-iw-d {
+            overflow: hidden !important;
+        }
+
+        .gm-style .gm-style-iw-t::after {
+            background: linear-gradient(45deg, rgba(255, 255, 255, 1) 50%, rgba(255, 255, 255, 0) 51%, rgba(255, 255, 255, 0) 100%) !important;
+        }
+
+    </style>
+
+    <!-- Card Click Handler Script -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add click handlers to all cards with data-url
+            const cards = document.querySelectorAll('.dish-highlight-item[data-url]');
+
+            cards.forEach(card => {
+                card.addEventListener('click', function(e) {
+                    const url = this.getAttribute('data-url');
+                    if (url) {
+                        window.open(url, '_blank');
+                    }
+                });
+            });
+        });
+
+    </script>
+    <script src="js/session-service.js"></script>
+    <script src="js/load-navbar.js?v=20251201v21"></script>
+    <script src="js/load-footer.js"></script>
+</body>
+</html>

@@ -1,0 +1,1580 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#ffffff" id="themeColor">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>宿泊プラン一覧｜【公式】Trip7箱根温泉ホテル</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/modern-navbar.css?v=20251201v49">
+    <link rel="stylesheet" href="css/footer.css">
+    <link rel="stylesheet" href="css/reservation.css?v=20251128v8">
+
+    <!-- Config file must be loaded first -->
+    <script src="js/config.js"></script>
+    <link rel="icon" href="img/logo.ico" type="image/x-icon">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;600;700&family=Pixelify+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="js/api-config.js"></script>
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div id="loadingScreen" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #fff; display: flex; align-items: center; justify-content: center; z-index: 9999; transition: opacity 0.3s ease, visibility 0.3s ease;">
+        <div style="text-align: center;">
+            <div class="spinner" style="width: 50px; height: 50px; border: 4px solid #f3f3f3; border-top: 4px solid #8a7a5e; border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 20px;"></div>
+            <p style="color: #666; font-size: 16px;">データを読み込んでいます...</p>
+        </div>
+    </div>
+
+    <!-- Main Content (hidden until loaded) -->
+    <div id="mainContent" style="display: none;">
+    <!-- Navbar loaded by template -->
+    <div id="navbar-placeholder"></div>
+
+    <!-- Universal Hero Banner -->
+    <div class="universal-hero-banner height-small">
+        <div class="hero-background">
+            <img src="img/hero-background.jpg" alt="宿泊プラン一覧横幅" class="hero-bg-image">
+            <div class="hero-overlay"></div>
+        </div>
+        <div class="hero-content">
+            <h1 class="hero-title single-line" data-i18n="hero.title">心に響く、特別な時間。</h1>
+            <p class="hero-subtitle" data-i18n="hero.subtitle">宿泊をもっと特別に。</p>
+        </div>
+    </div>
+
+    <!-- Breadcrumb Navigation -->
+    <div class="breadcrumb-section">
+        <div class="container">
+            <nav class="breadcrumb">
+                <a href="index.html"><i class="fas fa-home"></i> <span data-i18n="breadcrumb.home">ホーム</span></a>
+                <span class="separator">/</span>
+                <span class="current" data-i18n="breadcrumb.reservation">宿泊プラン一覧</span>
+            </nav>
+        </div>
+    </div>
+
+    <!-- Page Content -->
+    <div class="page-content">
+        <!-- Search Section -->
+        <div class="search-plans-section">
+            <div class="container">
+                <div class="search-plans-container">
+                    <h2 class="search-title">
+                        <i class="fas fa-search"></i>
+                        <span data-i18n="search.title">プラン検索</span>
+                    </h2>
+
+                    <form class="search-plans-form" id="plansSearchForm">
+                        <div class="search-row">
+                            <div class="search-group date-range-group">
+                                <label data-i18n="search.dates">チェックイン / チェックアウト</label>
+                                <div class="custom-date-picker" id="customDatePicker">
+                                    <div class="date-input-wrapper">
+                                        <div class="date-input-box" id="checkinBox">
+                                            <div class="date-input-label">チェックイン</div>
+                                            <div class="date-input-value" id="checkinDisplay">日付を選択</div>
+                                        </div>
+                                        <div class="date-separator">
+                                            <i class="fas fa-arrow-right"></i>
+                                        </div>
+                                        <div class="date-input-box" id="checkoutBox">
+                                            <div class="date-input-label">チェックアウト</div>
+                                            <div class="date-input-value" id="checkoutDisplay">日付を選択</div>
+                                        </div>
+                                        <div class="nights-badge" id="nightsBadge" style="display: none;">
+                                            <span id="nightsCount">0</span>泊
+                                        </div>
+                                    </div>
+
+                                    <!-- Custom Calendar Popup - Dual Month -->
+                                    <div class="calendar-popup" id="calendarPopup" style="display: none;">
+                                        <!-- Mobile Panel Header -->
+                                        <div class="calendar-panel-header">
+                                            <h3 class="calendar-panel-title">日付を選択</h3>
+                                            <button type="button" class="calendar-close-btn" id="calendarCloseBtn">
+                                                <i class="fas fa-times"></i>
+                                            </button>
+                                        </div>
+                                        <div class="calendar-dual-container">
+                                            <!-- Left Month -->
+                                            <div class="calendar-month-panel">
+                                                <div class="calendar-header">
+                                                    <button type="button" class="calendar-nav-btn" id="prevMonth">
+                                                        <i class="fas fa-chevron-left"></i>
+                                                    </button>
+                                                    <div class="calendar-title" id="calendarTitle">2025年1月</div>
+                                                    <div class="calendar-nav-placeholder"></div>
+                                                </div>
+                                                <div class="calendar-weekdays">
+                                                    <div class="calendar-weekday">日</div>
+                                                    <div class="calendar-weekday">月</div>
+                                                    <div class="calendar-weekday">火</div>
+                                                    <div class="calendar-weekday">水</div>
+                                                    <div class="calendar-weekday">木</div>
+                                                    <div class="calendar-weekday">金</div>
+                                                    <div class="calendar-weekday">土</div>
+                                                </div>
+                                                <div class="calendar-days" id="calendarDays"></div>
+                                            </div>
+                                            <!-- Right Month -->
+                                            <div class="calendar-month-panel">
+                                                <div class="calendar-header">
+                                                    <div class="calendar-nav-placeholder"></div>
+                                                    <div class="calendar-title" id="calendarTitle2">2025年2月</div>
+                                                    <button type="button" class="calendar-nav-btn" id="nextMonth">
+                                                        <i class="fas fa-chevron-right"></i>
+                                                    </button>
+                                                </div>
+                                                <div class="calendar-weekdays">
+                                                    <div class="calendar-weekday">日</div>
+                                                    <div class="calendar-weekday">月</div>
+                                                    <div class="calendar-weekday">火</div>
+                                                    <div class="calendar-weekday">水</div>
+                                                    <div class="calendar-weekday">木</div>
+                                                    <div class="calendar-weekday">金</div>
+                                                    <div class="calendar-weekday">土</div>
+                                                </div>
+                                                <div class="calendar-days" id="calendarDays2"></div>
+                                            </div>
+                                        </div>
+                                        <!-- Mobile Confirm Button -->
+                                        <div class="calendar-confirm-section">
+                                            <div class="calendar-selected-dates" id="calendarSelectedDates">
+                                                <div class="selected-date-item">
+                                                    <span class="selected-label">チェックイン</span>
+                                                    <span class="selected-value" id="mobileSelectedCheckin">日付を選択</span>
+                                                </div>
+                                                <div class="selected-date-arrow">
+                                                    <i class="fas fa-arrow-right"></i>
+                                                </div>
+                                                <div class="selected-date-item">
+                                                    <span class="selected-label">チェックアウト</span>
+                                                    <span class="selected-value" id="mobileSelectedCheckout">日付を選択</span>
+                                                </div>
+                                                <div class="selected-nights" id="mobileSelectedNights" style="display: none;">
+                                                    <span id="mobileSelectedNightsCount">0</span>泊
+                                                </div>
+                                            </div>
+                                            <button type="button" class="calendar-confirm-btn" id="calendarConfirmBtn">
+                                                <i class="fas fa-check"></i>
+                                                <span>日付を確定</span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <input type="hidden" id="checkin" name="checkin">
+                                <input type="hidden" id="checkout" name="checkout">
+                            </div>
+                            <div class="search-group">
+                                <label data-i18n="search.rooms">部屋数</label>
+                                <select id="rooms" name="rooms">
+                                    <option value="1" selected>1室</option>
+                                    <option value="2">2室</option>
+                                    <option value="3">3室</option>
+                                    <option value="4">4室</option>
+                                </select>
+                            </div>
+                            <div class="search-group">
+                                <label data-i18n="search.adults">大人</label>
+                                <select id="adults" name="adults">
+                                    <option value="1">1名</option>
+                                    <option value="2" selected>2名</option>
+                                    <option value="3">3名</option>
+                                    <option value="4">4名</option>
+                                    <option value="5">5名</option>
+                                    <option value="6">6名</option>
+                                </select>
+                            </div>
+                            <div class="search-group">
+                                <label data-i18n="search.children">子供（12歳以下）</label>
+                                <select id="children" name="children">
+                                    <option value="0" selected>0名</option>
+                                    <option value="1">1名</option>
+                                    <option value="2">2名</option>
+                                    <option value="3">3名</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="search-row search-button-row">
+                            <button type="submit" class="search-plans-btn">
+                                <i class="fas fa-search"></i>
+                                <span data-i18n="search.button">検索する</span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Results Section -->
+        <div class="plans-results-section">
+            <div class="container">
+                <div class="results-header">
+                    <h3 class="results-title" data-i18n="results.count">検索結果</h3>
+                    <div class="results-count">
+                        <span id="resultsCount">0</span><span data-i18n="results.showing">件のプランが見つかりました</span>
+                    </div>
+                </div>
+
+                <div class="plans-list" id="plansList">
+                    <!-- 初期状態: 検索を促すメッセージ -->
+                    <div style="text-align: center; padding: 80px 20px; width: 100%;">
+                        <i class="fas fa-search" style="font-size: 4rem; color: #D2691E; margin-bottom: 20px;"></i>
+                        <h3 style="color: #666; margin-bottom: 15px; font-size: 1.5rem;">宿泊プランを検索してください</h3>
+                        <p style="color: #999; font-size: 1rem;">チェックイン・チェックアウト日、人数を入力して検索ボタンを押してください</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Member Login Modal - 已禁用：现在要求必须登录才能预约 -->
+    <!--
+    <div id="memberModal" class="member-modal">
+        <div class="member-modal-overlay"></div>
+        <div class="member-modal-content">
+            <button class="modal-close-btn">&times;</button>
+            <div class="modal-header">
+                <h2 data-i18n="member.title">ご予約方法をお選びください</h2>
+                <p>会員登録いただくと、次回からのご予約がスムーズになります</p>
+            </div>
+            <div class="modal-body">
+                <div class="booking-options">
+                    <div class="booking-option member-login">
+                        <div class="option-icon">
+                            <i class="fas fa-user-circle"></i>
+                        </div>
+                        <h3>会員として予約</h3>
+                        <ul class="benefits-list">
+                            <li><i class="fas fa-check"></i> ポイントが貯まる</li>
+                            <li><i class="fas fa-check"></i> 予約履歴の確認</li>
+                            <li><i class="fas fa-check"></i> 会員限定プラン</li>
+                            <li><i class="fas fa-check"></i> 次回予約が簡単</li>
+                        </ul>
+
+                        <div class="login-form-section">
+                            <div class="login-actions">
+                                <button class="option-btn login-btn" id="memberLoginBtn" data-i18n="member.login">ログイン</button>
+                                <button class="option-btn register-btn" id="memberRegisterBtn" data-i18n="member.register">新規登録</button>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="booking-option guest-booking">
+                        <div class="option-icon">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <h3 data-i18n="member.guest">ゲストとして予約</h3>
+                        <p class="option-description">
+                            メールアドレスに予約リンクを送信します
+                        </p>
+                        <div class="guest-note">
+                            <p>※ゲスト予約の場合、会員特典は適用されません</p>
+                        </div>
+
+                        <div class="guest-email-form" style="margin-top: 20px;">
+                            <div class="auth-form-group">
+                                <label for="guestEmailInput">メールアドレス</label>
+                                <input type="email" id="guestEmailInput" placeholder="your@email.com" required>
+                            </div>
+                            <button class="auth-submit-btn" id="sendGuestLinkBtn" style="margin-top: 10px;">
+                                予約リンクを送信
+                            </button>
+                            <div id="guestEmailStatus" class="auth-info-message" style="margin-top: 15px;"></div>
+                        </div>
+
+                        <div class="social-login-section">
+                            <div class="divider-text"><span>または</span></div>
+                            <div class="social-login-buttons">
+                                <button class="social-login-btn google-login">
+                                    <i class="fab fa-google"></i>
+                                    <span>Googleでログイン</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    -->
+
+    <!-- Footer - Loaded dynamically -->
+    <div id="footer-placeholder"></div>
+
+    <style>
+        /* Loading spinner animation */
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Hide floating booking button on reservation page */
+        .floating-booking-btn {
+            display: none !important;
+        }
+
+        /* Member Login Modal Styles */
+        .member-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 10000;
+        }
+
+        .member-modal.show {
+            display: block;
+        }
+
+        .member-modal-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(5px);
+        }
+
+        .member-modal-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            border-radius: 16px;
+            width: 90%;
+            max-width: 800px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: modalFadeIn 0.3s ease;
+        }
+
+        @keyframes modalFadeIn {
+            from {
+                opacity: 0;
+                transform: translate(-50%, -45%);
+            }
+            to {
+                opacity: 1;
+                transform: translate(-50%, -50%);
+            }
+        }
+
+        .modal-close-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 40px;
+            height: 40px;
+            border: none;
+            background: #f5f5f5;
+            border-radius: 50%;
+            font-size: 24px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 10;
+        }
+
+        .modal-close-btn:hover {
+            background: #e0e0e0;
+            transform: rotate(90deg);
+        }
+
+        .modal-header {
+            padding: 30px 30px 15px;
+            text-align: center;
+            border-bottom: 1px solid #eee;
+        }
+
+        .modal-header h2 {
+            font-size: 24px;
+            color: #2c2c2c;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .modal-header p {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .modal-body {
+            padding: 30px;
+        }
+
+        .booking-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .booking-option {
+            padding: 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            text-align: center;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .booking-option:hover {
+            border-color: #8a7a5e;
+            box-shadow: 0 10px 30px rgba(138, 122, 94, 0.1);
+            transform: translateY(-5px);
+        }
+
+        .option-icon {
+            font-size: 40px;
+            color: #8a7a5e;
+            margin-bottom: 15px;
+        }
+
+        .booking-option h3 {
+            font-size: 20px;
+            color: #2c2c2c;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        .benefits-list {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 20px 0;
+            text-align: left;
+        }
+
+        .benefits-list li {
+            padding: 6px 0;
+            color: #555;
+            font-size: 14px;
+        }
+
+        .benefits-list i {
+            color: #4caf50;
+            margin-right: 10px;
+        }
+
+        .option-description {
+            color: #666;
+            font-size: 14px;
+            line-height: 1.4;
+            margin-bottom: 8px;
+            min-height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .guest-note {
+            background: #fff3cd;
+            padding: 4px 6px;
+            border-radius: 4px;
+            margin-bottom: 8px;
+        }
+
+        .guest-note p {
+            color: #856404;
+            font-size: 13px;
+            margin: 0;
+        }
+
+        .option-btn {
+            width: 100%;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .member-btn {
+            background: #8a7a5e;
+            color: white;
+        }
+
+        .member-btn:hover {
+            background: #6d5f49;
+            transform: scale(1.05);
+        }
+
+        .guest-btn {
+            background: #f5f5f5;
+            color: #2c2c2c;
+            border: 2px solid #ddd;
+        }
+
+        .guest-btn:hover {
+            background: #e8e8e8;
+            border-color: #8a7a5e;
+        }
+
+        .member-login {
+            border-color: #8a7a5e;
+            background: linear-gradient(135deg, rgba(138, 122, 94, 0.03) 0%, rgba(138, 122, 94, 0.06) 100%);
+        }
+
+        /* Social Login Styles */
+        .social-login-section {
+            margin-top: 15px;
+            padding-top: 15px;
+        }
+
+        .divider-text {
+            position: relative;
+            text-align: center;
+            margin: 12px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .divider-text::before,
+        .divider-text::after {
+            content: "";
+            flex: 1;
+            height: 1px;
+            background: #e0e0e0;
+        }
+
+        .divider-text::before {
+            margin-right: 15px;
+        }
+
+        .divider-text::after {
+            margin-left: 15px;
+        }
+
+        .divider-text span {
+            color: #999;
+            font-size: 14px;
+            position: relative;
+        }
+
+        .social-login-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .social-login-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            width: 100%;
+            padding: 12px 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 50px;
+            background: white;
+            font-size: 15px;
+            font-weight: 500;
+            font-family: 'Noto Sans JP', sans-serif;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            letter-spacing: 0.05em;
+        }
+
+        .social-login-btn:hover {
+            border-color: #8a7a5e;
+            background: #f8f6f3;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .social-login-btn i {
+            font-size: 18px;
+        }
+
+        .google-login {
+            color: #4285f4;
+        }
+
+        .google-login:hover {
+            border-color: #4285f4;
+            background: rgba(66, 133, 244, 0.05);
+        }
+
+        .line-login {
+            color: #00B900;
+        }
+
+        .line-login:hover {
+            border-color: #00B900;
+            background: rgba(0, 185, 0, 0.05);
+        }
+
+        .apple-login {
+            color: #000000;
+        }
+
+        .apple-login:hover {
+            border-color: #000000;
+            background: rgba(0, 0, 0, 0.05);
+        }
+
+        /* Nights Display Styles */
+        .date-input-container {
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .date-range-group #dateRange {
+            width: 320px;
+            min-width: 320px;
+        }
+
+        .nights-display {
+            background: #8a7a5e;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            white-space: nowrap;
+            min-width: 50px;
+            text-align: center;
+            flex-shrink: 0;
+        }
+
+        /* Login Form Styles */
+        .login-form-section {
+            margin-bottom: 20px;
+        }
+
+        .login-fields {
+            margin-bottom: 15px;
+        }
+
+        .field-group {
+            margin-bottom: 12px;
+        }
+
+        .field-group label {
+            display: block;
+            font-size: 13px;
+            color: #555;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+
+        .field-group input {
+            width: 100%;
+            min-width: 280px;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: border-color 0.3s ease;
+            box-sizing: border-box;
+        }
+
+        .field-group input:focus {
+            outline: none;
+            border-color: #8a7a5e;
+            box-shadow: 0 0 0 2px rgba(138, 122, 94, 0.1);
+        }
+
+        .login-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .login-btn {
+            background: #8a7a5e;
+            color: white;
+            flex: 1;
+        }
+
+        .login-btn:hover {
+            background: #6d5f49;
+            transform: scale(1.02);
+        }
+
+        .register-btn {
+            background: #f5f5f5;
+            color: #2c2c2c;
+            border: 2px solid #ddd;
+            flex: 1;
+        }
+
+        .register-btn:hover {
+            background: #e8e8e8;
+            border-color: #8a7a5e;
+        }
+
+        /* Forgot Password Styles */
+        .forgot-password-section {
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        .forgot-password-link {
+            font-size: 13px;
+            color: #8a7a5e;
+            text-decoration: none;
+            border-bottom: 1px dotted #8a7a5e;
+            transition: all 0.3s ease;
+        }
+
+        .forgot-password-link:hover {
+            color: #6d5f49;
+            border-bottom-color: #6d5f49;
+            text-decoration: none;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .booking-options {
+                grid-template-columns: 1fr;
+            }
+
+            .member-modal-content {
+                width: 95%;
+                max-height: 95vh;
+            }
+
+            .modal-header {
+                padding: 30px 20px 15px;
+            }
+
+            .modal-body {
+                padding: 20px;
+            }
+
+            .booking-option {
+                padding: 20px;
+            }
+
+            .option-icon {
+                font-size: 36px;
+            }
+
+            .booking-option h3 {
+                font-size: 18px;
+            }
+
+            .option-description {
+                min-height: auto;
+            }
+        }
+
+        /* Search Prompt Styles */
+        .search-prompt {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 80px 40px;
+            text-align: center;
+            background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+            border-radius: 12px;
+            border: 2px dashed #dee2e6;
+            min-height: 300px;
+        }
+
+        .search-prompt h3 {
+            color: #2c2c2c;
+            font-size: 24px;
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+
+        .search-prompt p {
+            color: #6c757d;
+            font-size: 16px;
+            line-height: 1.6;
+            max-width: 500px;
+        }
+
+        /* Loading State */
+        .loading-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 80px 40px;
+            text-align: center;
+            min-height: 300px;
+        }
+
+        .loading-state i {
+            font-size: 48px;
+            color: #8a7a5e;
+            margin-bottom: 20px;
+        }
+
+        .loading-state p {
+            color: #6c757d;
+            font-size: 18px;
+        }
+
+        /* Error State */
+        .error-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 80px 40px;
+            text-align: center;
+            background: #fff3cd;
+            border-radius: 12px;
+            border: 2px solid #ffc107;
+            min-height: 300px;
+        }
+
+        .error-state i {
+            font-size: 48px;
+            color: #ff6b6b;
+            margin-bottom: 20px;
+        }
+
+        .error-state h3 {
+            color: #721c24;
+            font-size: 22px;
+            margin-bottom: 12px;
+        }
+
+        .error-state p {
+            color: #856404;
+            font-size: 16px;
+        }
+
+        /* No Results State */
+        .no-results {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 80px 40px;
+            text-align: center;
+            background: #f8f9fa;
+            border-radius: 12px;
+            min-height: 300px;
+        }
+
+        .no-results i {
+            font-size: 48px;
+            color: #adb5bd;
+            margin-bottom: 20px;
+        }
+
+        .no-results h3 {
+            color: #495057;
+            font-size: 22px;
+            margin-bottom: 12px;
+        }
+
+        .no-results p {
+            color: #6c757d;
+            font-size: 16px;
+        }
+
+        /* ===== Custom Date Picker Design ===== */
+        .custom-date-picker {
+            position: relative;
+            width: 100%;
+        }
+
+        .date-input-wrapper {
+            display: flex;
+            align-items: center;
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            padding: 8px 12px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            gap: 12px;
+        }
+
+        .date-input-wrapper:hover {
+            border-color: #8a7a5e;
+            box-shadow: 0 4px 16px rgba(138, 122, 94, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .date-input-wrapper.active {
+            border-color: #8a7a5e;
+            box-shadow: 0 0 0 4px rgba(138, 122, 94, 0.1);
+        }
+
+        .date-input-box {
+            flex: 1;
+            padding: 8px 12px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            background: #f8f9fa;
+            border-bottom: 3px solid transparent;
+            cursor: pointer;
+        }
+
+        .date-input-box:hover {
+            background: #f0e9dc;
+        }
+
+        /* 激活状态 - 显示蓝色下划线 */
+        .date-input-box.active {
+            background: #e3f2fd;
+            border-bottom-color: #1e3a8a;
+            box-shadow: 0 4px 12px rgba(30, 58, 138, 0.15);
+        }
+
+        .date-input-label {
+            font-size: 11px;
+            color: #666;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+        }
+
+        .date-input-value {
+            font-size: 15px;
+            color: #2c2c2c;
+            font-weight: 600;
+        }
+
+        .date-input-value.placeholder {
+            color: #999;
+            font-weight: 400;
+        }
+
+        .date-separator {
+            color: #8a7a5e;
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+
+        .nights-badge {
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            background: linear-gradient(135deg, #8a7a5e 0%, #6d5f49 100%);
+            color: white;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 700;
+            box-shadow: 0 4px 12px rgba(138, 122, 94, 0.3);
+            z-index: 10;
+        }
+
+        /* Calendar Popup - Dual Month */
+        .calendar-popup {
+            position: absolute;
+            top: calc(100% + 12px);
+            left: 0;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15), 0 4px 20px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            z-index: 1000;
+            animation: calendarSlideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .calendar-dual-container {
+            display: flex;
+            gap: 24px;
+        }
+
+        .calendar-month-panel {
+            flex: 1;
+            min-width: 360px;
+        }
+
+        .calendar-nav-placeholder {
+            width: 32px;
+            height: 32px;
+        }
+
+        @keyframes calendarSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .calendar-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 14px;
+            padding: 0 4px;
+        }
+
+        .calendar-title {
+            font-size: 17px;
+            font-weight: 700;
+            color: #2c2c2c;
+            letter-spacing: 0.5px;
+        }
+
+        .calendar-nav-btn {
+            width: 32px;
+            height: 32px;
+            border: none;
+            background: #f8f9fa;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #666;
+            font-size: 14px;
+        }
+
+        .calendar-nav-btn:hover {
+            background: linear-gradient(135deg, #8a7a5e 0%, #6d5f49 100%);
+            color: white;
+            transform: scale(1.1);
+        }
+
+        .calendar-weekdays {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 4px;
+            margin-bottom: 6px;
+            padding: 6px 0;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .calendar-weekday {
+            text-align: center;
+            font-size: 12px;
+            font-weight: 700;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding: 10px 0;
+        }
+
+        .calendar-weekday:first-child {
+            color: #e53935;
+        }
+
+        .calendar-weekday:last-child {
+            color: #1e88e5;
+        }
+
+        .calendar-days {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 0;
+        }
+
+        .calendar-day {
+            aspect-ratio: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border-radius: 0;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: none;
+            position: relative;
+            background: white;
+            padding: 5px 4px;
+            min-width: 52px;
+            min-height: 52px;
+        }
+
+        .day-number {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+
+        .day-price {
+            font-size: 9px;
+            font-weight: 500;
+            color: #8a7a5e;
+            white-space: nowrap;
+        }
+
+        .day-price.holiday-price {
+            color: #e53935;
+            font-weight: 600;
+        }
+
+        .day-price.no-stock {
+            color: #999;
+            font-weight: 400;
+            font-size: 9px;
+        }
+
+        .calendar-day:hover:not(.disabled):not(.other-month):not(.empty-cell) {
+            background: linear-gradient(135deg, #f0e9dc 0%, #e8dfc8 100%);
+            z-index: 2;
+        }
+
+        .calendar-day.today:not(.range-start):not(.range-end):not(.in-range):not(.disabled) {
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+            color: #1565c0;
+            font-weight: 700;
+        }
+
+        .calendar-day.today:not(.range-start):not(.range-end):not(.in-range):not(.disabled)::after {
+            content: '';
+            position: absolute;
+            bottom: 4px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 6px;
+            height: 6px;
+            background: #1976d2;
+            border-radius: 50%;
+        }
+
+        .calendar-day.selected {
+            background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
+            color: white;
+            font-weight: 700;
+        }
+
+        .calendar-day.in-range {
+            background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+            color: #1e3a8a;
+        }
+
+        .calendar-day.range-start,
+        .calendar-day.range-end {
+            background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
+            color: white;
+            font-weight: 700;
+        }
+
+        /* 选中日期的价格颜色 */
+        .calendar-day.selected .day-price,
+        .calendar-day.range-start .day-price,
+        .calendar-day.range-end .day-price {
+            color: rgba(255, 255, 255, 0.9);
+            font-weight: 600;
+        }
+
+        /* 范围内日期的价格颜色 */
+        .calendar-day.in-range .day-price {
+            color: #1e3a8a;
+            font-weight: 600;
+        }
+
+        .calendar-day.disabled {
+            color: #bbb !important;
+            cursor: not-allowed;
+            background: #f0f0f0 !important;
+        }
+
+        .calendar-day.disabled .day-number {
+            color: #bbb !important;
+        }
+
+        .calendar-day.disabled .day-price {
+            color: #ccc !important;
+        }
+
+        .calendar-day.disabled:hover {
+            background: #f0f0f0 !important;
+        }
+
+        /* 过去的日期统一为灰色，覆盖周末颜色 */
+        .calendar-day.disabled.sunday,
+        .calendar-day.disabled.saturday {
+            color: #bbb !important;
+            background: #f0f0f0 !important;
+        }
+
+        .calendar-day.disabled.sunday .day-number,
+        .calendar-day.disabled.saturday .day-number {
+            color: #bbb !important;
+        }
+
+        /* 没有库存的日期 */
+        .calendar-day.no-inventory {
+            color: #bbb !important;
+            background: #f0f0f0 !important;
+        }
+
+        .calendar-day.no-inventory .day-number {
+            color: #bbb !important;
+        }
+
+        .calendar-day.other-month {
+            color: #bbb;
+            opacity: 0.4;
+        }
+
+        .calendar-day.sunday {
+            color: #e53935;
+        }
+
+        .calendar-day.saturday {
+            color: #1e88e5;
+        }
+
+        /* Empty cells - no inventory records */
+        .calendar-day.empty-cell {
+            background: transparent;
+            border: none;
+            cursor: default;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        /* Hover Preview Styles */
+        .calendar-day.preview-range {
+            background: linear-gradient(135deg, #fff8f0 0%, #fff0e0 100%);
+            color: #8a7a5e;
+            border-color: rgba(138, 122, 94, 0.2);
+            animation: previewPulse 0.3s ease;
+        }
+
+        .calendar-day.preview-end {
+            background: linear-gradient(135deg, #d4c4a8 0%, #b8a888 100%);
+            color: white;
+            font-weight: 700;
+            box-shadow: 0 4px 16px rgba(138, 122, 94, 0.3);
+            transform: scale(1.05);
+            animation: previewBounce 0.3s ease;
+        }
+
+        @keyframes previewPulse {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.02);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        @keyframes previewBounce {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.08);
+            }
+            100% {
+                transform: scale(1.05);
+            }
+        }
+
+        /* Nights Display (old style kept for compatibility) */
+        .nights-display {
+            background: #8a7a5e;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            white-space: nowrap;
+            min-width: 50px;
+            text-align: center;
+            flex-shrink: 0;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .calendar-popup {
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                min-width: auto;
+                width: calc(100vw - 24px);
+                max-width: 400px;
+                max-height: 90vh;
+                overflow-y: auto;
+                padding: 16px;
+                animation: calendarZoomIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            }
+
+            .calendar-dual-container {
+                flex-direction: column;
+                gap: 20px;
+            }
+
+            .calendar-month-panel {
+                min-width: auto;
+            }
+
+            .calendar-nav-placeholder {
+                display: none;
+            }
+
+            .calendar-month-panel:first-child .calendar-header {
+                justify-content: space-between;
+            }
+
+            .calendar-month-panel:last-child .calendar-header {
+                justify-content: space-between;
+            }
+
+            @keyframes calendarZoomIn {
+                from {
+                    opacity: 0;
+                    transform: translate(-50%, -50%) scale(0.9);
+                }
+                to {
+                    opacity: 1;
+                    transform: translate(-50%, -50%) scale(1);
+                }
+            }
+
+            .calendar-header {
+                margin-bottom: 15px;
+                padding: 0 4px;
+            }
+
+            .calendar-title {
+                font-size: 16px;
+            }
+
+            .calendar-nav-btn {
+                width: 32px;
+                height: 32px;
+            }
+
+            .calendar-nav-btn i {
+                font-size: 12px;
+            }
+
+            .calendar-weekdays {
+                margin-bottom: 8px;
+            }
+
+            .calendar-weekday {
+                font-size: 12px;
+                padding: 6px 2px;
+            }
+
+            .calendar-days {
+                gap: 0;
+            }
+
+            .calendar-day {
+                min-width: 42px;
+                min-height: 42px;
+                font-size: 14px;
+            }
+
+            .day-price {
+                font-size: 7px;
+            }
+
+            .day-price.no-stock {
+                font-size: 7px;
+            }
+
+            .date-input-wrapper {
+                flex-direction: column;
+                gap: 8px;
+                padding: 12px;
+            }
+
+            .date-separator {
+                transform: rotate(90deg);
+            }
+
+            .date-input-box {
+                width: 100%;
+            }
+
+            .nights-badge {
+                top: 50%;
+                right: 8px;
+                transform: translateY(-50%);
+            }
+        }
+
+        /* 更小屏幕优化 */
+        @media (max-width: 480px) {
+            .calendar-popup {
+                width: calc(100vw - 16px);
+                padding: 14px;
+            }
+
+            .calendar-header {
+                margin-bottom: 12px;
+            }
+
+            .calendar-title {
+                font-size: 15px;
+            }
+
+            .calendar-nav-btn {
+                width: 30px;
+                height: 30px;
+            }
+
+            .calendar-weekday {
+                font-size: 11px;
+                padding: 5px 2px;
+            }
+
+            .calendar-days {
+                gap: 0;
+            }
+
+            .calendar-day {
+                min-width: 38px;
+                min-height: 38px;
+                font-size: 13px;
+            }
+
+            .day-price {
+                font-size: 7px;
+            }
+
+            .day-price.no-stock {
+                font-size: 7px;
+            }
+        }
+
+        /* Auth Form Group Styles - for Email Input */
+        .auth-form-group {
+            margin-bottom: 20px;
+        }
+
+        .auth-form-group label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+            letter-spacing: 0.05em;
+        }
+
+        .auth-form-group input {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            font-family: 'Noto Sans JP', sans-serif;
+            transition: all 0.3s ease;
+            background: white;
+            box-sizing: border-box;
+        }
+
+        .auth-form-group input:focus {
+            outline: none;
+            border-color: #8a7a5e;
+            box-shadow: 0 0 0 3px rgba(138, 122, 94, 0.1);
+        }
+
+        /* Auth Submit Button */
+        .auth-submit-btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #8a7a5e 0%, #6d5d4a 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Noto Sans JP', sans-serif;
+            letter-spacing: 0.05em;
+        }
+
+        .auth-submit-btn:hover {
+            background: linear-gradient(135deg, #6d5d4a 0%, #8a7a5e 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(138, 122, 94, 0.3);
+        }
+
+        .auth-submit-btn:active {
+            transform: translateY(0);
+        }
+
+        /* Auth Info Message */
+        .auth-info-message {
+            font-size: 14px;
+            line-height: 1.6;
+            color: #666;
+        }
+
+        .auth-info-message.success {
+            color: #4caf50;
+        }
+
+        .auth-info-message.error {
+            color: #f44336;
+        }
+    </style>
+
+    <script src="js/storage-helper.js"></script>
+    <script src="js/custom-calendar.js?v=20251201v1"></script>
+    </div>
+    <!-- End Main Content -->
+
+    <script src="js/init.js?v=20251201"></script>
+    <script src="js/session-service.js"></script>
+    <script src="js/load-navbar.js?v=20251201v21"></script>
+    <script src="js/load-footer.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/reservation.js?v=20251201v2"></script>
+    <!-- <script src="js/room-search.js"></script> -->
+
+    <!-- Modern Navbar Initialization -->
+
+    <!-- 日期输入框激活状态 -->
+    <script>
+    (function() {
+        const checkinBox = document.getElementById('checkinBox');
+        const checkoutBox = document.getElementById('checkoutBox');
+        const calendarPopup = document.getElementById('calendarPopup');
+
+        if (checkinBox && checkoutBox) {
+            // 点击check-in框
+            checkinBox.addEventListener('click', function() {
+                checkinBox.classList.add('active');
+                checkoutBox.classList.remove('active');
+            });
+
+            // 点击check-out框
+            checkoutBox.addEventListener('click', function() {
+                checkoutBox.classList.add('active');
+                checkinBox.classList.remove('active');
+            });
+
+            // 点击页面其他地方移除激活状态
+            document.addEventListener('click', function(e) {
+                if (!checkinBox.contains(e.target) &&
+                    !checkoutBox.contains(e.target) &&
+                    !calendarPopup.contains(e.target)) {
+                    checkinBox.classList.remove('active');
+                    checkoutBox.classList.remove('active');
+                }
+            });
+        }
+    })();
+    </script>
+
+</body>
+</html>

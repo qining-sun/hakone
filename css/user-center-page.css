@@ -1,0 +1,1787 @@
+/**
+ * 用户中心页面样式
+ * User Center Page Styles
+ */
+
+/* 页面布局 */
+.user-center-page {
+    padding: 100px 0 80px;
+    background: #f8f9fa;
+    min-height: calc(100vh - 200px);
+}
+
+.user-center-layout {
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    gap: 30px;
+    align-items: start;
+}
+
+/* 侧边栏 */
+.user-sidebar {
+    position: sticky;
+    top: 20px;
+}
+
+.user-profile-card {
+    background: white;
+    border-radius: 16px;
+    padding: 30px 20px;
+    text-align: center;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    margin-bottom: 20px;
+}
+
+.user-avatar-large {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #8a7a5e 0%, #9d8a6d 100%);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 48px;
+    margin: 0 auto 20px;
+    border: 4px solid #f0ebe3;
+    overflow: hidden;
+    position: relative;
+}
+
+.user-avatar-large .avatar-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+.user-avatar-large .avatar-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.user-name {
+    font-size: 20px;
+    font-weight: 600;
+    color: #333;
+    margin: 0 0 8px 0;
+}
+
+.user-email {
+    font-size: 14px;
+    color: #666;
+    margin: 0 0 15px 0;
+}
+
+.user-member-info {
+    padding-top: 15px;
+    border-top: 1px solid #f0f0f0;
+}
+
+.member-badge {
+    display: inline-block;
+    padding: 6px 16px;
+    background: linear-gradient(135deg, #8a7a5e 0%, #9d8a6d 100%);
+    color: white;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+/* 导航菜单 */
+.user-nav {
+    background: white;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.user-nav-item {
+    display: flex;
+    align-items: center;
+    padding: 16px 20px;
+    color: #333;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    border-bottom: 1px solid #f0f0f0;
+    position: relative;
+}
+
+.user-nav-item:last-child {
+    border-bottom: none;
+}
+
+.user-nav-item i:first-child {
+    width: 24px;
+    font-size: 18px;
+    color: #8a7a5e;
+    margin-right: 12px;
+}
+
+.user-nav-item span {
+    flex: 1;
+    font-weight: 500;
+}
+
+.user-nav-item i:last-child {
+    font-size: 12px;
+    color: #ccc;
+    opacity: 0;
+    transform: translateX(-5px);
+    transition: all 0.3s ease;
+}
+
+.user-nav-item:hover {
+    background: #f8f6f3;
+    padding-left: 25px;
+}
+
+.user-nav-item:hover i:last-child {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.user-nav-item.active {
+    background: linear-gradient(90deg, rgba(138, 122, 94, 0.1) 0%, rgba(138, 122, 94, 0.05) 100%);
+    border-left: 4px solid #8a7a5e;
+    padding-left: 16px;
+    font-weight: 600;
+}
+
+.user-nav-item.active i:first-child {
+    color: #8a7a5e;
+}
+
+.user-nav-item.logout-item {
+    color: #d32f2f;
+}
+
+.user-nav-item.logout-item i:first-child {
+    color: #d32f2f;
+}
+
+.user-nav-item.logout-item:hover {
+    background: #fff5f5;
+}
+
+/* 主内容区域 */
+.user-main-content {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+}
+
+.content-section {
+    display: none;
+    padding: 40px;
+    animation: fadeIn 0.3s ease;
+}
+
+.content-section.active {
+    display: block;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.section-header {
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 2px solid #f0f0f0;
+}
+
+.section-title {
+    font-size: 24px;
+    font-weight: 600;
+    color: #333;
+    margin: 0 0 8px 0;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.section-title i {
+    color: #8a7a5e;
+}
+
+.section-description {
+    font-size: 14px;
+    color: #666;
+    margin: 0;
+}
+
+/* 预约标签 */
+.booking-tabs {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 25px;
+}
+
+.booking-tab {
+    flex: 1;
+    padding: 12px 24px;
+    background: white;
+    border: 2px solid #e0e0e0;
+    border-radius: 10px;
+    font-size: 15px;
+    font-weight: 600;
+    color: #666;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.booking-tab:hover {
+    border-color: #8a7a5e;
+    color: #8a7a5e;
+}
+
+.booking-tab.active {
+    background: linear-gradient(135deg, #8a7a5e 0%, #9d8a6d 100%);
+    border-color: #8a7a5e;
+    color: white;
+}
+
+/* 预约列表 */
+.bookings-container {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.booking-card {
+    min-height: 150px;
+    border: 1px solid #e0e0e0;
+    border-radius: 10px;
+    padding: 16px;
+    transition: all 0.3s ease;
+}
+
+.booking-card:hover {
+    border-color: #8a7a5e;
+    box-shadow: 0 2px 8px rgba(138, 122, 94, 0.15);
+}
+
+.booking-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 12px;
+}
+
+.booking-info h3 {
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+    margin: 0 0 4px 0;
+}
+
+.booking-id {
+    font-size: 12px;
+    color: #999;
+    margin: 0;
+}
+
+.booking-created-time {
+    font-size: 12px;
+    color: #666;
+    margin: 4px 0 0 0;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.booking-created-time i {
+    font-size: 11px;
+    color: #8a7a5e;
+}
+
+.booking-status-badges {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.booking-status-badge {
+    padding: 4px 12px;
+    border-radius: 16px;
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+/* 订单状态标签（与 order-detail.css 保持一致）*/
+.booking-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 12px;
+    border-radius: 16px;
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.booking-status i {
+    font-size: 11px;
+}
+
+.status-pending {
+    background: #f3e5f5;
+    color: #7b1fa2;
+}
+
+.status-confirmed {
+    background: #e8f5e9;
+    color: #2e7d32;
+}
+
+.status-cancelled {
+    background: #ffebee;
+    color: #c62828;
+}
+
+.status-completed {
+    background: #e1f5fe;
+    color: #0277bd;
+}
+
+.status-paid {
+    background: #e8f5e9;
+    color: #2e7d32;
+}
+
+/* Payment status styles */
+.payment-paid {
+    background: #e8f5e9;
+    color: #2e7d32;
+}
+
+.payment-unpaid {
+    background: #fff3e0;
+    color: #f57c00;
+}
+
+.payment-refunded {
+    background: #e3f2fd;
+    color: #1565c0;
+}
+
+.payment-pending {
+    background: #fce4ec;
+    color: #c2185b;
+}
+
+.booking-details-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px 12px;
+    margin-bottom: 12px;
+}
+
+.booking-detail {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: #666;
+}
+
+.booking-detail i {
+    width: 16px;
+    font-size: 14px;
+    color: #8a7a5e;
+}
+
+.booking-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    padding-top: 12px;
+    border-top: 1px solid #f0f0f0;
+}
+
+.booking-price {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 18px;
+    font-weight: 700;
+    color: #8a7a5e;
+}
+
+.booking-price i {
+    font-size: 16px;
+}
+
+.booking-buttons {
+    display: flex;
+    gap: 8px;
+    flex-shrink: 0;
+}
+
+.btn-booking {
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: 1.5px solid;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.btn-view {
+    background: white;
+    color: #8a7a5e;
+    border-color: #8a7a5e;
+}
+
+.btn-view:hover {
+    background: #8a7a5e;
+    color: white;
+}
+
+.btn-cancel-booking {
+    background: white;
+    color: #d32f2f;
+    border-color: #d32f2f;
+}
+
+.btn-cancel-booking:hover {
+    background: #d32f2f;
+    color: white;
+}
+
+.btn-rebook {
+    background: #8a7a5e;
+    color: white;
+    border-color: #8a7a5e;
+}
+
+.btn-rebook:hover {
+    background: #6d5f49;
+}
+
+.btn-pay {
+    background: linear-gradient(135deg, #4caf50 0%, #45a049 100%);
+    color: white;
+    border-color: #4caf50;
+}
+
+.btn-pay:hover {
+    background: linear-gradient(135deg, #45a049 0%, #3d8b40 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(76, 175, 80, 0.3);
+}
+
+/* 表单样式 */
+.user-form {
+    max-width: 800px;
+}
+
+/* Profile Section Styling */
+.profile-section {
+    margin-bottom: 35px;
+    padding-bottom: 30px;
+    border-bottom: 2px solid #f0f0f0;
+}
+
+.profile-section:last-of-type {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+
+.profile-section-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #333;
+    margin: 0 0 20px 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.profile-section-title i {
+    color: #8a7a5e;
+    font-size: 20px;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+    margin-bottom: 0;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group.full-width {
+    grid-column: 1 / -1;
+}
+
+.form-group label {
+    font-size: 14px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.form-group label i {
+    color: #8a7a5e;
+    width: 16px;
+}
+
+.form-group input,
+.form-group select {
+    width: 100%;
+    padding: 12px 15px;
+    border: 2px solid #e0e0e0;
+    border-radius: 10px;
+    font-size: 15px;
+    font-family: 'Noto Sans JP', sans-serif;
+    transition: all 0.3s ease;
+    box-sizing: border-box;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+    outline: none;
+    border-color: #8a7a5e;
+    box-shadow: 0 0 0 3px rgba(138, 122, 94, 0.1);
+}
+
+.form-group input:disabled,
+.form-group input:read-only {
+    background: #f5f5f5;
+    cursor: not-allowed;
+}
+
+/* Email Input Wrapper */
+.email-input-wrapper {
+    display: flex;
+    gap: 12px;
+    align-items: stretch;
+}
+
+.email-input-wrapper input {
+    flex: 1;
+}
+
+/* Email display wrapper - 邮箱显示和按钮在同一行 */
+.email-display-wrapper {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+.email-display {
+    flex: 1;
+    padding: 14px 18px;
+    background: #f8f9fa;
+    border: 1px solid #e0e0e0;
+    border-radius: 10px;
+    font-size: 15px;
+    color: #333;
+    font-weight: 500;
+    min-height: 48px;
+    display: flex;
+    align-items: center;
+}
+
+.btn-change-email {
+    padding: 12px 24px;
+    background: linear-gradient(135deg, #8a7a5e 0%, #9d8a6d 100%);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.btn-change-email:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(138, 122, 94, 0.3);
+}
+
+/* Email editing state */
+.email-input-wrapper input:not(:read-only) {
+    border-color: #8a7a5e !important;
+    background: #fffef8 !important;
+    box-shadow: 0 0 0 3px rgba(138, 122, 94, 0.1) !important;
+}
+
+/* Phone Input Wrapper */
+.phone-input-wrapper {
+    display: flex;
+    gap: 10px;
+}
+
+.phone-input-wrapper .country-code-select {
+    width: 120px;
+    flex-shrink: 0;
+}
+
+.phone-input-wrapper input {
+    flex: 1;
+}
+
+/* Foreigner Checkbox Styling */
+.foreigner-checkbox {
+    padding: 15px 20px;
+    background: #f8f9fa;
+    border-radius: 12px;
+    border: 2px solid #e0e0e0;
+    transition: all 0.3s ease;
+}
+
+.foreigner-checkbox label {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    margin: 0;
+    font-weight: 500;
+}
+
+.foreigner-checkbox input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    accent-color: #8a7a5e;
+}
+
+.foreigner-checkbox:hover {
+    border-color: #8a7a5e;
+    background: #f0ebe3;
+}
+
+/* Country Selection Group */
+.country-select-group {
+    margin-bottom: 25px;
+}
+
+/* Address Fields Container */
+.address-fields-container {
+    background: linear-gradient(135deg, #faf8f5 0%, #ffffff 100%);
+    border: 2px solid #e8e3d8;
+    border-radius: 16px;
+    padding: 0;
+    margin-bottom: 20px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.address-fields-container:hover {
+    border-color: #d4c5b0;
+    box-shadow: 0 4px 12px rgba(138, 122, 94, 0.1);
+}
+
+.address-fields-header {
+    background: linear-gradient(135deg, #8a7a5e 0%, #9d8a6d 100%);
+    color: white;
+    padding: 14px 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+}
+
+.address-fields-header i {
+    font-size: 18px;
+    opacity: 0.9;
+}
+
+.address-fields-container .form-grid {
+    padding: 20px;
+}
+
+.form-help {
+    font-size: 12px;
+    color: #999;
+    margin-top: 5px;
+}
+
+.form-actions {
+    display: flex;
+    gap: 15px;
+}
+
+.btn-primary,
+.btn-secondary {
+    padding: 14px 32px;
+    border-radius: 50px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: 2px solid;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #8a7a5e 0%, #9d8a6d 100%);
+    color: white;
+    border-color: transparent;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(138, 122, 94, 0.4);
+}
+
+.btn-secondary {
+    background: white;
+    color: #666;
+    border-color: #e0e0e0;
+}
+
+.btn-secondary:hover {
+    border-color: #8a7a5e;
+    color: #8a7a5e;
+}
+
+/* 密码强度指示器 */
+.password-strength {
+    margin-bottom: 25px;
+}
+
+.strength-bar {
+    height: 6px;
+    background: #f0f0f0;
+    border-radius: 3px;
+    overflow: hidden;
+    margin-bottom: 8px;
+}
+
+.strength-fill {
+    min-height: 150px;
+    width: 0%;
+    transition: all 0.3s ease;
+    border-radius: 3px;
+}
+
+.strength-fill.weak {
+    width: 33%;
+    background: #f44336;
+}
+
+.strength-fill.medium {
+    width: 66%;
+    background: #ff9800;
+}
+
+.strength-fill.strong {
+    width: 100%;
+    background: #4caf50;
+}
+
+.strength-text {
+    font-size: 13px;
+    color: #666;
+    margin: 0;
+}
+
+/* 设置区域 */
+.settings-container {
+    max-width: 800px;
+}
+
+.setting-group {
+    margin-bottom: 35px;
+    padding-bottom: 30px;
+    border-bottom: 2px solid #f0f0f0;
+}
+
+.setting-group:last-child {
+    border-bottom: none;
+}
+
+.setting-group-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #333;
+    margin: 0 0 20px 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.setting-group-title i {
+    color: #8a7a5e;
+}
+
+.setting-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 12px;
+    margin-bottom: 15px;
+}
+
+.setting-item:last-child {
+    margin-bottom: 0;
+}
+
+.setting-info h4 {
+    font-size: 15px;
+    font-weight: 600;
+    color: #333;
+    margin: 0 0 5px 0;
+}
+
+.setting-info p {
+    font-size: 13px;
+    color: #666;
+    margin: 0;
+}
+
+.setting-select {
+    padding: 10px 15px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 14px;
+    font-family: 'Noto Sans JP', sans-serif;
+    cursor: pointer;
+    min-width: 200px;
+}
+
+/* 开关按钮 */
+.toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 54px;
+    height: 28px;
+    flex-shrink: 0;
+}
+
+.toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.toggle-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: .3s;
+    border-radius: 28px;
+}
+
+.toggle-slider:before {
+    position: absolute;
+    content: "";
+    height: 22px;
+    width: 22px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: .3s;
+    border-radius: 50%;
+}
+
+input:checked + .toggle-slider {
+    background-color: #8a7a5e;
+}
+
+input:checked + .toggle-slider:before {
+    transform: translateX(26px);
+}
+
+/* 空状态 */
+.empty-state {
+    text-align: center;
+    padding: 80px 30px;
+    background: linear-gradient(135deg, #faf8f5 0%, #ffffff 100%);
+    border-radius: 24px;
+    margin: 20px 0;
+    border: 1px solid #f0ebe3;
+}
+
+.empty-state i {
+    font-size: 96px;
+    color: #d4c5b0;
+    margin-bottom: 24px;
+    display: inline-block;
+    opacity: 0.5;
+}
+
+.empty-state h3 {
+    font-size: 26px;
+    color: #2c2826;
+    margin: 0;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+}
+
+.empty-state p {
+    font-size: 15px;
+    color: #8a8280;
+    margin: 12px auto 0;
+    line-height: 1.7;
+    max-width: 400px;
+}
+
+/* 响应式设计 */
+@media (max-width: 1024px) {
+    .user-center-layout {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+
+    .user-sidebar {
+        position: static;
+    }
+
+    .user-nav {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .user-nav-item {
+        justify-content: center;
+    }
+
+    .user-nav-item span {
+        flex: none;
+    }
+
+    .user-nav-item i:last-child {
+        display: none;
+    }
+}
+
+@media (max-width: 768px) {
+    .user-center-page {
+        padding: 20px 0 40px;
+    }
+
+    .content-section {
+        padding: 25px 20px;
+    }
+
+    .section-title {
+        font-size: 20px;
+    }
+
+    .profile-section-title {
+        font-size: 16px;
+    }
+
+    .form-grid {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+
+    /* Responsive Email/Phone Wrappers */
+    .email-input-wrapper,
+    .email-display-wrapper,
+    .phone-input-wrapper {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .phone-input-wrapper .country-code-select {
+        width: 100%;
+    }
+
+    .btn-change-email {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .email-display {
+        width: 100%;
+    }
+
+    /* Responsive Address Fields */
+    .address-fields-header {
+        font-size: 14px;
+        padding: 12px 16px;
+    }
+
+    .address-fields-container .form-grid {
+        padding: 16px;
+    }
+
+    .booking-details-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .booking-actions {
+        flex-direction: column;
+    }
+
+    .btn-booking {
+        justify-content: center;
+    }
+
+    .form-actions {
+        flex-direction: column;
+    }
+
+    .btn-primary,
+    .btn-secondary {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .user-nav {
+        grid-template-columns: 1fr;
+    }
+
+    .setting-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+
+    .setting-select {
+        width: 100%;
+    }
+}
+
+@media (max-width: 768px) {
+    .empty-state {
+        padding: 60px 24px;
+    }
+
+    .empty-state i {
+        font-size: 72px;
+    }
+
+    .empty-state h3 {
+        font-size: 22px;
+    }
+
+    .empty-state p {
+        font-size: 14px;
+    }
+}
+
+@media (max-width: 480px) {
+    .booking-tab {
+        padding: 10px 16px;
+        font-size: 14px;
+    }
+
+    .section-header {
+        margin-bottom: 20px;
+    }
+
+    .empty-state {
+        padding: 50px 20px;
+        border-radius: 20px;
+    }
+
+    .empty-state i {
+        font-size: 64px;
+        margin-bottom: 20px;
+    }
+
+    .empty-state h3 {
+        font-size: 20px;
+    }
+
+    .empty-state p {
+        font-size: 14px;
+        margin-top: 10px;
+    }
+}
+
+/* Wallet Styles */
+.wallet-cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(325px, 425px));
+    gap: 20px;
+    margin-bottom: 30px;
+    max-width: 1200px;
+    justify-content: start;
+}
+
+.wallet-card {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 20px;
+    padding: 28px;
+    color: white;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    aspect-ratio: 1.586 / 1;
+    max-width: 450px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    position: relative;
+    overflow: hidden;
+}
+
+.wallet-card::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -20%;
+    width: 150%;
+    height: 150%;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+    pointer-events: none;
+}
+
+.wallet-card.balance-card {
+    background: linear-gradient(135deg, #8a7a5e 0%, #9d8a6d 100%);
+}
+
+.wallet-card.points-card {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+}
+
+.wallet-card-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 0;
+    position: relative;
+    z-index: 1;
+}
+
+.wallet-card-icon {
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    flex-shrink: 0;
+}
+
+.wallet-card-icon.points-icon {
+    width: auto;
+    height: 33px;
+    background: none;
+    border-radius: 0;
+}
+
+.bkc-logo {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    padding: 8px;
+}
+
+.card-logo-img {
+    height: 100%;
+    width: auto;
+    object-fit: contain;
+    padding: 0;
+}
+
+.wallet-card-header h3 {
+    font-size: 15px;
+    font-weight: 600;
+    margin: 0;
+    line-height: 1.3;
+    opacity: 0.95;
+}
+
+.wallet-card-holder {
+    position: relative;
+    z-index: 1;
+    margin: 8px 0;
+}
+
+.card-holder-name {
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    opacity: 0.95;
+}
+
+.wallet-card-amount {
+    font-size: 42px;
+    font-weight: 700;
+    margin: 0;
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+    position: relative;
+    z-index: 1;
+}
+
+.wallet-card-amount .currency {
+    font-size: 26px;
+    opacity: 0.9;
+    font-weight: 600;
+}
+
+.wallet-card-amount .points-unit {
+    font-size: 26px;
+    opacity: 0.9;
+    margin-left: 2px;
+    font-weight: 600;
+}
+
+.wallet-card-actions {
+    display: flex;
+    gap: 8px;
+    position: relative;
+    z-index: 1;
+}
+
+.btn-wallet-action {
+    flex: 1;
+    padding: 10px 16px;
+    background: rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 10px;
+    color: white;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    backdrop-filter: blur(10px);
+}
+
+.btn-wallet-action:hover {
+    background: rgba(255, 255, 255, 0.35);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.btn-wallet-action.secondary {
+    background: rgba(0, 0, 0, 0.15);
+    border-color: rgba(255, 255, 255, 0.25);
+}
+
+.points-info {
+    font-size: 12px;
+    opacity: 0.9;
+    position: relative;
+    z-index: 1;
+    line-height: 1.6;
+}
+
+.points-info p {
+    margin: 4px 0;
+}
+
+.points-expiry {
+    font-size: 11px;
+    opacity: 0.85;
+    margin-top: 8px;
+}
+
+.powered-by {
+    font-size: 12px;
+    opacity: 0.7;
+    text-align: right;
+    margin-top: 10px !important;
+    font-style: italic;
+}
+
+.powered-by a {
+    color: #000;
+    text-decoration: none;
+    border-bottom: 1px dotted rgba(0, 0, 0, 0.3);
+    transition: all 0.2s ease;
+}
+
+.powered-by a:hover {
+    opacity: 1;
+    border-bottom-color: rgba(0, 0, 0, 0.6);
+}
+
+.powered-by a img {
+    border-bottom: none !important;
+}
+
+.bkc-logo-inline {
+    height: 16px;
+    width: auto;
+    margin-left: 4px;
+    margin-right: 2px;
+    vertical-align: middle;
+    display: inline-block;
+}
+
+/* Wallet Section Block */
+.wallet-section-block {
+    background: white;
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 20px;
+    border: 1px solid #e0e0e0;
+}
+
+.wallet-section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.wallet-section-header h3 {
+    font-size: 18px;
+    font-weight: 600;
+    color: #333;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.wallet-section-header h3 i {
+    color: #8a7a5e;
+}
+
+.btn-add-card {
+    padding: 10px 20px;
+    background: linear-gradient(135deg, #8a7a5e 0%, #9d8a6d 100%);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.btn-add-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(138, 122, 94, 0.3);
+}
+
+/* Credit Cards */
+.credit-cards-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 20px;
+}
+
+.credit-card {
+    background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+    border-radius: 16px;
+    padding: 24px;
+    color: white;
+    position: relative;
+    overflow: hidden;
+}
+
+.credit-card.default-card {
+    border: 3px solid #4caf50;
+}
+
+.credit-card::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+    pointer-events: none;
+}
+
+.card-visual {
+    position: relative;
+    z-index: 1;
+}
+
+.card-brand-logo {
+    width: 60px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    margin-bottom: 20px;
+    font-size: 48px;
+    color: white;
+}
+
+.card-number {
+    display: flex;
+    gap: 12px;
+    font-size: 20px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    margin-bottom: 20px;
+    font-family: 'Courier New', monospace;
+}
+
+.card-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+}
+
+.card-holder {
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.card-expiry {
+    font-size: 13px;
+    opacity: 0.9;
+}
+
+.card-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+    position: relative;
+    z-index: 1;
+}
+
+.btn-card-action {
+    padding: 8px 16px;
+    background: rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 6px;
+    color: white;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.btn-card-action:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+.btn-card-action.danger {
+    background: rgba(244, 67, 54, 0.3);
+    border-color: rgba(244, 67, 54, 0.5);
+}
+
+.btn-card-action.danger:hover {
+    background: rgba(244, 67, 54, 0.5);
+}
+
+.default-badge {
+    padding: 8px 16px;
+    background: rgba(76, 175, 80, 0.3);
+    border: 1px solid rgba(76, 175, 80, 0.5);
+    border-radius: 6px;
+    color: white;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+/* Transactions */
+.transactions-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
+
+.transaction-item {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 16px;
+    border-bottom: 1px solid #f0f0f0;
+    transition: background 0.2s ease;
+}
+
+.transaction-item:last-child {
+    border-bottom: none;
+}
+
+.transaction-item:hover {
+    background: #f8f9fa;
+}
+
+.transaction-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+}
+
+.transaction-icon.charge {
+    background: #e8f5e9;
+    color: #2e7d32;
+}
+
+.transaction-icon.payment {
+    background: #ffebee;
+    color: #c62828;
+}
+
+.transaction-icon.points {
+    background: #fff3e0;
+    color: #f57c00;
+}
+
+.transaction-icon.refund {
+    background: #e3f2fd;
+    color: #1565c0;
+}
+
+.transaction-details {
+    flex: 1;
+}
+
+.transaction-description {
+    font-size: 14px;
+    font-weight: 500;
+    color: #333;
+    margin-bottom: 4px;
+}
+
+.transaction-date {
+    font-size: 12px;
+    color: #999;
+}
+
+.transaction-amount {
+    font-size: 16px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.transaction-amount.positive {
+    color: #2e7d32;
+}
+
+.transaction-amount.negative {
+    color: #c62828;
+}
+
+/* Responsive Wallet */
+@media (max-width: 1024px) {
+    .wallet-cards-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    .credit-cards-list {
+        grid-template-columns: 1fr;
+    }
+
+    .wallet-cards-grid {
+        grid-template-columns: 1fr;
+        justify-content: stretch;
+    }
+
+    .wallet-card {
+        padding: 24px;
+        max-width: 100%;
+    }
+
+    .wallet-card-amount {
+        font-size: 36px;
+    }
+
+    .wallet-card-amount .currency,
+    .wallet-card-amount .points-unit {
+        font-size: 22px;
+    }
+
+    .wallet-card-header h3 {
+        font-size: 14px;
+    }
+
+    .wallet-card-icon {
+        width: 45px;
+        height: 45px;
+        font-size: 20px;
+    }
+
+    .btn-wallet-action {
+        font-size: 12px;
+        padding: 9px 14px;
+    }
+
+    .points-info {
+        font-size: 11px;
+    }
+
+    .card-actions {
+        flex-direction: column;
+    }
+}
+
+
+
+/* 订单卡片布局优化 - 添加房间图片 */
+.booking-card {
+    display: flex !important;
+    padding: 0 !important;
+    overflow: hidden;
+    min-height: 150px;
+}
+
+.booking-card-image {
+    width: 200px;
+    min-height: 150px;
+    flex-shrink: 0;
+    overflow: hidden;
+    background: #f5f5f5;
+}
+
+.booking-card-image img {
+    width: 100%;
+    height: 100%;
+    min-height: 150px;
+    object-fit: cover;
+    object-position: center;
+    display: block;
+}
+
+.booking-card-content {
+    flex: 1;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Tax Included Text */
+.tax-included-text {
+    font-size: 12px;
+    color: #666;
+    margin-left: 4px;
+    font-weight: 400;
+    white-space: nowrap;
+}
+
+.price-amount,
+.total-amount,
+.booking-price span {
+    white-space: nowrap;
+}
+
+/* 房间卡片手机版响应式布局 */
+@media (max-width: 768px) {
+    /* 预约卡片 - 垂直布局 */
+    .booking-item {
+        padding: 12px !important;
+    }
+
+    .booking-item .booking-header {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 10px !important;
+    }
+
+    .booking-item .booking-details {
+        grid-template-columns: 1fr !important;
+        gap: 6px !important;
+    }
+
+    .booking-item .booking-actions {
+        flex-direction: column !important;
+        gap: 8px !important;
+    }
+
+    .booking-item .booking-actions button {
+        width: 100% !important;
+        justify-content: center !important;
+    }
+
+    /* 带图片的预约卡片 */
+    .booking-card {
+        flex-direction: column !important;
+    }
+
+    .booking-card-image {
+        width: 100% !important;
+        height: 160px !important;
+        min-height: auto !important;
+    }
+
+    .booking-card-content {
+        padding: 12px !important;
+    }
+
+    .booking-card-header {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 8px !important;
+    }
+
+    .booking-details-grid {
+        grid-template-columns: 1fr 1fr !important;
+    }
+
+    .booking-buttons {
+        width: 100%;
+        flex-direction: column;
+    }
+
+    .booking-buttons .btn-booking {
+        width: 100%;
+    }
+}
+
+@media (max-width: 480px) {
+    .booking-item .booking-details {
+        grid-template-columns: 1fr !important;
+    }
+
+    .booking-details-grid {
+        grid-template-columns: 1fr !important;
+    }
+
+    .booking-item .booking-detail-item {
+        font-size: 13px !important;
+    }
+}

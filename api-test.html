@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API连接测试</title>
+    <script src="js/api-config.js"></script>
+    <style>
+        body {
+            font-family: 'Courier New', monospace;
+            max-width: 1000px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .test-section {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .test-section h2 {
+            color: #333;
+            border-bottom: 2px solid #4CAF50;
+            padding-bottom: 10px;
+        }
+        .result {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+            font-family: monospace;
+        }
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .info {
+            background-color: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 5px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        pre {
+            background-color: #f4f4f4;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔍 API 服务器连接诊断工具</h1>
+
+    <div class="test-section">
+        <h2>1. 配置检查</h2>
+        <div id="config-results"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>2. 网络连接测试</h2>
+        <button onclick="testAPIConnection()">测试 API 连接</button>
+        <button onclick="testRoomsAPI()">测试房间 API</button>
+        <button onclick="testNewsAPI()">测试新闻 API</button>
+        <div id="connection-results"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>3. CORS 检查</h2>
+        <div id="cors-results"></div>
+    </div>
+
+    <script>
+        // 显示配置信息
+        function displayConfig() {
+            const configDiv = document.getElementById('config-results');
+            const results = [];
+
+            results.push(`<div class="result info">
+                <strong>当前访问的URL:</strong> ${window.location.href}<br>
+                <strong>主机名:</strong> ${window.location.hostname}<br>
+                <strong>端口:</strong> ${window.location.port || '80'}
+            </div>`);
+
+            results.push(`<div class="result ${window.API_CONFIG ? 'success' : 'error'}">
+                <strong>API_CONFIG 配置:</strong><br>
+                <pre>${JSON.stringify(window.API_CONFIG, null, 2)}</pre>
+            </div>`);
+
+            results.push(`<div class="result ${window.API_BASE_URL ? 'success' : 'error'}">
+                <strong>API_BASE_URL:</strong> ${window.API_BASE_URL || '未设置'}
+            </div>`);
+
+            configDiv.innerHTML = results.join('');
+        }
+
+        // 测试API连接
+        async function testAPIConnection() {
+            const resultsDiv = document.getElementById('connection-results');
+            resultsDiv.innerHTML += '<div class="result info">正在测试连接...</div>';
+
+            try {
+                const startTime = Date.now();
+                const response = await fetch(`${window.API_CONFIG.BOOKING_API}/health`, {
+                    method: 'GET',
+                    mode: 'cors'
+                });
+                const endTime = Date.now();
+                const data = await response.json();
+
+                resultsDiv.innerHTML += `<div class="result success">
+                    ✅ API服务器连接成功！<br>
+                    <strong>URL:</strong> ${window.API_CONFIG.BOOKING_API}/health<br>
+                    <strong>状态码:</strong> ${response.status}<br>
+                    <strong>响应时间:</strong> ${endTime - startTime}ms<br>
+                    <strong>响应数据:</strong><br>
+                    <pre>${JSON.stringify(data, null, 2)}</pre>
+                </div>`;
+            } catch (error) {
+                resultsDiv.innerHTML += `<div class="result error">
+                    ❌ API服务器连接失败！<br>
+                    <strong>错误:</strong> ${error.message}<br>
+                    <strong>尝试的URL:</strong> ${window.API_CONFIG.BOOKING_API}/health<br>
+                    <br>
+                    <strong>可能的原因:</strong><br>
+                    1. API服务器未启动（请检查 http://160.16.67.238:5000 是否运行）<br>
+                    2. 防火墙阻止了连接<br>
+                    3. CORS配置问题<br>
+                    4. 网络连接问题
+                </div>`;
+            }
+        }
+
+        // 测试房间API
+        async function testRoomsAPI() {
+            const resultsDiv = document.getElementById('connection-results');
+            resultsDiv.innerHTML += '<div class="result info">正在测试房间API...</div>';
+
+            try {
+                const url = `${window.API_CONFIG.BOOKING_API}/rooms/search?checkin=2025-12-01&checkout=2025-12-02&adults=2`;
+                const response = await fetch(url);
+                const data = await response.json();
+
+                resultsDiv.innerHTML += `<div class="result success">
+                    ✅ 房间API连接成功！<br>
+                    <strong>找到房间数:</strong> ${data.length || 0}<br>
+                    <pre>${JSON.stringify(data, null, 2).substring(0, 500)}...</pre>
+                </div>`;
+            } catch (error) {
+                resultsDiv.innerHTML += `<div class="result error">
+                    ❌ 房间API连接失败！<br>
+                    <strong>错误:</strong> ${error.message}
+                </div>`;
+            }
+        }
+
+        // 测试新闻API
+        async function testNewsAPI() {
+            const resultsDiv = document.getElementById('connection-results');
+            resultsDiv.innerHTML += '<div class="result info">正在测试新闻API...</div>';
+
+            try {
+                const response = await fetch(window.API_CONFIG.NEWS_API);
+                const data = await response.json();
+
+                resultsDiv.innerHTML += `<div class="result success">
+                    ✅ 新闻API连接成功！<br>
+                    <strong>新闻数量:</strong> ${data.length || 0}
+                </div>`;
+            } catch (error) {
+                resultsDiv.innerHTML += `<div class="result error">
+                    ❌ 新闻API连接失败！<br>
+                    <strong>错误:</strong> ${error.message}
+                </div>`;
+            }
+        }
+
+        // 检查CORS
+        function checkCORS() {
+            const corsDiv = document.getElementById('cors-results');
+            corsDiv.innerHTML = `<div class="result info">
+                <strong>CORS 说明:</strong><br>
+                如果你看到 "CORS policy" 或 "Access-Control-Allow-Origin" 相关错误，<br>
+                这意味着 API 服务器需要设置正确的 CORS 头。<br><br>
+
+                请确保你的 API 服务器（node server-booking.js）中包含以下代码：<br>
+                <pre>
+app.use(cors({
+    origin: '*',  // 或指定你的前端URL
+    credentials: true
+}));
+                </pre>
+            </div>`;
+        }
+
+        // 页面加载时执行
+        window.addEventListener('DOMContentLoaded', () => {
+            displayConfig();
+            checkCORS();
+        });
+    </script>
+</body>
+</html>

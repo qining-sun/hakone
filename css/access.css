@@ -1,0 +1,1732 @@
+/* Access Page Styles - Exact copy from yuzawamd */
+
+/* Page Layout */
+.page-content {
+    margin-top: 0;
+}
+
+.custom-hero-banner {
+	position: relative;
+	width: 100vw;
+	left: 50%;
+	right: 50%;
+	margin-left: -50vw;
+	margin-right: -50vw;
+	margin-top: -70px; /* 调整横幅位置，与其他页面一致 */
+	min-width: 100vw;
+	height: 40vh;
+	min-height: 300px;
+	max-height: 400px;
+	overflow: hidden;
+	z-index: 1;
+}
+.hero-bg-img {
+	position: absolute;
+	top: 0; left: 0; width: 100%; height: 100%;
+	object-fit: cover;
+	object-position: center center;
+	z-index: 1;
+	filter: brightness(1.0);
+	transition: transform 1s cubic-bezier(0.4,0,0.2,1);
+}
+.custom-hero-banner:hover .hero-bg-img {
+	transform: scale(1.05);
+}
+.hero-banner-content {
+	position: absolute;
+	top: 0; left: 0; right: 0; bottom: 0;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	color: #fff;
+	text-shadow: 0 2px 8px rgba(0,0,0,0.4);
+	z-index: 2;
+	font-family: 'Noto Sans JP', 'Microsoft YaHei', Arial, sans-serif;
+	background: rgba(0,0,0,0.15);
+}
+.hero-banner-content h1 {
+	font-size: 60px;
+	font-weight: bold;
+	margin-bottom: 24px;
+	letter-spacing: 0.1em;
+}
+.hero-banner-content p {
+	font-size: 28px;
+	opacity: 0.95;
+}
+@media (max-width: 768px) {
+	.custom-hero-banner { min-height: 250px; height: 50vh; }
+	.hero-banner-content h1 { font-size: 32px; }
+	.hero-banner-content p { font-size: 18px; }
+}
+
+/* 地图模块样式 */
+.map-section {
+	padding: 80px 0;
+	background-color: white;
+}
+
+/* 酒店详情模块样式 */
+.hotel-details-section {
+	padding: 12px 0;
+	background-color: #f8f9fa;
+	background-image:
+		radial-gradient(circle at 25% 25%, rgba(139, 124, 90, 0.03) 0%, transparent 50%),
+		radial-gradient(circle at 75% 75%, rgba(139, 124, 90, 0.03) 0%, transparent 50%),
+		linear-gradient(45deg, transparent 40%, rgba(139, 124, 90, 0.02) 50%, transparent 60%);
+	background-size: 200px 200px, 200px 200px, 100px 100px;
+	background-position: 0 0, 100px 100px, 0 0;
+	width: 100vw;
+	margin-left: calc(-50vw + 50%);
+	margin-right: calc(-50vw + 50%);
+	position: relative;
+	z-index: 1;
+}
+
+.hotel-details-section::before {
+	content: '';
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background-image:
+		repeating-linear-gradient(
+			45deg,
+			transparent,
+			transparent 10px,
+			rgba(139, 124, 90, 0.01) 10px,
+			rgba(139, 124, 90, 0.01) 20px
+		);
+	pointer-events: none;
+}
+
+.hotel-image-container {
+	height: 333px;
+	overflow: hidden;
+	border-radius: 0;
+	box-shadow: none;
+	transform: scale(0.8);
+	transform-origin: center center;
+	margin: 0;
+}
+
+.hotel-image {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	object-position: center;
+}
+
+.hotel-info-container {
+	padding: 40px 0px;
+	background-color: transparent;
+	border-radius: 0;
+	height: 333px;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	transform: scale(0.8);
+	transform-origin: center center;
+	margin-left: -70px;
+}
+
+.hotel-info-container .section-title {
+	font-size: 28px;
+	color: #333;
+	margin-bottom: 30px;
+	font-weight: bold;
+	font-family: 'Noto Sans JP', 'Microsoft YaHei', Arial, sans-serif;
+	text-align: left;
+}
+
+.info-list {
+	display: flex;
+	flex-direction: column;
+	gap: 25px;
+}
+
+.info-item {
+	display: flex;
+	justify-content: flex-start;
+	align-items: flex-start;
+	padding: 1px 0 8px 0;
+	border-bottom: 1px solid #d6d1c4;
+}
+
+.info-item:last-child {
+	border-bottom: none;
+}
+
+.info-item .label {
+	font-weight: bold;
+	color: #8b7c5a;
+	font-size: 15px;
+	font-family: 'Noto Sans JP', 'Microsoft YaHei', Arial, sans-serif;
+	flex-shrink: 0;
+	width: 70px;
+}
+
+.info-item .value {
+	color: #444;
+	font-size: 15px;
+	font-family: 'Noto Sans JP', 'Microsoft YaHei', Arial, sans-serif;
+	line-height: 1.4;
+	font-weight: normal;
+	flex: 1;
+	text-align: left;
+	margin-left: 20px;
+}
+
+.map-section .section-title {
+	font-size: 2.5em;
+	color: #333;
+	margin-bottom: 10px;
+	font-weight: 700;
+	font-family: 'Noto Sans JP', sans-serif;
+}
+
+.map-section .section-subtitle {
+	font-size: 1.2em;
+	color: #666;
+	margin-bottom: 50px;
+	font-family: 'Noto Sans JP', sans-serif;
+}
+
+.map-container {
+	height: 300px !important;
+	border-radius: 0;
+	overflow: hidden;
+	box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+	margin-top: 20px;
+}
+
+.map-container iframe {
+	width: 100% !important;
+	height: 100% !important;
+	border: 0;
+}
+
+.map-note {
+	color: #888;
+	font-size: 0.9em;
+	margin-top: 20px;
+	font-family: 'Noto Sans JP', sans-serif;
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+	.map-section {
+		padding: 50px 0;
+	}
+
+	.map-section .section-title {
+		font-size: 2em;
+	}
+
+	.map-section .section-subtitle {
+		font-size: 1em;
+		margin-bottom: 30px;
+	}
+
+	.map-container {
+		height: 300px !important;
+	}
+}
+
+/* 交通方式模块样式 */
+.transportation-section {
+	padding: 40px 0;
+	background-color: white;
+	width: 100vw;
+	margin-left: calc(-50vw + 50%);
+	margin-right: calc(-50vw + 50%);
+	position: relative;
+}
+
+.transportation-title {
+	font-size: 2.5em;
+	color: #333;
+	margin-bottom: 10px;
+	font-weight: 700;
+	font-family: 'Noto Sans JP', sans-serif;
+	text-align: center;
+}
+
+.transportation-subtitle {
+	font-size: 1.2em;
+	color: #666;
+	margin-bottom: 50px;
+	font-family: 'Noto Sans JP', sans-serif;
+	text-align: center;
+}
+
+.transportation-card {
+	background: white;
+	border-radius: 20px;
+	border: 1px solid #000;
+	box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+	overflow: visible;
+	transition: transform 0.3s ease, box-shadow 0.3s ease;
+	margin-bottom: 30px;
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+	margin: 0;
+	max-width: 280px;
+	margin-left: auto;
+	margin-right: auto;
+	position: relative;
+}
+
+.transportation-section .col-md-4 {
+	padding: 0 5px;
+}
+
+.transportation-card:hover {
+	transform: translateY(-5px);
+	box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+}
+
+.transportation-image {
+	height: 150px;
+	overflow: hidden;
+	position: relative;
+	border-radius: 20px 20px 0 0;
+}
+
+.transport-img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	object-position: center;
+	transition: transform 0.3s ease;
+	border-radius: 20px 20px 0 0;
+}
+
+.transportation-card:hover .transport-img {
+	transform: scale(1.05);
+}
+
+.transportation-content {
+	padding: 12px;
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	text-align: left;
+}
+
+.transportation-name {
+	font-size: 18px;
+	color: #333;
+	margin-bottom: 8px;
+	font-weight: bold;
+	font-family: 'Noto Sans JP', 'Microsoft YaHei', Arial, sans-serif;
+}
+
+.transportation-description {
+	font-size: 14px;
+	color: #666;
+	margin-bottom: 15px;
+	font-family: 'Noto Sans JP', 'Microsoft YaHei', Arial, sans-serif;
+	line-height: 1.4;
+}
+
+.transportation-arrow {
+	text-align: center;
+	position: absolute;
+	bottom: -15px;
+	left: 50%;
+	transform: translateX(-50%);
+	width: 30px;
+	height: 30px;
+	border: 1px solid #ccc;
+	border-radius: 50%;
+	background-color: #f8f8f8;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	z-index: 10;
+}
+
+.arrow-down {
+	width: 0;
+	height: 0;
+	border-left: 6px solid transparent;
+	border-right: 6px solid transparent;
+	border-top: 8px solid #666;
+	transition: transform 0.3s ease;
+}
+
+.transportation-card:hover .arrow-down {
+	transform: translateY(2px);
+}
+
+.transportation-card:hover .transportation-arrow {
+	border-color: #999;
+	background-color: #f0f0f0;
+}
+
+@media (max-width: 768px) {
+	.transportation-section {
+		padding: 60px 0;
+	}
+
+	.transportation-title {
+		font-size: 28px;
+	}
+
+	.transportation-subtitle {
+		font-size: 14px;
+		margin-bottom: 40px;
+	}
+
+	.transportation-content {
+		padding: 20px;
+	}
+
+	.transportation-name {
+		font-size: 18px;
+	}
+}
+
+/* 路线标题卡片样式 */
+.route-section-card {
+	background: white;
+	border-radius: 20px;
+	border: 1px solid #000;
+	box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+	padding: 30px;
+	max-width: 800px;
+	margin: 0 auto 40px auto;
+	transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.route-section-card:hover {
+	transform: translateY(-3px);
+	box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+}
+
+/* 汽车路线图模块样式 */
+.car-routes-section {
+	margin-top: 60px;
+	padding-top: 40px;
+	border-top: 1px solid #dee2e6;
+	overflow: visible !important;
+	height: auto !important;
+	max-height: none !important;
+	max-width: 100%;
+}
+
+.routes-title {
+	font-size: 2.5em;
+	color: #333;
+	margin-bottom: 10px;
+	font-weight: 700;
+	font-family: 'Noto Sans JP', sans-serif;
+	text-align: center;
+}
+
+.routes-subtitle {
+	font-size: 1.1em;
+	color: #666;
+	margin-bottom: 50px;
+	font-family: 'Noto Sans JP', sans-serif;
+	text-align: center;
+	max-width: 800px;
+	margin-left: auto;
+	margin-right: auto;
+	line-height: 1.6;
+}
+
+.routes-diagram {
+	display: flex;
+	flex-direction: column;
+	gap: 20px;
+	margin-bottom: 30px;
+	width: 100%;
+	position: relative;
+}
+
+/* 连接所有路线结尾点的垂直线 */
+.routes-diagram::after {
+	content: '';
+	position: absolute;
+	top: 35px;
+	bottom: 45px;
+	right: 235px;
+	width: 4px;
+	background: #28a745;
+	border-radius: 2px;
+	z-index: 2;
+}
+
+.route-column {
+	width: 80%;
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	position: relative;
+	justify-content: flex-start;
+	margin-bottom: 10px;
+}
+
+
+.route-header {
+	background: #28a745;
+	color: white;
+	padding: 15px 20px;
+	border-radius: 0;
+	text-align: center;
+	width: 150px;
+	box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+	flex-shrink: 0;
+}
+
+.route-header h3 {
+	font-size: 16px;
+	font-weight: bold;
+	margin: 0 0 5px 0;
+	font-family: 'Noto Sans JP', sans-serif;
+}
+
+.total-time {
+	font-size: 14px;
+	margin: 0;
+	font-family: 'Noto Sans JP', sans-serif;
+}
+
+.route-steps {
+	position: relative;
+	flex: 1;
+	margin-left: 20px;
+	height: 60px;
+	display: grid;
+	grid-template-columns: 1fr auto auto;
+	gap: 10px;
+	align-items: center;
+}
+
+/* 基线 - 从起点到终点的直线 */
+.route-steps::before {
+	content: '';
+	position: absolute;
+	top: 50%;
+	left: 0;
+	right: 0;
+	height: 4px;
+	background: linear-gradient(to right, #28a745, #1976d2, #9c27b0, #28a745);
+	border-radius: 2px;
+	z-index: 1;
+	transform: translateY(-50%);
+}
+
+/* 在每条路线末端添加垂直连接点 */
+.route-steps::after {
+	content: '';
+	position: absolute;
+	top: 50%;
+	right: 0;
+	transform: translateY(-50%);
+	width: 6px;
+	height: 6px;
+	background: #28a745;
+	border-radius: 50%;
+	z-index: 3;
+}
+
+.route-variable-steps {
+	display: flex;
+	gap: 15px;
+	align-items: center;
+	position: relative;
+	z-index: 2;
+}
+
+.route-step {
+	background: #fff;
+	border: 2px solid #28a745;
+	border-radius: 6px;
+	padding: 8px 12px;
+	min-width: 100px;
+	text-align: center;
+	position: relative;
+	box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+	z-index: 2;
+}
+
+/* 移除连接线，因为方块直接在基线上 */
+.route-step::after {
+	display: none;
+}
+
+.route-step.yuza-ic {
+	background: #e3f2fd;
+	border-color: #2196f3;
+}
+
+
+.route-step.final-step {
+	background: #28a745;
+	color: white;
+	font-weight: bold;
+	border-color: #28a745;
+	min-width: 140px;
+	position: absolute;
+	right: -180px;
+	z-index: 3;
+}
+
+/* 为有酒店的路线创建特殊的基线 */
+.route-with-hotel .route-steps::before {
+	background: linear-gradient(to right, #28a745, #1976d2, #9c27b0, #28a745) !important;
+	right: -90px !important;
+}
+
+/* 连接第三条路线到酒店方块的线 */
+.route-step.final-step::before {
+	display: none;
+}
+
+/* 高速道路方块设置为透明背景，无边框 */
+.route-step.highway {
+	background: transparent;
+	border: none;
+	box-shadow: none;
+}
+
+.step-title {
+	font-size: 14px;
+	font-weight: bold;
+	color: #333;
+	margin: 0 0 5px 0;
+	font-family: 'Noto Sans JP', sans-serif;
+}
+
+.step-time {
+	font-size: 12px;
+	color: #666;
+	margin: 0;
+	font-family: 'Noto Sans JP', sans-serif;
+}
+
+
+/* 停车场介绍模块样式 */
+.parking-details-section {
+	padding: 12px 0;
+	max-width: 80%;
+	margin: 0 auto;
+	background: none;
+}
+
+.parking-details-box {
+	background-color: #edebe6;
+	border-radius: 0;
+	padding: 8px 8px;
+	box-shadow: 0 2px 12px rgba(0,0,0,0.03);
+	display: flex;
+	flex-direction: column;
+	width: 100%;
+	max-width: 900px;
+	margin: 0 auto;
+}
+
+.parking-image-container {
+	height: 333px;
+	overflow: hidden;
+	border-radius: 0;
+	box-shadow: none;
+	transform: scale(0.8);
+	transform-origin: center center;
+	margin: 0;
+}
+
+.parking-image {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	object-position: center;
+}
+
+.parking-info-container {
+	padding: 40px 0px;
+	background-color: transparent;
+	border-radius: 0;
+	height: 333px;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	transform: scale(0.8);
+	transform-origin: center center;
+	margin-left: -70px;
+}
+
+.parking-info-container .section-title {
+	font-size: 32px;
+	color: #2c3e50;
+	margin-top: 0;
+	margin-bottom: 32px;
+	font-weight: 600;
+	font-family: 'Noto Sans JP', 'Microsoft YaHei', Arial, sans-serif;
+	text-align: left;
+	letter-spacing: 0.05px;
+	line-height: 1.1;
+}
+
+.parking-info-container .info-list {
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+	margin-bottom: 10px;
+}
+
+.parking-info-container .info-item {
+	display: flex;
+	justify-content: flex-start;
+	align-items: center;
+	padding: 4px 0;
+	transition: all 0.3s ease;
+	border-bottom: 1px solid #000;
+}
+.parking-info-container .info-item:last-child {
+	border-bottom: none;
+}
+
+.parking-info-container .info-item .label {
+	font-weight: 600;
+	color: #5d4e37;
+	font-size: 18px;
+	font-family: 'Noto Sans JP', 'Microsoft YaHei', Arial, sans-serif;
+	flex-shrink: 0;
+	width: 120px;
+	letter-spacing: 0.02px;
+	white-space: nowrap;
+	text-align: left;
+}
+
+.parking-info-container .info-item .value {
+	color: #34495e;
+	font-size: 18px;
+	font-family: 'Noto Sans JP', 'Microsoft YaHei', Arial, sans-serif;
+	line-height: 1.1;
+	font-weight: 500;
+	flex: 1;
+	text-align: left;
+	margin-left: 15px;
+	letter-spacing: 0.02px;
+}
+
+.parking-info-container .parking-description {
+	padding-top: 8px;
+	margin-top: 0;
+	border-top: none;
+}
+
+.parking-info-container .parking-description p {
+	color: #5a6c7d;
+	font-size: 14px;
+	line-height: 1.2;
+	font-family: 'Noto Sans JP', 'Microsoft YaHei', Arial, sans-serif;
+	letter-spacing: 0.02px;
+	text-align: justify;
+}
+
+/* 停车场模块移动端响应式样式 */
+@media (max-width: 768px) {
+	.parking-details-section {
+		padding: 60px 0;
+	}
+
+	.parking-image-container {
+		height: 200px;
+		transform: none;
+	}
+
+	.parking-info-container {
+		padding: 20px 0px;
+		height: auto;
+		transform: none;
+		margin-left: 0;
+	}
+
+	.parking-info-container .section-title {
+		font-size: 20px;
+		margin-bottom: 20px;
+	}
+
+	.parking-info-container .info-list {
+		gap: 20px;
+	}
+
+	.parking-info-container .info-item {
+		padding: 0;
+	}
+
+	.parking-info-container .info-item .label {
+		font-size: 14px;
+	}
+
+	.parking-info-container .info-item .value {
+		font-size: 14px;
+	}
+
+	.parking-info-container .parking-description {
+		padding-top: 15px;
+	}
+
+	.parking-info-container .parking-description p {
+		font-size: 14px;
+	}
+}
+
+/* 駐車場案内 - シンプル */
+.parking-info-simple {
+	margin-top: 50px;
+	padding: 0;
+	background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+	border: 2px solid #8a7a5e;
+	border-radius: 8px;
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+	display: flex;
+	overflow: hidden;
+}
+
+.parking-content-left {
+	flex: 1;
+	padding: 30px 35px;
+	display: flex;
+	flex-direction: column;
+}
+
+.parking-image-right {
+	flex: 0 0 40%;
+	overflow: hidden;
+}
+
+.parking-image-right img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	display: block;
+	transition: transform 0.5s ease;
+}
+
+.parking-info-simple:hover .parking-image-right img {
+	transform: scale(1.05);
+}
+
+.parking-simple-title {
+	font-family: 'Noto Sans JP', sans-serif;
+	font-size: 1.5rem;
+	color: #2c2c2c;
+	font-weight: 600;
+	margin: 0 0 15px 0;
+	letter-spacing: 0.1em;
+	display: flex;
+	align-items: center;
+	gap: 10px;
+}
+
+.parking-icon {
+	width: 1.8rem;
+	height: 1.8rem;
+	display: inline-block;
+}
+
+.parking-simple-text {
+	font-family: 'Noto Sans JP', sans-serif;
+	font-size: 1rem;
+	color: #555;
+	margin: 0 0 20px 0;
+	line-height: 1.8;
+	letter-spacing: 0.03em;
+}
+
+.parking-capacity {
+	display: flex;
+	align-items: center;
+	gap: 15px;
+	padding-top: 15px;
+	border-top: 1px solid #d4af37;
+	margin-top: auto;
+}
+
+.capacity-label {
+	font-family: 'Noto Sans JP', sans-serif;
+	font-size: 1rem;
+	color: #8a7a5e;
+	font-weight: 500;
+}
+
+.capacity-number {
+	font-family: 'Noto Sans JP', sans-serif;
+	font-size: 1.8rem;
+	color: #2c2c2c;
+	font-weight: 700;
+	letter-spacing: 0.05em;
+}
+
+@media (max-width: 768px) {
+	.parking-info-simple {
+		margin-top: 40px;
+		flex-direction: column;
+	}
+
+	.parking-content-left {
+		padding: 25px 20px;
+		order: 2;
+	}
+
+	.parking-image-right {
+		flex: 0 0 auto;
+		height: 200px;
+		order: 1;
+	}
+
+	.parking-simple-title {
+		font-size: 1.3rem;
+		margin-bottom: 12px;
+	}
+
+	.parking-simple-text {
+		font-size: 0.9rem;
+		line-height: 1.7;
+		margin-bottom: 18px;
+	}
+
+	.parking-capacity {
+		gap: 12px;
+		padding-top: 12px;
+	}
+
+	.capacity-label {
+		font-size: 0.9rem;
+	}
+
+	.capacity-number {
+		font-size: 1.5rem;
+	}
+}
+
+/* 送迎バス案内 - 停車場と同じスタイル */
+.shuttle-bus-info {
+	margin-top: 50px;
+	padding: 0;
+	background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+	border: 2px solid #8a7a5e;
+	border-radius: 8px;
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+	display: flex;
+	overflow: hidden;
+}
+
+.shuttle-content-left {
+	flex: 1;
+	padding: 30px 35px;
+	display: flex;
+	flex-direction: column;
+}
+
+.shuttle-image-right {
+	flex: 0 0 40%;
+	overflow: hidden;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background: #e9ecef;
+}
+
+.image-placeholder {
+	text-align: center;
+	color: #8a7a5e;
+}
+
+.image-placeholder i {
+	font-size: 80px;
+	margin-bottom: 15px;
+	opacity: 0.3;
+}
+
+.image-placeholder p {
+	font-family: 'Noto Sans JP', sans-serif;
+	font-size: 0.95rem;
+	margin: 0;
+	opacity: 0.5;
+}
+
+.shuttle-title {
+	font-family: 'Noto Sans JP', sans-serif;
+	font-size: 1.5rem;
+	color: #2c2c2c;
+	font-weight: 600;
+	margin: 0 0 15px 0;
+	letter-spacing: 0.1em;
+	display: flex;
+	align-items: center;
+	gap: 10px;
+}
+
+.shuttle-icon {
+	width: 1.8rem;
+	height: 1.8rem;
+	display: inline-block;
+}
+
+.shuttle-text {
+	font-family: 'Noto Sans JP', sans-serif;
+	font-size: 1rem;
+	color: #555;
+	margin: 0 0 20px 0;
+	line-height: 1.8;
+	letter-spacing: 0.03em;
+}
+
+.shuttle-details {
+	display: flex;
+	align-items: center;
+	gap: 15px;
+	padding-top: 15px;
+	border-top: 1px solid #d4af37;
+	margin-top: auto;
+}
+
+.shuttle-label {
+	font-family: 'Noto Sans JP', sans-serif;
+	font-size: 1rem;
+	color: #8a7a5e;
+	font-weight: 500;
+}
+
+.shuttle-value {
+	font-family: 'Noto Sans JP', sans-serif;
+	font-size: 1.1rem;
+	color: #2c2c2c;
+	font-weight: 600;
+	letter-spacing: 0.05em;
+}
+
+/* 送迎バス時刻表 */
+.shuttle-timetable {
+	flex: 1;
+	padding: 20px 25px;
+	background: #fff;
+	border-left: 1px solid #e8e8e8;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+}
+
+.timetable-title {
+	font-family: 'Noto Sans JP', sans-serif;
+	font-size: 0.95rem;
+	color: #2c2c2c;
+	font-weight: 600;
+	margin: 0 0 12px 0;
+	text-align: center;
+	letter-spacing: 0.05em;
+}
+
+.timetable-title i {
+	color: #8a7a5e;
+	margin-right: 6px;
+	font-size: 0.9rem;
+}
+
+.timetable-grid {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 15px;
+	margin-bottom: 10px;
+}
+
+.timetable-column {
+	flex: 1;
+}
+
+.timetable-header {
+	font-family: 'Noto Sans JP', sans-serif;
+	font-size: 0.85rem;
+	color: #8a7a5e;
+	font-weight: 600;
+	text-align: center;
+	margin-bottom: 8px;
+	padding-bottom: 5px;
+	border-bottom: 2px solid #d4af37;
+}
+
+.timetable-times {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+}
+
+.time-slot {
+	font-family: 'Noto Sans JP', sans-serif;
+	font-size: 0.85rem;
+	color: #2c2c2c;
+	font-weight: 500;
+	text-align: center;
+	padding: 4px 8px;
+	background: #f8f9fa;
+	border-radius: 3px;
+	border: 1px solid #e8e8e8;
+	transition: all 0.2s ease;
+}
+
+.time-slot:hover {
+	background: #e9ecef;
+	border-color: #8a7a5e;
+}
+
+.timetable-divider {
+	display: flex;
+	align-items: center;
+	color: #8a7a5e;
+	font-size: 1rem;
+}
+
+.timetable-note {
+	font-family: 'Noto Sans JP', sans-serif;
+	font-size: 0.75rem;
+	color: #666;
+	text-align: center;
+	margin: 0;
+	padding-top: 8px;
+	border-top: 1px solid #e8e8e8;
+}
+
+@media (max-width: 768px) {
+	.shuttle-bus-info {
+		margin-top: 40px;
+		flex-direction: column;
+	}
+
+	.shuttle-timetable {
+		padding: 25px 20px;
+		border-left: none;
+		border-top: 1px solid #e8e8e8;
+		order: 3;
+	}
+
+	.timetable-title {
+		font-size: 1rem;
+		margin-bottom: 15px;
+	}
+
+	.timetable-grid {
+		gap: 15px;
+	}
+
+	.timetable-header {
+		font-size: 0.85rem;
+	}
+
+	.time-slot {
+		font-size: 0.85rem;
+		padding: 5px 10px;
+	}
+
+	.timetable-note {
+		font-size: 0.75rem;
+	}
+
+	.shuttle-content-left {
+		padding: 25px 20px;
+		order: 2;
+	}
+
+	.shuttle-image-right {
+		flex: 0 0 auto;
+		height: 200px;
+		order: 1;
+	}
+
+	.image-placeholder i {
+		font-size: 60px;
+		margin-bottom: 10px;
+	}
+
+	.image-placeholder p {
+		font-size: 0.85rem;
+	}
+
+	.shuttle-title {
+		font-size: 1.3rem;
+		margin-bottom: 12px;
+	}
+
+	.shuttle-text {
+		font-size: 0.9rem;
+		line-height: 1.7;
+		margin-bottom: 18px;
+	}
+
+	.shuttle-details {
+		gap: 12px;
+		padding-top: 12px;
+	}
+
+	.shuttle-label {
+		font-size: 0.9rem;
+	}
+
+	.shuttle-value {
+		font-size: 1rem;
+	}
+}
+
+/* =============================================
+   日式横向路线卡片 - Japanese Horizontal Route Card (紧凑版)
+   ============================================= */
+
+.route-card-jp {
+	background: white;
+	border-radius: 0;
+	padding: 20px 25px;
+	box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
+	border: 1px solid #e8e8e8;
+	transition: all 0.3s ease;
+	display: flex;
+	align-items: center;
+	gap: 25px;
+}
+
+.route-card-jp:hover {
+	box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+	transform: translateY(-2px);
+}
+
+.route-title-text {
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+	flex-shrink: 0;
+	min-width: 120px;
+	padding-right: 20px;
+	border-right: 2px solid #8a7a5e;
+	align-items: center;
+	justify-content: center;
+}
+
+
+.route-origin-jp {
+	font-family: 'Noto Sans JP', sans-serif;
+	font-size: 1rem;
+	color: #2c2c2c;
+	font-weight: 600;
+	margin: 0;
+	letter-spacing: 0.05em;
+	white-space: nowrap;
+}
+
+.route-city-emoji {
+	font-size: 1.1rem;
+	line-height: 1;
+}
+
+.route-duration-jp {
+	font-family: 'Noto Sans JP', sans-serif;
+	font-size: 0.8rem;
+	color: #8a7a5e;
+	font-weight: 600;
+	background: #f8f9fa;
+	padding: 3px 10px;
+	border-radius: 10px;
+	text-align: center;
+}
+
+/* 横向路线 - 紧凑布局 */
+.route-path-jp-horizontal {
+	display: flex;
+	align-items: flex-start;
+	gap: 0;
+	flex: 1;
+}
+
+.route-station-jp-h {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 6px;
+	position: relative;
+	flex-shrink: 0;
+}
+
+.station-dot-h {
+	width: 10px;
+	height: 10px;
+	background: white;
+	border: 2px solid #8a7a5e;
+	border-radius: 50%;
+	z-index: 2;
+	position: relative;
+	flex-shrink: 0;
+	margin-top: 24px;
+}
+
+.route-start .station-dot-h {
+	background: #8a7a5e;
+}
+
+.route-end .station-dot-h {
+	background: #d4af37;
+	border-color: #d4af37;
+}
+
+.station-info-h {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 2px;
+}
+
+.station-name-h {
+	font-family: 'Noto Sans JP', sans-serif;
+	font-size: 0.85rem;
+	color: #2c2c2c;
+	font-weight: 600;
+	white-space: nowrap;
+}
+
+/* 终点站酒店名称为蓝色 */
+.route-end .station-name-h {
+	color: #1e3a8a;
+}
+
+.station-label-h {
+	font-family: 'Noto Sans JP', sans-serif;
+	font-size: 0.65rem;
+	color: #999;
+	font-weight: 400;
+}
+
+/* 连接线 - 简洁版 */
+.route-line-jp-h {
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: flex-start;
+	gap: 6px;
+	position: relative;
+	margin: 0 12px;
+}
+
+.line-connector-h {
+	width: 100%;
+	height: 2px;
+	background: linear-gradient(90deg, #8a7a5e 0%, #d4af37 100%);
+	margin-top: 29px;
+}
+
+.line-dashed {
+	background: transparent;
+	border-top: 2px dashed #8a7a5e;
+}
+
+.line-info-h {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	position: absolute;
+	top: 0;
+	left: 50%;
+	transform: translateX(-50%);
+}
+
+.line-info-secondary {
+	top: 34px;
+}
+
+.line-transport-h {
+	font-family: 'Noto Sans JP', sans-serif;
+	font-size: 0.75rem;
+	color: #555;
+	font-weight: 500;
+	background: #f8f9fa;
+	padding: 3px 8px;
+	border-radius: 4px;
+	white-space: nowrap;
+}
+
+.route-walk .line-transport-h {
+	background: #fff;
+	border: 1px dashed #ccc;
+	padding: 2px 6px;
+}
+
+.line-transport-h i {
+	color: #8a7a5e;
+	margin-right: 3px;
+	font-size: 0.7rem;
+}
+
+.transport-icon {
+	width: 0.9rem;
+	height: 0.9rem;
+	margin-right: 4px;
+	vertical-align: middle;
+	display: inline-block;
+}
+
+.free-badge {
+	background: #059669;
+	color: white;
+	font-size: 0.65rem;
+	padding: 2px 5px;
+	margin-right: 3px;
+	font-weight: 700;
+	border-radius: 0;
+	letter-spacing: 0.5px;
+}
+
+.shuttle-link {
+	color: inherit;
+	text-decoration: none;
+	transition: all 0.3s ease;
+	cursor: pointer;
+}
+
+.shuttle-link:hover {
+	color: #059669;
+	text-decoration: underline;
+}
+
+.shuttle-link:hover .free-badge {
+	background: #047857;
+	box-shadow: 0 2px 4px rgba(5, 150, 105, 0.3);
+}
+
+/* Scroll offset for anchor links to account for fixed navbar */
+#shuttle-bus {
+	scroll-margin-top: 120px;
+}
+
+.line-time-h {
+	font-family: 'Noto Sans JP', sans-serif;
+	font-size: 0.7rem;
+	color: #8a7a5e;
+	font-weight: 600;
+	white-space: nowrap;
+}
+
+/* 响应式 */
+@media (max-width: 768px) {
+	.route-card-jp {
+		padding: 16px;
+		flex-direction: column;
+		gap: 0;
+		align-items: stretch;
+	}
+
+	.route-title-text {
+		flex-direction: row;
+		justify-content: space-between;
+		align-items: center;
+		border-right: none;
+		border-bottom: 1px solid #e8e8e8;
+		padding-right: 0;
+		padding-bottom: 12px;
+		margin-bottom: 16px;
+		min-width: auto;
+	}
+
+	.route-origin-jp {
+		font-size: 1rem;
+	}
+
+	.route-duration-jp {
+		font-size: 0.75rem;
+		padding: 4px 10px;
+	}
+
+	.route-path-jp-horizontal {
+		flex-direction: column;
+		gap: 0;
+		padding-left: 12px;
+		position: relative;
+	}
+
+	/* 垂直连接线 - 贯穿整个路线 */
+	.route-path-jp-horizontal::before {
+		content: '';
+		position: absolute;
+		left: 16px;
+		top: 8px;
+		bottom: 8px;
+		width: 2px;
+		background: linear-gradient(180deg, #8a7a5e 0%, #d4af37 100%);
+		z-index: 1;
+	}
+
+	.route-station-jp-h {
+		flex-direction: row;
+		width: 100%;
+		justify-content: flex-start;
+		align-items: center;
+		gap: 12px;
+		padding: 10px 0;
+		position: relative;
+		z-index: 2;
+	}
+
+	.station-dot-h {
+		margin-top: 0;
+		flex-shrink: 0;
+	}
+
+	.station-info-h {
+		align-items: flex-start;
+		text-align: left;
+		flex-direction: row;
+		gap: 8px;
+	}
+
+	.station-name-h {
+		font-size: 0.95rem;
+		white-space: normal;
+	}
+
+	.station-label-h {
+		font-size: 0.7rem;
+		background: #f0f0f0;
+		padding: 2px 6px;
+		border-radius: 3px;
+	}
+
+	.route-start .station-label-h {
+		background: #8a7a5e;
+		color: white;
+	}
+
+	.route-end .station-label-h {
+		background: #d4af37;
+		color: white;
+	}
+
+	.route-line-jp-h {
+		width: 100%;
+		flex-direction: row;
+		margin: 0;
+		padding: 8px 0 8px 36px;
+		position: relative;
+		z-index: 2;
+	}
+
+	.line-connector-h {
+		display: none;
+	}
+
+	.line-dashed {
+		border-top: none;
+		border-left: none;
+	}
+
+	.line-info-h {
+		position: static;
+		transform: none;
+		flex-direction: row;
+		flex-wrap: wrap;
+		gap: 8px;
+		align-items: center;
+		background: #f8f9fa;
+		padding: 8px 12px;
+		border-radius: 6px;
+		border-left: 3px solid #8a7a5e;
+	}
+
+	.line-info-secondary {
+		margin-top: 0;
+		margin-left: 8px;
+	}
+
+	.route-walk .line-info-h {
+		border-left-style: dashed;
+	}
+
+	.line-transport-h {
+		font-size: 0.8rem;
+		padding: 4px 8px;
+		background: white;
+		border-radius: 4px;
+	}
+
+	.line-time-h {
+		font-size: 0.75rem;
+		color: #666;
+	}
+
+	.transport-icon {
+		width: 1rem;
+		height: 1rem;
+	}
+
+	.free-badge {
+		font-size: 0.6rem;
+		padding: 2px 4px;
+	}
+}
+
+/* 更小屏幕优化 */
+@media (max-width: 480px) {
+	.route-card-jp {
+		padding: 14px;
+	}
+
+	.route-title-text {
+		padding-bottom: 10px;
+		margin-bottom: 14px;
+	}
+
+	.route-origin-jp {
+		font-size: 0.95rem;
+	}
+
+	.route-path-jp-horizontal {
+		padding-left: 8px;
+	}
+
+	.route-path-jp-horizontal::before {
+		left: 12px;
+	}
+
+	.route-station-jp-h {
+		padding: 8px 0;
+		gap: 10px;
+	}
+
+	.station-dot-h {
+		width: 8px;
+		height: 8px;
+	}
+
+	.station-name-h {
+		font-size: 0.85rem;
+	}
+
+	.station-label-h {
+		font-size: 0.65rem;
+	}
+
+	.route-line-jp-h {
+		padding: 6px 0 6px 28px;
+	}
+
+	.line-info-h {
+		padding: 6px 10px;
+		gap: 6px;
+	}
+
+	.line-transport-h {
+		font-size: 0.75rem;
+		padding: 3px 6px;
+	}
+
+	.line-time-h {
+		font-size: 0.7rem;
+	}
+}
+
+/* =============================================
+   Google Maps Route Section
+   ============================================= */
+
+.google-maps-route-section {
+	margin-top: 40px;
+	text-align: center;
+	padding: 30px 0;
+}
+
+.google-maps-route-btn {
+	display: inline-flex;
+	align-items: center;
+	gap: 12px;
+	padding: 18px 40px;
+	background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
+	color: white;
+	text-decoration: none;
+	border-radius: 0;
+	font-family: 'Noto Sans JP', sans-serif;
+	font-size: 1rem;
+	font-weight: 600;
+	transition: all 0.3s ease;
+	box-shadow: 0 4px 15px rgba(30, 58, 138, 0.3);
+	letter-spacing: 0.05em;
+}
+
+.google-maps-route-btn:hover {
+	background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+	transform: translateY(-2px);
+	box-shadow: 0 6px 20px rgba(30, 58, 138, 0.4);
+	color: white;
+}
+
+/* Transit button - Green color for public transport */
+.google-maps-route-btn.transit-btn {
+	background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+	box-shadow: 0 4px 15px rgba(5, 150, 105, 0.3);
+}
+
+.google-maps-route-btn.transit-btn:hover {
+	background: linear-gradient(135deg, #10b981 0%, #047857 100%);
+	box-shadow: 0 6px 20px rgba(5, 150, 105, 0.4);
+}
+
+/* Driving button - Blue color for car */
+.google-maps-route-btn.driving-btn {
+	background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
+	box-shadow: 0 4px 15px rgba(30, 58, 138, 0.3);
+}
+
+.google-maps-route-btn.driving-btn:hover {
+	background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+	box-shadow: 0 6px 20px rgba(30, 58, 138, 0.4);
+}
+
+.google-maps-route-btn .google-maps-icon {
+	width: 1.3rem;
+	height: 1.3rem;
+}
+
+.google-maps-route-btn i:first-child {
+	font-size: 1.3rem;
+}
+
+.google-maps-route-btn i:last-child {
+	font-size: 0.9rem;
+	opacity: 0.8;
+}
+
+.route-hint {
+	margin-top: 15px;
+	font-family: 'Noto Sans JP', sans-serif;
+	font-size: 0.85rem;
+	color: #666;
+	font-weight: 400;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+	.google-maps-route-btn {
+		padding: 15px 30px;
+		font-size: 0.9rem;
+		gap: 10px;
+	}
+
+	.google-maps-route-btn .google-maps-icon {
+		width: 1.1rem;
+		height: 1.1rem;
+	}
+
+	.google-maps-route-btn i:first-child {
+		font-size: 1.1rem;
+	}
+
+	.route-hint {
+		font-size: 0.75rem;
+		padding: 0 15px;
+	}
+}

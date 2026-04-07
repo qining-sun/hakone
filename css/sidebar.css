@@ -1,0 +1,321 @@
+/*
+ * Sidebar Navigation Design
+ * Inspired by Colorlib Sidebar V06
+ * License: CC BY 3.0 - https://colorlib.com
+ */
+
+/* Body adjustment for sidebar */
+body.sidebar-active {
+    margin-left: 260px;
+}
+
+/* Main Sidebar Container */
+.sidebar-nav {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 260px;
+    height: 100vh;
+    background: #ffffff;
+    color: #1e3a8a;
+    z-index: 1000;
+    overflow-y: auto;
+    transition: transform 0.3s ease;
+    box-shadow: 2px 0 15px rgba(0, 0, 0, 0.1);
+    border-right: 1px solid #e5e5e5;
+}
+
+/* Custom Scrollbar */
+.sidebar-nav::-webkit-scrollbar {
+    width: 6px;
+}
+
+.sidebar-nav::-webkit-scrollbar-track {
+    background: #f5f5f5;
+}
+
+.sidebar-nav::-webkit-scrollbar-thumb {
+    background: #1e3a8a;
+    border-radius: 3px;
+}
+
+.sidebar-nav::-webkit-scrollbar-thumb:hover {
+    background: #1e40af;
+}
+
+/* Logo Section */
+.sidebar-logo {
+    padding: 40px 30px 30px;
+    text-align: center;
+    border-bottom: 1px solid #e5e5e5;
+}
+
+.sidebar-logo-link {
+    display: inline-block;
+    transition: transform 0.3s ease;
+}
+
+.sidebar-logo-link:hover {
+    transform: scale(1.05);
+}
+
+.sidebar-logo-img {
+    height: 85px;
+    width: auto;
+    filter: none;
+}
+
+/* Navigation Menu */
+.sidebar-menu {
+    padding: 20px 0;
+}
+
+.sidebar-menu-item {
+    display: flex;
+    align-items: center;
+    padding: 16px 30px;
+    color: #1e3a8a;
+    text-decoration: none;
+    font-size: 16px;
+    font-weight: 400;
+    transition: all 0.3s ease;
+    position: relative;
+    border-left: 3px solid transparent;
+}
+
+.sidebar-menu-item:hover {
+    background: #f8f9fa;
+    color: #1e3a8a;
+    border-left-color: #1e3a8a;
+    padding-left: 35px;
+}
+
+.sidebar-menu-item.active {
+    background: rgba(30, 58, 138, 0.1);
+    color: #1e3a8a;
+    border-left-color: #1e3a8a;
+    font-weight: 500;
+}
+
+.sidebar-menu-item i {
+    font-size: 20px;
+    width: 35px;
+    text-align: center;
+    margin-right: 15px;
+}
+
+/* Booking Section */
+.sidebar-booking {
+    padding: 20px 30px;
+    border-top: 1px solid #e5e5e5;
+    margin-top: 20px;
+}
+
+.sidebar-booking-btn {
+    width: 100%;
+    padding: 14px 20px;
+    background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%);
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    box-shadow: 0 4px 12px rgba(30, 58, 138, 0.3);
+    position: relative;
+}
+
+.sidebar-booking-btn:hover {
+    background: linear-gradient(135deg, #1e40af 0%, #1e4fb8 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(30, 58, 138, 0.4);
+}
+
+.sidebar-booking-btn i {
+    font-size: 18px;
+}
+
+.sidebar-coming-soon {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background: #ff6b6b;
+    color: white;
+    font-size: 10px;
+    padding: 3px 8px;
+    border-radius: 10px;
+    font-weight: 600;
+}
+
+/* Contact Info */
+.sidebar-contact {
+    padding: 20px 30px;
+    border-top: 1px solid #e5e5e5;
+}
+
+.sidebar-contact-item {
+    display: flex;
+    align-items: center;
+    color: #1e3a8a;
+    font-size: 14px;
+    margin-bottom: 12px;
+}
+
+.sidebar-contact-item i {
+    font-size: 16px;
+    width: 25px;
+    margin-right: 10px;
+    color: #1e3a8a;
+}
+
+/* Copyright Footer */
+.sidebar-footer {
+    padding: 20px 30px 30px;
+    border-top: 1px solid #e5e5e5;
+    text-align: center;
+    font-size: 12px;
+    color: #999999;
+    line-height: 1.6;
+}
+
+.sidebar-footer a {
+    color: #1e3a8a;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.sidebar-footer a:hover {
+    color: #1e3a8a;
+}
+
+/* Mobile Toggle Button */
+.sidebar-toggle {
+    display: none;
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    width: 50px;
+    height: 50px;
+    background: #1e3a8a;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    z-index: 1001;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    transition: all 0.3s ease;
+}
+
+.sidebar-toggle:hover {
+    background: #1e40af;
+    transform: scale(1.05);
+}
+
+.sidebar-toggle span {
+    width: 25px;
+    height: 3px;
+    background: #ffffff;
+    border-radius: 2px;
+    transition: all 0.3s ease;
+}
+
+/* Mobile Overlay */
+.sidebar-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+/* Mobile Responsive */
+@media (max-width: 992px) {
+    body.sidebar-active {
+        margin-left: 0;
+    }
+
+    .sidebar-nav {
+        transform: translateX(-100%);
+    }
+
+    .sidebar-toggle {
+        display: flex;
+    }
+
+    body.sidebar-open .sidebar-nav {
+        transform: translateX(0);
+    }
+
+    body.sidebar-open .sidebar-overlay {
+        display: block;
+        opacity: 1;
+    }
+
+    body.sidebar-open .sidebar-toggle {
+        left: 280px;
+    }
+}
+
+@media (max-width: 768px) {
+    .sidebar-nav {
+        width: 260px;
+    }
+
+    .sidebar-logo {
+        padding: 30px 20px 20px;
+    }
+
+    .sidebar-logo-img {
+        height: 70px;
+    }
+
+    .sidebar-menu-item {
+        padding: 14px 20px;
+        font-size: 15px;
+    }
+
+    .sidebar-booking {
+        padding: 15px 20px;
+    }
+
+    .sidebar-contact {
+        padding: 15px 20px;
+    }
+}
+
+/* Animation for active state */
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateX(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.sidebar-menu-item {
+    animation: slideIn 0.3s ease forwards;
+}
+
+.sidebar-menu-item:nth-child(1) { animation-delay: 0.05s; }
+.sidebar-menu-item:nth-child(2) { animation-delay: 0.1s; }
+.sidebar-menu-item:nth-child(3) { animation-delay: 0.15s; }
+.sidebar-menu-item:nth-child(4) { animation-delay: 0.2s; }
+.sidebar-menu-item:nth-child(5) { animation-delay: 0.25s; }
+.sidebar-menu-item:nth-child(6) { animation-delay: 0.3s; }
+.sidebar-menu-item:nth-child(7) { animation-delay: 0.35s; }

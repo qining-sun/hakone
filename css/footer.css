@@ -1,0 +1,439 @@
+.footer-container {
+    background: transparent;
+    color: #333;
+    padding: 60px 0 0;
+    border-top: 1px solid rgba(210, 105, 30, 0.2);
+}
+
+.footer-container #footer.container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 40px;
+}
+
+/* Footer Brand Section */
+.footer-brand-section .footer-section h4 {
+    display: none;
+}
+
+.footer-logo-container {
+    display: flex;
+    justify-content: flex-start;
+    margin-bottom: 15px;
+}
+
+.footer-logo {
+    height: 130px;
+    width: auto;
+}
+
+.footer-hotel-name {
+    font-family: 'AoyagiReisho', 'DotGothic16', 'Noto Sans JP', serif;
+    font-size: 24px;
+    font-weight: 400;
+    color: #1e3a8a;
+    letter-spacing: 3px;
+    margin: 0 0 8px 0;
+    text-shadow: 0 2px 4px rgba(30, 58, 138, 0.2);
+}
+
+.footer-tagline {
+    font-size: 13px;
+    color: #D2691E;
+    letter-spacing: 2px;
+    margin: 0 0 20px 0;
+    font-weight: 300;
+}
+
+.footer-contact-info {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.footer-contact-info li {
+    color: #666;
+    margin-bottom: 8px;
+    font-size: 14px;
+}
+
+.footer-contact-info .footer-phone {
+    font-size: 20px;
+    font-weight: 600;
+    color: #333;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+}
+
+.footer-contact-info .footer-phone i {
+    color: #D2691E;
+    font-size: 18px;
+}
+
+.footer-section {
+    min-width: 0;
+}
+
+.footer-section ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.footer-section ul li {
+    margin-bottom: 12px;
+}
+
+.footer-section ul li a {
+    color: #666;
+    text-decoration: none;
+    transition: color 0.3s ease;
+    font-size: 14px;
+}
+
+.footer-section ul li a:hover {
+    color: #D2691E;
+}
+
+.footer-section ul li i {
+    color: #D2691E;
+    width: 16px;
+}
+
+.footer-content {
+    display: grid;
+    grid-template-columns: 2fr 1.12fr 1fr 1.5fr;
+    gap: 40px;
+    width: 100%;
+    align-items: start;
+}
+
+.footer-section h4 {
+    font-size: 16px;
+    font-weight: 500;
+    margin-bottom: 25px;
+    color: #333;
+    position: relative;
+    white-space: nowrap;
+    padding-bottom: 15px;
+    letter-spacing: 2px;
+    font-family: 'Noto Sans JP', sans-serif;
+}
+
+.footer-section h4::before {
+    content: '◆';
+    position: absolute;
+    left: -20px;
+    color: #D2691E;
+    font-size: 12px;
+    top: 2px;
+}
+
+.footer-section h4::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, #D2691E 0%, transparent 100%);
+}
+
+.payment-methods {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    align-items: center;
+}
+
+.payment-icon {
+    width: 36px;
+    height: 36px;
+    transition: all 0.3s ease;
+}
+
+.payment-icon:hover {
+    transform: translateY(-2px);
+    opacity: 0.8;
+}
+
+.footer-payment-social .follow-title {
+    margin-top: 35px;
+}
+
+.social-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.social-links a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #666;
+    transition: all 0.3s ease;
+}
+
+.social-links a svg,
+.social-links a .social-icon-svg {
+    width: 36px;
+    height: 36px;
+}
+
+.social-links a .social-icon-svg {
+    transition: opacity 0.3s ease;
+}
+
+.social-links a:hover .social-icon-svg {
+    opacity: 0.8;
+}
+
+.social-links a:hover {
+    color: #D2691E;
+    transform: translateY(-2px);
+}
+
+.footer-copyright {
+    text-align: center;
+    padding: 30px 0;
+    margin-top: 50px;
+    border-top: 1px solid rgba(210, 105, 30, 0.2);
+    color: #666;
+    font-size: 13px;
+}
+
+.margin-btm-50 {
+    margin-bottom: 50px;
+}
+
+/* Responsive Design */
+@media (max-width: 992px) {
+    .footer-container {
+        padding: 50px 0 0;
+    }
+
+    .footer-container #footer.container {
+        padding: 0 30px;
+    }
+
+    .footer-content {
+        grid-template-columns: 1fr 1fr;
+        gap: 30px;
+    }
+
+    .footer-brand-section {
+        grid-column: span 2;
+    }
+
+    .footer-logo-container {
+        justify-content: center;
+    }
+
+    .footer-logo {
+        height: 110px;
+    }
+
+    .footer-hotel-name {
+        font-size: 22px;
+        letter-spacing: 2px;
+    }
+
+    .footer-section h4 {
+        font-size: 15px;
+        margin-bottom: 20px;
+        padding-bottom: 12px;
+    }
+
+    .footer-section ul li {
+        margin-bottom: 10px;
+    }
+
+    .footer-section ul li a {
+        font-size: 13px;
+    }
+
+    .footer-contact-info li {
+        font-size: 13px;
+    }
+
+    .footer-contact-info .footer-phone {
+        font-size: 18px;
+    }
+}
+
+@media (max-width: 768px) {
+    .footer-container {
+        padding: 40px 0 0;
+    }
+
+    .footer-container #footer.container {
+        padding: 0 20px;
+    }
+
+    .footer-content {
+        grid-template-columns: 1fr;
+        gap: 30px;
+        text-align: center;
+    }
+
+    .footer-brand-section {
+        grid-column: 1;
+        margin-bottom: 20px;
+    }
+
+    .footer-logo-container {
+        justify-content: center;
+    }
+
+    .footer-logo {
+        height: 100px;
+    }
+
+    .footer-hotel-name {
+        font-size: 20px;
+        letter-spacing: 2px;
+    }
+
+    .footer-tagline {
+        font-size: 12px;
+    }
+
+    .footer-contact-info {
+        text-align: center !important;
+    }
+
+    .footer-contact-info li {
+        display: block !important;
+        text-align: center !important;
+        width: 100% !important;
+    }
+
+    .footer-contact-info .footer-phone {
+        display: flex !important;
+        justify-content: center !important;
+        align-items: center !important;
+        font-size: 17px !important;
+        width: 100% !important;
+        text-align: center !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
+    }
+
+    .footer-section h4 {
+        font-size: 14px;
+        margin-bottom: 18px;
+        padding-bottom: 10px;
+    }
+
+    .footer-section h4::before {
+        display: none;
+    }
+
+    .footer-section ul li {
+        margin-bottom: 10px;
+    }
+
+    .footer-section ul li a {
+        font-size: 13px;
+    }
+
+    .social-links {
+        justify-content: center;
+    }
+
+    .payment-methods {
+        justify-content: center;
+    }
+
+    .footer-copyright {
+        padding: 25px 0;
+        margin-top: 40px;
+        font-size: 12px;
+    }
+}
+
+@media (max-width: 480px) {
+    .footer-container {
+        padding: 35px 0 0;
+    }
+
+    .footer-container #footer.container {
+        padding: 0 15px;
+    }
+
+    .footer-content {
+        gap: 25px;
+    }
+
+    .footer-logo {
+        height: 90px;
+    }
+
+    .footer-hotel-name {
+        font-size: 18px;
+        letter-spacing: 1.5px;
+    }
+
+    .footer-tagline {
+        font-size: 11px;
+        letter-spacing: 1.5px;
+    }
+
+    .footer-contact-info li {
+        font-size: 12px !important;
+        margin-bottom: 7px !important;
+        text-align: center !important;
+        width: 100% !important;
+    }
+
+    .footer-contact-info .footer-phone {
+        display: flex !important;
+        justify-content: center !important;
+        align-items: center !important;
+        font-size: 16px !important;
+        margin-bottom: 10px !important;
+        width: 100% !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
+    }
+
+    .footer-contact-info .footer-phone i {
+        font-size: 16px;
+    }
+
+    .footer-section h4 {
+        font-size: 13px;
+        margin-bottom: 15px;
+    }
+
+    .footer-section ul li {
+        margin-bottom: 9px;
+    }
+
+    .footer-section ul li a {
+        font-size: 12px;
+    }
+
+    .payment-icon {
+        width: 32px;
+        height: 32px;
+    }
+
+    .social-links a svg,
+    .social-links a .social-icon-svg {
+        width: 32px;
+        height: 32px;
+    }
+
+    .footer-payment-social .follow-title {
+        margin-top: 25px;
+    }
+
+    .footer-copyright {
+        padding: 20px 0;
+        margin-top: 35px;
+        font-size: 11px;
+    }

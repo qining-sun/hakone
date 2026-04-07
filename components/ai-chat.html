@@ -1,0 +1,40 @@
+<!-- AI聊天机器人组件 -->
+<div id="ai-chat-container"></div>
+
+<!-- Marked.js库 - 用于Markdown渲染 -->
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+<!-- AI聊天机器人样式 -->
+<link rel="stylesheet" href="css/ai-chat-styles.css?v=20251127">
+
+<!-- AI聊天机器人脚本 -->
+<script src="js/ai-chat-service.js"></script>
+
+<!-- 初始化AI聊天机器人 -->
+<script>
+(function initAIChatBot() {
+    // 立即或等待初始化
+    function init() {
+        if (typeof initAIFrontdesk === 'function') {
+            // 初始化AI客服
+            window.aiChat = initAIFrontdesk({
+                container: '#ai-chat-container',
+                apiUrl: window.API_CONFIG?.CHATBOT_API || `http://${window.location.hostname}:5001/api/ai/invoke`,
+                timeout: 40000
+            });
+
+            console.log('✅ AI聊天机器人已初始化');
+        } else {
+            console.error('❌ initAIFrontdesk 函数未找到');
+        }
+    }
+
+    // 如果DOM已就绪，立即初始化；否则等待
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+    } else {
+        // DOM已加载，稍微延迟以确保所有脚本都加载完成
+        setTimeout(init, 100);
+    }
+})();
+</script>

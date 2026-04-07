@@ -1,0 +1,914 @@
+/* Onsen Page Specific Styles */
+
+/* Page Layout */
+.page-content {
+    margin-top: 0;
+}
+
+/* Hero Banner */
+.custom-hero-banner {
+    position: relative;
+    width: 100vw;
+    left: 50%;
+    right: 50%;
+    margin-left: -50vw;
+    margin-right: -50vw;
+    margin-top: -70px;
+    min-width: 100vw;
+    height: 40vh;
+    min-height: 300px;
+    max-height: 400px;
+    overflow: hidden;
+    z-index: 1;
+}
+
+.hero-bg-img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center center;
+    z-index: 1;
+    transition: transform 1s cubic-bezier(0.4,0,0.2,1);
+    filter: brightness(1.0);
+}
+
+.custom-hero-banner:hover .hero-bg-img {
+    transform: scale(1.05);
+}
+
+.hero-banner-content {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    text-shadow: 0 2px 8px rgba(0,0,0,0.4);
+    z-index: 2;
+    font-family: 'Noto Sans JP', 'Microsoft YaHei', Arial, sans-serif;
+    background: rgba(0,0,0,0.15);
+}
+
+.hero-banner-content h1 {
+    font-size: 60px;
+    font-weight: bold;
+    margin-bottom: 24px;
+    letter-spacing: 0.1em;
+}
+
+.hero-banner-content p {
+    font-size: 28px;
+    opacity: 0.95;
+}
+
+/* Main Onsen Section */
+.onsen-main-section {
+    padding: 60px 0;
+    background: #fff;
+}
+
+.onsen-intro {
+    display: flex;
+    align-items: center;
+    gap: 60px;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.onsen-intro-content {
+    flex: 1;
+}
+
+.onsen-badge {
+    display: inline-block;
+    background: linear-gradient(135deg, #D2691E, #CD853F);
+    color: white;
+    padding: 8px 20px;
+    border-radius: 25px;
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 20px;
+    letter-spacing: 0.5px;
+}
+
+.onsen-intro-content h3 {
+    font-size: 32px;
+    color: #333;
+    margin-bottom: 25px;
+    font-weight: 500;
+}
+
+.onsen-intro-text {
+    font-size: 16px;
+    color: #666;
+    line-height: 1.8;
+    margin-bottom: 40px;
+}
+
+.onsen-benefits {
+    display: flex;
+    gap: 30px;
+}
+
+.benefit-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.benefit-item i {
+    font-size: 24px;
+    color: #D2691E;
+    margin-bottom: 10px;
+}
+
+.benefit-item span {
+    font-size: 14px;
+    color: #666;
+    font-weight: 500;
+}
+
+.onsen-intro-image {
+    flex: 1;
+}
+
+.onsen-intro-img {
+    width: 100%;
+    height: 400px;
+    object-fit: cover;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+/* Onsen Types Section */
+.onsen-types-section {
+    padding: 80px 0;
+    background: #f8f8f8;
+}
+
+.onsen-types-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 60px;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.onsen-type-item {
+    background: white;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+}
+
+.onsen-type-item:hover {
+    transform: translateY(-5px);
+}
+
+.onsen-type-image {
+    position: relative;
+    height: 300px;
+    overflow: hidden;
+}
+
+.onsen-type-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+}
+
+.onsen-type-item:hover .onsen-type-img {
+    transform: scale(1.05);
+}
+
+.onsen-type-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.onsen-type-item:hover .onsen-type-overlay {
+    opacity: 1;
+}
+
+.onsen-type-info {
+    text-align: center;
+    color: white;
+}
+
+.onsen-type-info h4 {
+    font-size: 24px;
+    margin-bottom: 8px;
+    font-weight: 500;
+}
+
+.onsen-type-info p {
+    font-size: 14px;
+    opacity: 0.9;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.onsen-type-content {
+    padding: 30px;
+}
+
+.onsen-type-content h4 {
+    font-size: 22px;
+    color: #333;
+    margin-bottom: 15px;
+    font-weight: 500;
+}
+
+.onsen-type-content p {
+    font-size: 15px;
+    color: #666;
+    line-height: 1.7;
+    margin-bottom: 20px;
+}
+
+.onsen-features {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.feature-tag {
+    background: rgba(210, 105, 30, 0.1);
+    color: #D2691E;
+    padding: 6px 12px;
+    border-radius: 15px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+/* Onsen Information Section */
+.onsen-info-section {
+    padding: 80px 0;
+    background: white;
+}
+
+.onsen-info-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 40px;
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.info-card {
+    background: #f8f8f8;
+    padding: 30px;
+    border-radius: 15px;
+    text-align: center;
+    transition: transform 0.3s ease;
+}
+
+.info-card:hover {
+    transform: translateY(-5px);
+}
+
+.info-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 60px;
+    height: 60px;
+    background: #D2691E;
+    color: white;
+    border-radius: 50%;
+    margin: 0 auto 20px;
+    font-size: 24px;
+}
+
+.info-card h4 {
+    font-size: 20px;
+    color: #333;
+    margin-bottom: 20px;
+    font-weight: 500;
+}
+
+.info-details p {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 8px;
+    line-height: 1.6;
+}
+
+.info-details strong {
+    color: #333;
+    font-weight: 600;
+}
+
+/* Rooms showcase section - full width */
+.rooms-showcase-section {
+    width: 100vw;
+    position: relative;
+    left: 50%;
+    right: 50%;
+    margin-left: -50vw;
+    margin-right: -50vw;
+    padding: 60px 0;
+}
+
+/* First Onsen wrapper - 4/5 width, centered */
+.onsen-first-wrapper {
+    width: 80%;
+    max-width: 80%;
+    margin: 0 auto;
+    padding: 0 40px;
+}
+
+/* All Onsen modules - consistent wrapper styling */
+.onsen-first-wrapper,
+.onsen-second-wrapper,
+.onsen-third-wrapper,
+.onsen-fourth-wrapper {
+    width: 80%;
+    max-width: 80%;
+    margin: 0 auto 80px auto;
+    padding: 0 40px;
+}
+
+/* All Onsen modules - 2.2:1 aspect ratio image */
+.rooms-showcase-section .room-introduction-section {
+    display: flex;
+    gap: 0;
+    align-items: stretch;
+}
+
+/* Alternate layout - even modules have image on right */
+.onsen-second-wrapper .room-introduction-section,
+.onsen-fourth-wrapper .room-introduction-section {
+    flex-direction: row-reverse;
+}
+
+.rooms-showcase-section .room-introduction-section .room-image-container {
+    flex: 1;
+    width: 50%;
+    display: flex;
+    align-items: stretch;
+    overflow: hidden;
+}
+
+.rooms-showcase-section .room-introduction-section .room-image-container img {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 2.2 / 1;
+    object-fit: cover;
+    display: block;
+    flex-shrink: 0;
+    transition: transform 2s ease;
+}
+
+.rooms-showcase-section .room-introduction-section:hover .room-image-container img {
+    transform: scale(1.1);
+}
+
+.rooms-showcase-section .room-introduction-section .room-info-container {
+    flex: 1;
+    width: 50%;
+    padding: 40px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    transition: background 0.3s ease;
+}
+
+/* Different colors for each onsen module */
+.onsen-first-wrapper .room-info-container {
+    background: #f7fbff; /* Very light blue */
+}
+
+.onsen-first-wrapper .room-introduction-section:hover .room-info-container {
+    background: #eff8ff; /* Slightly darker blue on hover */
+}
+
+.onsen-second-wrapper .room-info-container {
+    background: #fffbf0; /* Very light yellow */
+}
+
+.onsen-second-wrapper .room-introduction-section:hover .room-info-container {
+    background: #fff8e1; /* Slightly darker yellow on hover */
+}
+
+.onsen-third-wrapper .room-info-container {
+    background: #fef7fb; /* Very light pink */
+}
+
+.onsen-third-wrapper .room-introduction-section:hover .room-info-container {
+    background: #fcf0f7; /* Slightly darker pink on hover */
+}
+
+.onsen-fourth-wrapper .room-info-container {
+    background: #f7fef9; /* Very light green */
+}
+
+.onsen-fourth-wrapper .room-introduction-section:hover .room-info-container {
+    background: #edfcf2; /* Slightly darker green on hover */
+}
+
+/* Seasons Section - 四季の魅力 */
+.seasons-section {
+    padding: 80px 0;
+    background: #ffffff;
+}
+
+.seasons-container {
+    width: 80%;
+    max-width: 80%;
+    margin: 0 auto;
+    padding: 0 40px;
+}
+
+.seasons-title {
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 2.5rem;
+    color: #333;
+    text-align: center;
+    margin-bottom: 60px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+}
+
+.seasons-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 30px;
+}
+
+.season-card {
+    padding: 40px 30px;
+    text-align: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border-radius: 0;
+    background: #f8f8f8;
+}
+
+.season-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.season-icon {
+    font-size: 4rem;
+    font-weight: bold;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.season-decoration {
+    font-size: 3rem;
+    animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+}
+
+/* Spring flower petals */
+.spring-flower {
+    position: relative;
+    display: inline-block;
+    width: 3rem;
+    height: 3rem;
+}
+
+.spring-flower .petal {
+    position: absolute;
+    width: 1.2rem;
+    height: 1.2rem;
+    background: #ec4899;
+    border-radius: 50% 0 50% 0;
+    opacity: 0.8;
+}
+
+.spring-flower .petal:nth-child(1) {
+    top: 0;
+    left: 50%;
+    transform: translate(-50%, 0) rotate(0deg);
+}
+
+.spring-flower .petal:nth-child(2) {
+    top: 25%;
+    right: 0;
+    transform: translate(0, 0) rotate(72deg);
+}
+
+.spring-flower .petal:nth-child(3) {
+    bottom: 10%;
+    right: 15%;
+    transform: translate(0, 0) rotate(144deg);
+}
+
+.spring-flower .petal:nth-child(4) {
+    bottom: 10%;
+    left: 15%;
+    transform: translate(0, 0) rotate(216deg);
+}
+
+.spring-flower .petal:nth-child(5) {
+    top: 25%;
+    left: 0;
+    transform: translate(0, 0) rotate(288deg);
+}
+
+/* Summer sun */
+.summer-sun {
+    position: relative;
+    display: inline-block;
+    width: 3rem;
+    height: 3rem;
+}
+
+.summer-sun .sun-center {
+    position: absolute;
+    width: 1.5rem;
+    height: 1.5rem;
+    background: #10b981;
+    border-radius: 50%;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.summer-sun .sun-ray {
+    position: absolute;
+    width: 0.4rem;
+    height: 1rem;
+    background: #10b981;
+    border-radius: 0.2rem;
+}
+
+.summer-sun .sun-ray:nth-child(2) {
+    top: 0;
+    left: 50%;
+    transform: translate(-50%, 0);
+}
+
+.summer-sun .sun-ray:nth-child(3) {
+    bottom: 0;
+    left: 50%;
+    transform: translate(-50%, 0);
+}
+
+.summer-sun .sun-ray:nth-child(4) {
+    top: 50%;
+    left: 0;
+    transform: translate(0, -50%) rotate(90deg);
+}
+
+.summer-sun .sun-ray:nth-child(5) {
+    top: 50%;
+    right: 0;
+    transform: translate(0, -50%) rotate(90deg);
+}
+
+/* Autumn leaves */
+.autumn-leaf {
+    position: relative;
+    display: inline-block;
+    width: 3rem;
+    height: 3rem;
+}
+
+.autumn-leaf .leaf {
+    position: absolute;
+    width: 1.2rem;
+    height: 1.2rem;
+    background: #f59e0b;
+    border-radius: 0 50% 0 50%;
+    opacity: 0.9;
+}
+
+.autumn-leaf .leaf:nth-child(1) {
+    top: 10%;
+    left: 50%;
+    transform: translate(-50%, 0) rotate(15deg);
+}
+
+.autumn-leaf .leaf:nth-child(2) {
+    top: 40%;
+    left: 20%;
+    transform: rotate(-30deg);
+}
+
+.autumn-leaf .leaf:nth-child(3) {
+    top: 40%;
+    right: 20%;
+    transform: rotate(45deg);
+}
+
+/* Winter snowflakes */
+.winter-snow {
+    position: relative;
+    display: inline-block;
+    width: 3rem;
+    height: 3rem;
+}
+
+.winter-snow .snowflake {
+    position: absolute;
+    width: 0.8rem;
+    height: 0.8rem;
+    background: #3b82f6;
+    clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+    opacity: 0.8;
+}
+
+.winter-snow .snowflake:nth-child(1) {
+    top: 0;
+    left: 50%;
+    transform: translate(-50%, 0) scale(1.2);
+}
+
+.winter-snow .snowflake:nth-child(2) {
+    top: 50%;
+    right: 10%;
+    transform: translate(0, -50%) scale(0.9);
+}
+
+.winter-snow .snowflake:nth-child(3) {
+    bottom: 5%;
+    left: 50%;
+    transform: translate(-50%, 0) scale(1);
+}
+
+.winter-snow .snowflake:nth-child(4) {
+    top: 50%;
+    left: 10%;
+    transform: translate(0, -50%) scale(0.8);
+}
+
+.season-name {
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 1.3rem;
+    margin-bottom: 15px;
+    font-weight: 600;
+}
+
+.season-description {
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 0.95rem;
+    line-height: 1.8;
+    color: #666;
+}
+
+/* Individual season colors */
+.season-card.spring {
+    background: #ffcce0 !important;
+}
+
+.season-card.spring .season-icon {
+    color: #ec4899;
+}
+
+.season-card.summer {
+    background: #cceeff !important;
+}
+
+.season-card.summer .season-icon {
+    color: #10b981;
+}
+
+.season-card.autumn {
+    background: #ffd4a3 !important;
+}
+
+.season-card.autumn .season-icon {
+    color: #f59e0b;
+}
+
+.season-card.winter {
+    background: linear-gradient(135deg, #f7fbff 0%, #eff8ff 100%);
+}
+
+.season-card.winter .season-icon {
+    color: #3b82f6;
+}
+
+/* Active navigation link */
+.main-navigation a.active {
+    color: #D2691E;
+}
+
+/* Responsive Design */
+@media (max-width: 992px) {
+    .onsen-intro {
+        flex-direction: column;
+        gap: 40px;
+        text-align: center;
+    }
+
+    .onsen-benefits {
+        justify-content: center;
+    }
+
+    .onsen-info-grid {
+        grid-template-columns: 1fr;
+        gap: 30px;
+    }
+}
+
+@media (max-width: 768px) {
+    .custom-hero-banner {
+        min-height: 250px;
+        height: 50vh;
+    }
+
+    .hero-banner-content h1 {
+        font-size: 32px;
+    }
+
+    .hero-banner-content p {
+        font-size: 18px;
+    }
+
+    .onsen-main-section {
+        padding: 40px 0;
+    }
+
+    .onsen-intro {
+        gap: 30px;
+    }
+
+    .onsen-intro-content h3 {
+        font-size: 26px;
+    }
+
+    .onsen-intro-text {
+        font-size: 15px;
+    }
+
+    .onsen-benefits {
+        gap: 20px;
+    }
+
+    .onsen-intro-img {
+        height: 250px;
+    }
+
+    .onsen-types-section {
+        padding: 60px 0;
+    }
+
+    .onsen-types-grid {
+        gap: 40px;
+    }
+
+    .onsen-type-image {
+        height: 200px;
+    }
+
+    .onsen-type-content {
+        padding: 25px;
+    }
+
+    .onsen-type-content h4 {
+        font-size: 20px;
+    }
+
+    .onsen-info-section {
+        padding: 60px 0;
+    }
+
+    .info-card {
+        padding: 25px;
+    }
+
+    .info-icon {
+        width: 50px;
+        height: 50px;
+        font-size: 20px;
+    }
+
+    /* 温泉施設卡片 - 手机版响应式布局 */
+    .onsen-first-wrapper,
+    .onsen-second-wrapper,
+    .onsen-third-wrapper,
+    .onsen-fourth-wrapper {
+        width: 100%;
+        max-width: 100%;
+        margin: 0 auto 40px auto;
+        padding: 0 15px;
+    }
+
+    /* 卡片改为垂直布局 */
+    .rooms-showcase-section .room-introduction-section {
+        flex-direction: column !important;
+    }
+
+    /* 偶数卡片也改为垂直布局（覆盖 row-reverse） */
+    .onsen-second-wrapper .room-introduction-section,
+    .onsen-fourth-wrapper .room-introduction-section {
+        flex-direction: column !important;
+    }
+
+    /* 图片容器 */
+    .rooms-showcase-section .room-introduction-section .room-image-container {
+        width: 100%;
+        flex: none;
+    }
+
+    /* 图片比例调整 */
+    .rooms-showcase-section .room-introduction-section .room-image-container img {
+        aspect-ratio: 16 / 10;
+        width: 100%;
+    }
+
+    /* 信息容器 */
+    .rooms-showcase-section .room-introduction-section .room-info-container {
+        width: 100%;
+        flex: none;
+        padding: 25px 20px;
+    }
+
+    /* 分类标签 */
+    .rooms-showcase-section .room-category {
+        font-size: 12px;
+    }
+
+    /* 标题 */
+    .rooms-showcase-section .room-title {
+        font-size: 22px;
+        margin-bottom: 15px;
+    }
+
+    /* 描述文字 */
+    .rooms-showcase-section .room-description {
+        font-size: 14px;
+        line-height: 1.8;
+    }
+
+    /* 详情项 */
+    .rooms-showcase-section .room-details {
+        margin-top: 15px;
+    }
+
+    .rooms-showcase-section .detail-item {
+        font-size: 13px;
+    }
+
+    /* 四季卡片 - 手机版2列布局 */
+    .seasons-container {
+        width: 100%;
+        max-width: 100%;
+        padding: 0 15px;
+    }
+
+    .seasons-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
+    }
+
+    .season-card {
+        padding: 25px 15px;
+    }
+
+    .season-icon {
+        font-size: 2.5rem;
+    }
+
+    .season-decoration {
+        font-size: 2rem;
+    }
+
+    .season-name {
+        font-size: 1.1rem;
+    }
+
+    .season-description {
+        font-size: 0.85rem;
+        line-height: 1.6;
+    }
+
+    .seasons-title {
+        font-size: 1.8rem;
+        margin-bottom: 40px;
+    }
+}

@@ -1,0 +1,32 @@
+# Dependencies
+node_modules/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.claude/
+.vscode/
+*.swp
+*.swo
+
+# Stash files
+*.stash
+
+# Temporary files
+*.tmp
+*.temp
+
+# Backup files
+*.bak
+*~
+
+# Lock files
+package-lock.json
+
+# Well-known (SSL certs etc)
+.well-known/
+
+# Logs
+*.log

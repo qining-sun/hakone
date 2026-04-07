@@ -1,0 +1,25 @@
+version: '3.8'
+
+services:
+  hotel-web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: hotel-web
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - letsencrypt:/etc/letsencrypt
+    restart: unless-stopped
+    networks:
+      - hotel-network
+    environment:
+      - TZ=Asia/Tokyo
+
+volumes:
+  letsencrypt:
+
+networks:
+  hotel-network:
+    driver: bridge

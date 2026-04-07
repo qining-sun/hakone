@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#ffffff" id="themeColor">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>プラン詳細｜【公式】Trip7箱根温泉ホテル</title>
+    <link rel="stylesheet" href="css/style.css?v=20251127">
+    <link rel="stylesheet" href="css/modern-navbar.css?v=20251201v49">
+    <link rel="stylesheet" href="css/plan-detail-new.css?v=20251127">
+    <link rel="icon" href="img/logo.ico" type="image/x-icon">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;600;700&family=Pixelify+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="js/config.js"></script>
+    <script src="js/api-config.js"></script>
+</head>
+<body class="plan-detail-page">
+    <!-- Navbar -->
+    <div id="navbar-placeholder"></div>
+
+    <!-- Hero Section with Fullscreen Image -->
+    <section class="plan-hero-section">
+        <div class="hero-image-container">
+            <img src="img/rooms/double room/room_2_500.jpg" alt="Room" class="hero-main-image" id="heroMainImage">
+            <div class="hero-gradient-overlay"></div>
+        </div>
+
+        <div class="hero-content-wrapper">
+            <div class="container">
+                <!-- Breadcrumb -->
+                <nav class="hero-breadcrumb">
+                    <a href="index.html"><i class="fas fa-home"></i></a>
+                    <i class="fas fa-chevron-right"></i>
+                    <a href="reservation.html">プラン一覧</a>
+                    <i class="fas fa-chevron-right"></i>
+                    <span class="current" id="breadcrumbCurrent">ツインルーム</span>
+                </nav>
+
+                <!-- Title Section -->
+                <div class="hero-title-section">
+                    <div class="plan-badges-hero">
+                        <span class="badge-hero popular">人気</span>
+                        <span class="badge-hero new">おすすめ</span>
+                    </div>
+                    <h1 class="hero-plan-title" id="heroPlanTitle">ツインルーム【セミダブルベッド】</h1>
+                    <p class="hero-plan-subtitle" id="heroPlanSubtitle">Twin Room with Semi-Double Beds</p>
+                </div>
+
+                <!-- Quick Info Pills -->
+                <div class="quick-info-pills">
+                    <div class="info-pill">
+                        <i class="fas fa-bed"></i>
+                        <span id="quickBedInfo">セミダブル × 2</span>
+                    </div>
+                    <div class="info-pill">
+                        <i class="fas fa-users"></i>
+                        <span id="quickCapacity">最大2名</span>
+                    </div>
+                    <div class="info-pill">
+                        <i class="fas fa-expand"></i>
+                        <span id="quickArea">33㎡</span>
+                    </div>
+                    <div class="info-pill">
+                        <i class="fas fa-utensils"></i>
+                        <span>朝夕食付き</span>
+                    </div>
+                </div>
+
+                <!-- CTA Button -->
+                <div class="hero-cta">
+                    <a href="reservation.html" class="btn-reserve-now">
+                        <span class="btn-icon"><i class="fas fa-calendar-check"></i></span>
+                        <span class="btn-content">
+                            <strong>このプランで予約</strong>
+                            <small>Check Availability</small>
+                        </span>
+                        <span class="btn-arrow"><i class="fas fa-arrow-right"></i></span>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Gallery Thumbnails -->
+        <div class="gallery-thumbnails-bar">
+            <div class="container">
+                <div class="thumbnails-scroll" id="thumbnailsScroll">
+                    <div class="thumbnail-item active" data-image="img/rooms/double room/room_2_500.jpg">
+                        <img src="img/rooms/double room/room_2_500.jpg" alt="View 1">
+                    </div>
+                    <div class="thumbnail-item" data-image="img/rooms/double room/room_2_500 - Copy.jpg">
+                        <img src="img/rooms/double room/room_2_500 - Copy.jpg" alt="View 2">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Content Section -->
+    <section class="plan-content-section">
+        <div class="container">
+            <div class="content-grid">
+
+                <!-- Room Specifications -->
+                <div class="content-card specs-card">
+                    <div class="card-header">
+                        <div class="card-icon">
+                            <i class="fas fa-door-open"></i>
+                        </div>
+                        <h2>客室仕様</h2>
+                    </div>
+                    <div class="specs-grid">
+                        <div class="spec-item">
+                            <div class="spec-label">客室面積</div>
+                            <div class="spec-value" id="specArea">33㎡</div>
+                        </div>
+                        <div class="spec-item">
+                            <div class="spec-label">ベッドタイプ</div>
+                            <div class="spec-value" id="specBed">セミダブル × 2台</div>
+                        </div>
+                        <div class="spec-item">
+                            <div class="spec-label">定員</div>
+                            <div class="spec-value" id="specCapacity">最大2名様</div>
+                        </div>
+                        <div class="spec-item">
+                            <div class="spec-label">眺望</div>
+                            <div class="spec-value" id="specView">山景色</div>
+                        </div>
+                        <div class="spec-item">
+                            <div class="spec-label">禁煙・喫煙</div>
+                            <div class="spec-value">選択可能</div>
+                        </div>
+                        <div class="spec-item">
+                            <div class="spec-label">料金目安</div>
+                            <div class="spec-value price-highlight">
+                                <span class="price-from">¥</span>
+                                <span class="price-amount" id="specPrice">15,000</span>
+                                <span class="price-unit">～</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Amenities -->
+                <div class="content-card amenities-card">
+                    <div class="card-header">
+                        <div class="card-icon">
+                            <i class="fas fa-concierge-bell"></i>
+                        </div>
+                        <h2>設備・アメニティ</h2>
+                    </div>
+                    <div class="amenities-tabs">
+                        <button class="tab-btn active" data-tab="basic">基本設備</button>
+                        <button class="tab-btn" data-tab="bathroom">バスルーム</button>
+                        <button class="tab-btn" data-tab="other">その他</button>
+                    </div>
+                    <div class="amenities-content">
+                        <div class="amenity-tab-content active" id="basic">
+                            <div class="amenity-grid">
+                                <div class="amenity-item"><i class="fas fa-wifi"></i> 無料WiFi</div>
+                                <div class="amenity-item"><i class="fas fa-snowflake"></i> エアコン</div>
+                                <div class="amenity-item"><i class="fas fa-tv"></i> 液晶テレビ</div>
+                                <div class="amenity-item"><i class="fas fa-phone"></i> 電話</div>
+                                <div class="amenity-item"><i class="fas fa-shield-alt"></i> セーフティボックス</div>
+                                <div class="amenity-item"><i class="fas fa-coffee"></i> 電気ケトル</div>
+                            </div>
+                        </div>
+                        <div class="amenity-tab-content" id="bathroom">
+                            <div class="amenity-grid">
+                                <div class="amenity-item"><i class="fas fa-bath"></i> バスタブ</div>
+                                <div class="amenity-item"><i class="fas fa-shower"></i> シャワー</div>
+                                <div class="amenity-item"><i class="fas fa-pump-soap"></i> シャンプー・リンス</div>
+                                <div class="amenity-item"><i class="fas fa-soap"></i> ボディソープ</div>
+                                <div class="amenity-item"><i class="fas fa-wind"></i> ドライヤー</div>
+                                <div class="amenity-item"><i class="fas fa-tshirt"></i> バスローブ</div>
+                            </div>
+                        </div>
+                        <div class="amenity-tab-content" id="other">
+                            <div class="amenity-grid">
+                                <div class="amenity-item"><i class="fas fa-thermometer-half"></i> 加湿器</div>
+                                <div class="amenity-item"><i class="fas fa-lightbulb"></i> 読書灯</div>
+                                <div class="amenity-item"><i class="fas fa-chair"></i> デスク・チェア</div>
+                                <div class="amenity-item"><i class="fas fa-wine-glass"></i> グラス・カップ</div>
+                                <div class="amenity-item"><i class="fas fa-bed"></i> 寝具一式</div>
+                                <div class="amenity-item"><i class="fas fa-smoking-ban"></i> 消臭スプレー</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Hotel Facilities -->
+                <div class="content-card facilities-card">
+                    <div class="card-header">
+                        <div class="card-icon">
+                            <i class="fas fa-building"></i>
+                        </div>
+                        <h2>ホテル施設</h2>
+                    </div>
+                    <div class="facilities-grid">
+                        <div class="facility-box">
+                            <div class="facility-icon">
+                                <i class="fas fa-hot-tub"></i>
+                            </div>
+                            <h3>大浴場・露天風呂</h3>
+                            <p>天然温泉24時間</p>
+                        </div>
+                        <div class="facility-box">
+                            <div class="facility-icon">
+                                <i class="fas fa-utensils"></i>
+                            </div>
+                            <h3>レストラン</h3>
+                            <p>新潟の旬の食材</p>
+                        </div>
+                        <div class="facility-box">
+                            <div class="facility-icon">
+                                <i class="fas fa-dumbbell"></i>
+                            </div>
+                            <h3>フィットネス</h3>
+                            <p>最新マシン完備</p>
+                        </div>
+                        <div class="facility-box">
+                            <div class="facility-icon">
+                                <i class="fas fa-parking"></i>
+                            </div>
+                            <h3>駐車場</h3>
+                            <p>無料100台完備</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Policies -->
+                <div class="content-card policies-card">
+                    <div class="card-header">
+                        <div class="card-icon">
+                            <i class="fas fa-file-alt"></i>
+                        </div>
+                        <h2>ご利用条件</h2>
+                    </div>
+                    <div class="policies-content">
+                        <div class="policy-box">
+                            <h3><i class="fas fa-clock"></i> チェックイン・アウト</h3>
+                            <div class="policy-detail">
+                                <span class="detail-label">チェックイン</span>
+                                <span class="detail-value">15:00</span>
+                            </div>
+                            <div class="policy-detail">
+                                <span class="detail-label">チェックアウト</span>
+                                <span class="detail-value">10:00</span>
+                            </div>
+                        </div>
+                        <div class="policy-box">
+                            <h3><i class="fas fa-ban"></i> キャンセルポリシー</h3>
+                            <div class="policy-detail">
+                                <span class="detail-label">当日</span>
+                                <span class="detail-value">100%</span>
+                            </div>
+                            <div class="policy-detail">
+                                <span class="detail-label">前日</span>
+                                <span class="detail-value">100%</span>
+                            </div>
+                            <div class="policy-detail">
+                                <span class="detail-label">3日前</span>
+                                <span class="detail-value">100%</span>
+                            </div>
+                            <div class="policy-detail">
+                                <span class="detail-label">7日前</span>
+                                <span class="detail-value">100%</span>
+                            </div>
+                        </div>
+                        <div class="policy-box">
+                            <h3><i class="fas fa-info-circle"></i> その他</h3>
+                            <ul class="policy-list">
+                                <li>ペットの同伴はお断りしております</li>
+                                <li>館内は全館禁煙です</li>
+                                <li>駐車場は先着順となります</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Bottom CTA Bar (Sticky) -->
+    <div class="bottom-cta-bar">
+        <div class="container">
+            <div class="cta-bar-content">
+                <div class="cta-info">
+                    <div class="cta-room-name" id="ctaRoomName">ツインルーム【セミダブルベッド】</div>
+                    <div class="cta-price">
+                        <span class="from">1泊</span>
+                        <span class="amount">¥<span id="ctaPrice">15,000</span>～</span>
+                    </div>
+                </div>
+                <div class="cta-actions">
+                    <a href="reservation.html" class="btn-back">
+                        <i class="fas fa-arrow-left"></i>
+                        <span>一覧に戻る</span>
+                    </a>
+                    <a href="reservation.html" class="btn-cta-reserve">
+                        <i class="fas fa-calendar-check"></i>
+                        <span>予約する</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div id="footer-placeholder"></div>
+
+    <script src="js/storage-helper.js"></script>
+    <script src="js/init.js?v=20251128"></script>
+    <script src="js/load-navbar.js?v=20251201v21"></script>
+    <script src="js/load-footer.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/plan-detail-new.js"></script>
+</body>
+</html>
