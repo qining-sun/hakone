@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#ffffff" id="themeColor">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>予約照会｜【公式】Trip7箱根温泉ホテル</title>
+    <link rel="stylesheet" href="css/style.css?v=20260130">
+    <link rel="stylesheet" href="css/modern-navbar.css?v=20260130">
+    <link rel="stylesheet" href="css/footer.css?v=20260130">
+    <link rel="icon" href="img/logo.ico" type="image/x-icon">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="js/config.js"></script>
+    <script src="js/api-config.js"></script>
+    <style>
+        .lookup-content {
+            max-width: 560px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            padding-top: 120px;
+            min-height: 60vh;
+        }
+        @media (max-width: 768px) {
+            .lookup-content {
+                padding-top: 80px;
+            }
+        }
+        .lookup-card {
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            padding: 40px 32px;
+        }
+        .lookup-header {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+        .lookup-header i {
+            font-size: 48px;
+            color: #D2691E;
+            margin-bottom: 16px;
+            display: block;
+        }
+        .lookup-header h1 {
+            font-size: 24px;
+            font-weight: 600;
+            color: #333;
+            margin: 0 0 8px;
+        }
+        .lookup-header p {
+            font-size: 14px;
+            color: #888;
+            margin: 0;
+        }
+        .lookup-form .form-group {
+            margin-bottom: 20px;
+        }
+        .lookup-form label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            color: #555;
+            margin-bottom: 6px;
+        }
+        .lookup-form input {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.2s;
+            box-sizing: border-box;
+            background: #fff;
+        }
+        .lookup-form input:focus {
+            outline: none;
+            border-color: #D2691E;
+            box-shadow: 0 0 0 3px rgba(210,105,30,0.1);
+        }
+        .lookup-form input::placeholder {
+            color: #bbb;
+        }
+        .lookup-submit {
+            width: 100%;
+            padding: 14px;
+            background: #D2691E;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .lookup-submit:hover {
+            background: #b8571a;
+        }
+        .lookup-submit:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        .lookup-error {
+            display: none;
+            background: #fff0f0;
+            border: 1px solid #fdd;
+            border-radius: 8px;
+            padding: 12px 16px;
+            margin-top: 16px;
+            color: #c33;
+            font-size: 14px;
+            text-align: center;
+        }
+        .lookup-error.show {
+            display: block;
+        }
+        .lookup-note {
+            margin-top: 24px;
+            padding: 16px;
+            background: #f9f6f2;
+            border-radius: 8px;
+            font-size: 13px;
+            color: #888;
+            line-height: 1.6;
+        }
+        .lookup-note i {
+            color: #D2691E;
+            margin-right: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div id="navbar-placeholder"></div>
+
+    <div class="lookup-content">
+        <div class="lookup-card">
+            <div class="lookup-header">
+                <i class="fas fa-search"></i>
+                <h1 data-i18n="lookup_title">予約照会</h1>
+                <p data-i18n="lookup_subtitle">ご予約番号とメールアドレスで予約内容をご確認いただけます</p>
+            </div>
+            <form class="lookup-form" id="lookupForm">
+                <div class="form-group">
+                    <label for="lookupCode" data-i18n="lookup_code_label">予約番号</label>
+                    <input type="text" id="lookupCode" placeholder="例: 17XXXXXXXXXXXXXX" required>
+                </div>
+                <div class="form-group">
+                    <label for="lookupEmail" data-i18n="lookup_email_label">メールアドレス</label>
+                    <input type="email" id="lookupEmail" placeholder="例: example@email.com" required data-i18n-placeholder="lookup_email_placeholder">
+                </div>
+                <button type="submit" class="lookup-submit" id="lookupBtn">
+                    <i class="fas fa-search"></i>
+                    <span data-i18n="lookup_submit">予約を検索</span>
+                </button>
+                <div class="lookup-error" id="lookupError" data-i18n="lookup_error">予約が見つかりませんでした。予約番号とメールアドレスをご確認ください。</div>
+            </form>
+            <div class="lookup-note">
+                <p><i class="fas fa-info-circle"></i> <span data-i18n="lookup_note">予約番号は予約確認メールに記載されています。</span></p>
+            </div>
+        </div>
+    </div>
+
+    <div id="footer-placeholder"></div>
+
+    <script src="js/storage-helper.js"></script>
+    <script src="js/init.js?v=20251201"></script>
+    <script src="js/session-service.js"></script>
+    <script src="js/i18n.js"></script>
+    <script src="js/load-navbar.js?v=20260130"></script>
+    <script src="js/load-footer.js"></script>
+    <script src="js/main.js"></script>
+    <script>
+        document.getElementById('lookupForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const code = document.getElementById('lookupCode').value.trim();
+            const email = document.getElementById('lookupEmail').value.trim();
+            const errorEl = document.getElementById('lookupError');
+            const btn = document.getElementById('lookupBtn');
+
+            if (!code || !email) return;
+
+            errorEl.classList.remove('show');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> <span>検索中...</span>';
+
+            function resetBtn() {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-search"></i> <span data-i18n="lookup_submit">予約を検索</span>';
+                if (window.i18n && window.i18n.applyTranslations) window.i18n.applyTranslations();
+            }
+
+            // apiProvider に応じて検索先を決定
+            const apiProvider = window.getApiProvider ? window.getApiProvider() : 'local';
+
+            if (apiProvider === 'tl-lincoln') {
+                // TL-Lincoln モード：TL-Lincoln API のみ
+                tryTlLincoln(code, email);
+            } else {
+                // 自社モード：本地DB查询のみ
+                const apiUrl = window.getApiUrl(`/user-orders/${encodeURIComponent(code)}`);
+                fetch(apiUrl, {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Guest-Email': email
+                    }
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success || data.order) {
+                        // 本地DB找到，跳转
+                        window.location.href = `order-detail.html?code=${encodeURIComponent(code)}&email=${encodeURIComponent(email)}`;
+                    } else {
+                        // 自社モード：本地に見つからなければエラー表示
+                        errorEl.textContent = data.message || '予約が見つかりませんでした。予約番号とメールアドレスをご確認ください。';
+                        errorEl.classList.add('show');
+                        resetBtn();
+                    }
+                })
+                .catch(() => {
+                    errorEl.classList.add('show');
+                    resetBtn();
+                });
+            }
+
+            function tryTlLincoln(code, email) {
+                const tlUrl = window.getApiUrl(`/tl-lincoln/orders/${encodeURIComponent(code)}?email=${encodeURIComponent(email)}`);
+                return fetch(tlUrl)
+                    .then(res => res.json())
+                    .then(tlData => {
+                        if (tlData.success && tlData.data) {
+                            // TL-Lincoln 找到，跳转（带 source 参数）
+                            window.location.href = `order-detail.html?code=${encodeURIComponent(code)}&source=tl-lincoln&email=${encodeURIComponent(email)}`;
+                        } else {
+                            errorEl.textContent = tlData.message || '予約が見つかりませんでした。予約番号とメールアドレスをご確認ください。';
+                            errorEl.classList.add('show');
+                            resetBtn();
+                        }
+                    })
+                    .catch(() => {
+                        errorEl.classList.add('show');
+                        resetBtn();
+                    });
+            }
+        });
+    </script>
+</body>
+</html>
