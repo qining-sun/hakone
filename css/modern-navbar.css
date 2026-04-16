@@ -806,6 +806,27 @@ body.navbar-overflow .modern-navbar.single-row .navbar-logo .logo-img-hotel {
     box-shadow: 0 1px 3px rgba(255, 255, 255, 0.3);
 }
 
+/* 即将公开标签 - 独立于nav-item外部 */
+.nav-item-external {
+    position: relative;
+}
+
+.nav-item-external .badge-external {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background: linear-gradient(135deg, #ff6b6b, #ee5a5a);
+    color: white;
+    font-size: 9px;
+    font-weight: 700;
+    padding: 2px 6px;
+    border-radius: 10px;
+    letter-spacing: 0.5px;
+    box-shadow: 0 2px 8px rgba(255, 107, 107, 0.4);
+    z-index: 100;
+    white-space: nowrap;
+}
+
 /* Phone Button */
 .phone-btn {
     display: flex;
