@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#ffffff" id="themeColor">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <!-- 防止页面缓存 -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>ご予約失敗｜【公式】Trip7箱根温泉ホテル店</title>
+    <link rel="stylesheet" href="css/style.css?v=20260120">
+    <link rel="stylesheet" href="css/modern-navbar.css?v=20260120">
+    <link rel="stylesheet" href="css/footer.css?v=20260120">
+    <link rel="stylesheet" href="css/reservation-failed.css?v=20260120">
+    <link rel="icon" href="img/logo.ico" type="image/x-icon">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;600;700&family=Pixelify+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/section-title-template.css?v=20260120">
+
+    <!-- Config file must be loaded first -->
+    <script src="js/config.js"></script>
+    <script src="js/api-config.js"></script>
+</head>
+<body>
+    <!-- Navbar loaded by template -->
+    <div id="navbar-placeholder"></div>
+
+    <!-- Universal Hero Banner -->
+    <div class="universal-hero-banner height-small reservation-transparent-banner">
+        <div class="hero-background">
+            <img src="img/hero-background.jpg" alt="予約失敗横幅" class="hero-bg-image">
+            <div class="hero-overlay"></div>
+        </div>
+        <div class="hero-content">
+            <h1 class="hero-title single-line" data-i18n="failed_page_title">ご予約失敗</h1>
+            <p class="hero-subtitle" data-i18n="failed_page_subtitle">Reservation Failed</p>
+        </div>
+    </div>
+
+    <!-- Breadcrumb Navigation -->
+    <div class="breadcrumb-section">
+        <div class="container">
+            <nav class="breadcrumb">
+                <a href="index.html"><i class="fas fa-home"></i> <span data-i18n="breadcrumb_home">ホーム</span></a>
+                <span class="separator">/</span>
+                <a href="reservation.html" data-i18n="failed_breadcrumb_reservation">ご予約</a>
+                <span class="separator">/</span>
+                <span class="current" data-i18n="failed_breadcrumb_failed">予約失敗</span>
+            </nav>
+        </div>
+    </div>
+
+    <!-- Page Content -->
+    <div class="page-content">
+        <!-- Failed Section -->
+        <div class="failed-section">
+            <div class="container">
+                <div class="failed-container">
+                    <!-- Failed Message -->
+                    <div class="failed-message">
+                        <div class="failed-icon">
+                            <i class="fas fa-times-circle"></i>
+                        </div>
+                        <h2 class="failed-title" data-i18n="failed_title">ご予約を完了できませんでした</h2>
+                        <p class="failed-subtitle" id="failedReason" data-i18n="failed_default_reason">申し訳ございませんが、ご希望の日程は満室となりました。</p>
+                    </div>
+
+                    <!-- Error Details -->
+                    <div class="error-details">
+                        <h3 class="details-title"><i class="fas fa-info-circle"></i> <span data-i18n="failed_details_title">詳細情報</span></h3>
+
+                        <div class="error-info">
+                            <div class="error-item" id="errorCodeSection" style="display: none;">
+                                <span class="label" data-i18n="failed_error_code">エラーコード</span>
+                                <span class="value" id="errorCode">-</span>
+                            </div>
+                            <div class="error-item" id="orderCodeSection" style="display: none;">
+                                <span class="label" data-i18n="failed_order_code">受付番号</span>
+                                <span class="value" id="orderCode">-</span>
+                            </div>
+                            <div class="error-item">
+                                <span class="label" data-i18n="failed_error_time">発生日時</span>
+                                <span class="value" id="errorTime">-</span>
+                            </div>
+                        </div>
+
+                        <!-- Refund Notice -->
+                        <div class="refund-notice" id="refundNotice" style="display: none;">
+                            <div class="notice-icon">
+                                <i class="fas fa-undo"></i>
+                            </div>
+                            <div class="notice-content">
+                                <h4 data-i18n="failed_refund_title">返金について</h4>
+                                <p data-i18n-html="failed_refund_desc">お支払いいただいた金額は、<strong>3〜5営業日以内</strong>にご利用のクレジットカードに返金されます。</p>
+                                <p class="notice-small" data-i18n="failed_refund_note">※返金の反映時期はカード会社によって異なる場合があります。</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Possible Reasons -->
+                    <div class="reasons-section">
+                        <h3 class="reasons-title" data-i18n="failed_reasons_title">考えられる原因</h3>
+                        <div class="reasons-list">
+                            <div class="reason-item" id="reason-inventory">
+                                <div class="reason-icon">
+                                    <i class="fas fa-bed"></i>
+                                </div>
+                                <div class="reason-content">
+                                    <h4 data-i18n="failed_reason_inventory_title">在庫切れ</h4>
+                                    <p data-i18n="failed_reason_inventory_desc">ご希望の日程・客室タイプが他のお客様によりご予約されました。</p>
+                                </div>
+                            </div>
+                            <div class="reason-item" id="reason-payment" style="display: none;">
+                                <div class="reason-icon">
+                                    <i class="fas fa-credit-card"></i>
+                                </div>
+                                <div class="reason-content">
+                                    <h4 data-i18n="failed_reason_payment_title">決済エラー</h4>
+                                    <p data-i18n="failed_reason_payment_desc">クレジットカードの決済処理中にエラーが発生しました。</p>
+                                </div>
+                            </div>
+                            <div class="reason-item" id="reason-timeout" style="display: none;">
+                                <div class="reason-icon">
+                                    <i class="fas fa-clock"></i>
+                                </div>
+                                <div class="reason-content">
+                                    <h4 data-i18n="failed_reason_timeout_title">セッションタイムアウト</h4>
+                                    <p data-i18n="failed_reason_timeout_desc">予約セッションが期限切れになりました。</p>
+                                </div>
+                            </div>
+                            <div class="reason-item" id="reason-system" style="display: none;">
+                                <div class="reason-icon">
+                                    <i class="fas fa-exclamation-triangle"></i>
+                                </div>
+                                <div class="reason-content">
+                                    <h4 data-i18n="failed_reason_system_title">システムエラー</h4>
+                                    <p data-i18n="failed_reason_system_desc">システムに一時的な問題が発生しました。</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Suggested Actions -->
+                    <div class="suggestions-section">
+                        <h3 class="suggestions-title" data-i18n="failed_suggestions_title">おすすめの対応</h3>
+                        <div class="suggestions-list">
+                            <div class="suggestion-item">
+                                <div class="suggestion-number">1</div>
+                                <div class="suggestion-content">
+                                    <h4 data-i18n="failed_suggestion1_title">別の日程をお試しください</h4>
+                                    <p data-i18n="failed_suggestion1_desc">カレンダーから空室のある日程をご確認いただけます。</p>
+                                </div>
+                            </div>
+                            <div class="suggestion-item">
+                                <div class="suggestion-number">2</div>
+                                <div class="suggestion-content">
+                                    <h4 data-i18n="failed_suggestion2_title">別の客室タイプをご検討ください</h4>
+                                    <p data-i18n="failed_suggestion2_desc">他の客室タイプに空きがある場合がございます。</p>
+                                </div>
+                            </div>
+                            <div class="suggestion-item">
+                                <div class="suggestion-number">3</div>
+                                <div class="suggestion-content">
+                                    <h4 data-i18n="failed_suggestion3_title">お電話でのお問い合わせ</h4>
+                                    <p data-i18n="failed_suggestion3_desc">スタッフが直接ご対応いたします。</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="action-buttons">
+                        <a href="reservation.html" class="btn btn-primary">
+                            <i class="fas fa-calendar-alt"></i>
+                            <span data-i18n="failed_search_again">空室を再検索</span>
+                        </a>
+                        <a href="index.html" class="btn btn-outline">
+                            <i class="fas fa-home"></i>
+                            <span data-i18n="failed_back_home">ホームに戻る</span>
+                        </a>
+                    </div>
+
+                    <!-- Contact Info -->
+                    <div class="contact-info">
+                        <h4 data-i18n="failed_contact_title">ご不明な点がございましたら</h4>
+                        <div class="contact-details">
+                            <div class="contact-item">
+                                <i class="fas fa-phone"></i>
+                                <div>
+                                    <strong>025-000-0000</strong>
+                                    <span data-i18n="failed_contact_hours">受付時間: 9:00〜21:00</span>
+                                </div>
+                            </div>
+                            <div class="contact-item">
+                                <i class="fas fa-envelope"></i>
+                                <div>
+                                    <strong class="contact-email-support"></strong>
+                                    <span data-i18n="failed_contact_24h">24時間受付</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer loaded by template -->
+    <div id="footer-placeholder"></div>
+
+    <!-- Scripts -->
+    <script src="js/storage-helper.js"></script>
+    <script src="js/session-service.js"></script>
+    <script src="js/i18n.js"></script>
+    <script src="js/load-navbar.js?v=20260130"></script>
+    <script src="js/load-footer.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/reservation-failed.js?v=20251212"></script>
+</body>
+</html>

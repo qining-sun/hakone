@@ -127,3 +127,213 @@ console.log('Current Mode:', useProxy ? 'Proxy (Nginx)' : currentEnv.toUpperCase
 console.log('Protocol:', window.location.protocol);
 console.log('API Config:', window.API_CONFIG);
 console.log('='.repeat(50));
+
+// ==================== 开发/生产环境切换功能 ====================
+// TL-Lincoln テスト環境判定（ポート 8880）
+window.isTlTestMode =
+    window.location.port === '8880' ||
+    window.location.hostname === 'test.yuzawamd.com';
+
+// 判断是否为开发环境（非 HTTPS 且为私有IP）
+window.isDevelopmentMode = !isHTTPS && isPrivateIP(window.location.hostname);
+
+// 判断是否为生产环境（HTTPS、ただし TL テストポートは除外）
+window.isProductionMode = isHTTPS && !window.isTlTestMode;
+
+// 数据库环境配置
+const DB_ENV_CONFIG = {
+    test: {
+        label: 'テスト',
+        dbName: 'hotel_booking_test'
+    },
+    production: {
+        label: '本番',
+        dbName: 'hotel_booking'
+    }
+};
+
+// Stripe 环境配置
+const STRIPE_ENV_CONFIG = {
+    test: {
+        label: 'テスト',
+        mode: 'test'
+    },
+    production: {
+        label: '本番',
+        mode: 'live'
+    }
+};
+
+// API Provider 配置（自社 API 或 TL-Lincoln）
+const API_PROVIDER_CONFIG = {
+    local: {
+        label: '自社',
+        provider: 'local'
+    },
+    'tl-lincoln': {
+        label: 'TL-Lincoln',
+        provider: 'tl-lincoln'
+    }
+};
+
+// 获取数据库环境
+window.getDbEnvironment = function() {
+    if (window.isTlTestMode) {
+        return 'test';
+    }
+    if (window.isProductionMode) {
+        return 'production';
+    }
+    return localStorage.getItem('dbEnvironment') || 'production';
+};
+
+window.setDbEnvironment = function(env) {
+    if (window.isProductionMode) {
+        console.warn('⚠️ 生産環境では環境切り替えは無効です');
+        return false;
+    }
+    if (DB_ENV_CONFIG[env]) {
+        localStorage.setItem('dbEnvironment', env);
+        return true;
+    }
+    return false;
+};
+
+window.switchDbEnvironment = function(env) {
+    if (window.isProductionMode) {
+        console.warn('⚠️ 生産環境では環境切り替えは無効です');
+        return false;
+    }
+    if (window.setDbEnvironment(env)) {
+        window.location.reload();
+        return true;
+    }
+    return false;
+};
+
+// 获取 Stripe 环境
+window.getStripeEnvironment = function() {
+    if (window.isTlTestMode) {
+        return 'test';
+    }
+    if (window.isProductionMode) {
+        return 'production';
+    }
+    return localStorage.getItem('stripeEnvironment') || 'test';
+};
+
+window.setStripeEnvironment = function(env) {
+    if (window.isProductionMode) {
+        console.warn('⚠️ 生産環境では環境切り替えは無効です');
+        return false;
+    }
+    if (STRIPE_ENV_CONFIG[env]) {
+        localStorage.setItem('stripeEnvironment', env);
+        return true;
+    }
+    return false;
+};
+
+window.switchStripeEnvironment = function(env) {
+    if (window.isProductionMode) {
+        console.warn('⚠️ 生産環境では環境切り替えは無効です');
+        return false;
+    }
+    if (window.setStripeEnvironment(env)) {
+        window.location.reload();
+        return true;
+    }
+    return false;
+};
+
+// 获取 API Provider
+window.getApiProvider = function() {
+    if (window.isTlTestMode) {
+        return 'tl-lincoln';
+    }
+    if (window.isProductionMode) {
+        return 'local';
+    }
+    return localStorage.getItem('apiProvider') || 'local';
+};
+
+window.setApiProvider = function(provider) {
+    if (window.isProductionMode) {
+        console.warn('⚠️ 生産環境では環境切り替えは無効です');
+        return false;
+    }
+    if (API_PROVIDER_CONFIG[provider]) {
+        localStorage.setItem('apiProvider', provider);
+        return true;
+    }
+    return false;
+};
+
+window.switchApiProvider = function(provider) {
+    if (window.isProductionMode) {
+        console.warn('⚠️ 生産環境では環境切り替えは無効です');
+        return false;
+    }
+    if (window.setApiProvider(provider)) {
+        window.location.reload();
+        return true;
+    }
+    return false;
+};
+
+window.DB_ENV_CONFIG = DB_ENV_CONFIG;
+window.STRIPE_ENV_CONFIG = STRIPE_ENV_CONFIG;
+window.API_PROVIDER_CONFIG = API_PROVIDER_CONFIG;
+
+if (window.isProductionMode) {
+    console.log('🔒 Production Mode - 本番環境');
+    console.log('📦 DB Environment: production (強制)');
+    console.log('💳 Stripe Environment: production (強制)');
+    console.log('🔗 API Provider: local (強制)');
+} else if (window.isDevelopmentMode) {
+    console.log('🔧 Development Mode - 開発環境');
+    console.log('📦 DB Environment:', window.getDbEnvironment());
+    console.log('💳 Stripe Environment:', window.getStripeEnvironment());
+    console.log('🔗 API Provider:', window.getApiProvider());
+}
+
+// ==================== ホテルID設定 ====================
+// 箱根ホテル = hotel_id: 2
+window.HOTEL_ID = 2;
+
+// ==================== API 请求辅助函数 ====================
+window.getApiHeaders = function(additionalHeaders = {}) {
+    const headers = {
+        'X-DB-Environment': window.getDbEnvironment(),
+        'X-Stripe-Environment': window.getStripeEnvironment(),
+        'X-API-Provider': window.getApiProvider(),
+        'X-Hotel-ID': String(window.HOTEL_ID),
+        ...additionalHeaders
+    };
+    return headers;
+};
+
+// ==================== 全局 Fetch 拦截器 ====================
+const originalFetch = window.fetch;
+
+window.fetch = function(url, options = {}) {
+    const urlStr = typeof url === 'string' ? url : url.toString();
+    const isApiRequest = urlStr.includes('/api/') || urlStr.includes(':5000/') || urlStr.includes(':4000/');
+
+    if (isApiRequest) {
+        const envHeaders = window.getApiHeaders();
+        options = {
+            ...options,
+            headers: {
+                ...envHeaders,
+                ...(options.headers || {})
+            }
+        };
+    }
+
+    return originalFetch(url, options);
+};
+
+console.log('🏨 Hotel ID:', window.HOTEL_ID, '(箱根)');
+console.log('📤 API Environment Headers:', window.getApiHeaders());
+console.log('✅ Fetch interceptor installed - API requests will include environment headers');

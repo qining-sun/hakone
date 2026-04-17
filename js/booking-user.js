@@ -6,15 +6,43 @@ window.API_BASE_URL = window.API_BASE_URL || window.API_CONFIG?.BOOKING_API || '
 let currentStep = 1;
 const maxSteps = 4; // 4 steps: 1.予約内容 2.確認 3.支払い・決済 4.完了
 
+// 缓存（保留变量定义以避免错误，但数据从服务器获取）
+let roomDataCache = {};
+
 // ==================== Page Loading Management ====================
 let isPageDataLoaded = false;
+let hasPageError = false; // 标记是否发生了错误
 
 // Hide page content and show loading overlay initially
 function showPageContent() {
+    // 如果发生了错误，不显示页面
+    if (hasPageError) {
+        console.warn('⚠️ Page has error, not showing content');
+        return;
+    }
+
+    // TL-Lincoln 模式下跳过订单数据检查
+    const apiProvider = window.getApiProvider ? window.getApiProvider() : 'local';
+    if (apiProvider === 'tl-lincoln') {
+        console.log('📡 TL-Lincoln mode: スキップ注文データチェック');
+    } else {
+        // 检查订单数据是否存在
+        if (!window.currentOrderData && !window.currentTempOrderCode) {
+            console.warn('⚠️ No order data, not showing content');
+            if (window.__handleBookingError) {
+                window.__handleBookingError('予約データが見つかりません');
+            }
+            return;
+        }
+    }
+
     const loadingOverlay = document.getElementById('loadingOverlay');
     const pageContent = document.getElementById('pageContent');
 
     if (loadingOverlay && pageContent) {
+        // 标记页面可以安全显示
+        window.__bookingPageSafe = true;
+
         // Fade out loading overlay
         loadingOverlay.classList.add('fade-out');
 
@@ -33,44 +61,36 @@ function showPageContent() {
 }
 
 // Function to check if all data is loaded
+// 数据由 order-temp.js 从服务器获取
 async function checkDataLoaded() {
     console.log('Checking if all data is loaded...');
 
-    // Wait for all critical data to load
-    const urlParams = new URLSearchParams(window.location.search);
-    const code = urlParams.get('code') || urlParams.get('plan') || 'twin';
-    const checkin = urlParams.get('checkin') || '';
-    const checkout = urlParams.get('checkout') || '';
-    const adults = parseInt(urlParams.get('adults') || '2');
+    // TL-Lincoln 模式下直接显示页面
+    const apiProvider = window.getApiProvider ? window.getApiProvider() : 'local';
+    if (apiProvider === 'tl-lincoln') {
+        console.log('📡 TL-Lincoln mode: 直接ページを表示');
+        isPageDataLoaded = true;
+        showPageContent();
+        return;
+    }
 
     try {
-        // Wait for room data to be fetched using search API
-        if (!roomDataCache[code] && checkin && checkout) {
-            const searchApiUrl = window.getApiUrl(`/rooms/search?checkin=${checkin}&checkout=${checkout}&adults=${adults}&rooms=1`);
-            const response = await fetch(searchApiUrl);
-            if (response.ok) {
-                const result = await response.json();
-                if (result.success && result.data && result.data.length > 0) {
-                    const roomData = result.data.find(r => r.room_type_code === code);
-                    if (roomData) {
-                        roomDataCache[code] = {
-                            price: Math.round(roomData.price_per_night),
-                            name: roomData.room_type_name || ''
-                        };
-                    }
-                }
-            }
+        // 检查是否有错误发生
+        if (hasPageError) {
+            console.warn('⚠️ Page has error, not showing content');
+            return;
         }
 
+        // 数据由 OrderTemp.init() 从服务器获取，这里只需要显示页面
         console.log('All data loaded successfully');
         isPageDataLoaded = true;
         showPageContent();
     } catch (error) {
         console.error('Error loading data:', error);
-        // Show page anyway after error
-        setTimeout(() => {
-            showPageContent();
-        }, 500);
+        hasPageError = true;
+        if (window.__handleBookingError) {
+            window.__handleBookingError('データの読み込みに失敗しました');
+        }
     }
 }
 
@@ -81,6 +101,13 @@ const EXPIRATION_TIME = 30 * 60 * 1000; // 30分钟（后备方案）
 let expirationTime = null;
 
 function startExpirationTimer(expiresAt) {
+    // TL-Lincoln 模式下不使用倒计时
+    const apiProvider = window.getApiProvider ? window.getApiProvider() : 'local';
+    if (apiProvider === 'tl-lincoln') {
+        console.log('📡 TL-Lincoln mode: 有効期限タイマーをスキップ');
+        return;
+    }
+
     // 清除之前的计时器
     clearExpirationTimer();
 
@@ -162,13 +189,16 @@ function clearExpirationTimer() {
 
 document.addEventListener('DOMContentLoaded', async function() {
 
+    // 刷新检测和确认弹窗已取消
+    // 临时订单数据保存在服务器端，刷新后会重新加载
+
     // 不在这里启动倒计时，等待数据加载后再启动
     // startExpirationTimer();
 
     // Initialize OrderTemp module first (to store booking params)
     if (window.OrderTemp && typeof window.OrderTemp.init === 'function') {
         console.log('🔄 Initializing OrderTemp module...');
-        window.OrderTemp.init();
+        await window.OrderTemp.init();
     }
 
 
@@ -179,6 +209,13 @@ document.addEventListener('DOMContentLoaded', async function() {
     initializePage();
     setupEventListeners();
     updateReservationInfo();
+
+    // Update breadcrumb link to preserve URL parameters
+    updateBreadcrumbLinks();
+
+    // Also update after navbar loads (navbar is loaded dynamically)
+    setTimeout(updateBreadcrumbLinks, 500);
+    setTimeout(updateBreadcrumbLinks, 1000);
 
     // Enable country code search by typing
     enableCountryCodeSearch();
@@ -203,6 +240,43 @@ document.addEventListener('DOMContentLoaded', async function() {
 
     console.log('Booking page initialized (User Mode)');
 });
+
+// Update all links to reservation.html to preserve URL parameters
+function updateBreadcrumbLinks() {
+    const urlParams = new URLSearchParams(window.location.search);
+
+    // Build URL with all booking parameters
+    const params = new URLSearchParams();
+    const checkin = urlParams.get('checkin');
+    const checkout = urlParams.get('checkout');
+    const rooms = urlParams.get('rooms') || '1';
+    const adults = urlParams.get('adults') || '2';
+    const children = urlParams.get('children') || '0';
+    const childrenPreschool = urlParams.get('childrenPreschool') || '0';
+    const childrenElementary = urlParams.get('childrenElementary') || '0';
+
+    if (checkin) params.append('checkin', checkin);
+    if (checkout) params.append('checkout', checkout);
+    params.append('rooms', rooms);
+    params.append('adults', adults);
+    params.append('children', children);
+    params.append('childrenPreschool', childrenPreschool);
+    params.append('childrenElementary', childrenElementary);
+
+    const newHref = `reservation.html?${params.toString()}`;
+
+    // Update ALL links to reservation.html (breadcrumb and navbar)
+    const reservationLinks = document.querySelectorAll('a[href="reservation.html"], a[href*="reservation.html"]');
+    reservationLinks.forEach(link => {
+        // Only update if it's a simple reservation.html link (not already with params)
+        if (link.href.endsWith('reservation.html') || link.getAttribute('href') === 'reservation.html') {
+            link.href = newHref;
+            console.log('✅ Link updated:', link.href);
+        }
+    });
+
+    console.log('✅ Updated', reservationLinks.length, 'reservation links');
+}
 
 // Enable typing search in country code select
 function enableCountryCodeSearch() {
@@ -270,7 +344,7 @@ function setupEmailVerification() {
 
         // Disable button and show loading
         sendBtn.disabled = true;
-        sendBtn.textContent = '送信中...';
+        sendBtn.textContent = window.i18n ? window.i18n.t('sending') : '送信中...';
 
         // Simulate sending email (in production, this would be an API call)
         setTimeout(() => {
@@ -321,7 +395,7 @@ function setupEmailVerification() {
             sendBtn.disabled = true;
 
             // Update button text
-            verifyBtn.textContent = '認証済み ✓';
+            verifyBtn.textContent = window.i18n ? window.i18n.t('verified') : '認証済み ✓';
             verifyBtn.style.background = '#28a745';
 
         } else {
@@ -360,7 +434,7 @@ function startCountdown(button, seconds) {
         if (remaining < 0) {
             clearInterval(interval);
             button.disabled = false;
-            button.textContent = '認証コード再送信';
+            button.textContent = window.i18n ? window.i18n.t('resend_code') : '認証コード再送信';
         }
     }, 1000);
 }
@@ -410,7 +484,7 @@ function validateKatakana(field) {
             errorMsg.style.cssText = 'color: #dc3545; font-size: 12px; margin-top: 5px;';
             field.parentElement.appendChild(errorMsg);
         }
-        errorMsg.textContent = '全角カタカナで入力してください';
+        errorMsg.textContent = window.i18n ? window.i18n.t('katakana_required') : '全角カタカナで入力してください';
 
         return false;
     } else {
@@ -567,47 +641,9 @@ function setupForeignerCheckboxes() {
     }
 }
 
-// Setup country selection handler
+// Setup country selection handler (address fields are currently hidden)
 function setupCountrySelectionHandler() {
-    const countrySelect = document.getElementById('country');
-    const japanAddressFields = document.getElementById('japanAddressFields');
-    const internationalAddressFields = document.getElementById('internationalAddressFields');
-
-    if (countrySelect && japanAddressFields && internationalAddressFields) {
-        countrySelect.addEventListener('change', function() {
-            const selectedCountry = this.value;
-
-            if (selectedCountry === 'japan') {
-                // Show Japan address fields
-                japanAddressFields.style.display = 'block';
-                internationalAddressFields.style.display = 'none';
-
-                // Set required attributes for Japan fields
-                document.getElementById('postalCode').setAttribute('required', '');
-                document.getElementById('prefecture').setAttribute('required', '');
-                document.getElementById('address').setAttribute('required', '');
-
-                // Remove required from international fields
-                document.getElementById('stateProvince').removeAttribute('required');
-                document.getElementById('cityDistrict').removeAttribute('required');
-                document.getElementById('streetAddress').removeAttribute('required');
-            } else {
-                // Show international address fields
-                japanAddressFields.style.display = 'none';
-                internationalAddressFields.style.display = 'block';
-
-                // Remove required from Japan fields
-                document.getElementById('postalCode').removeAttribute('required');
-                document.getElementById('prefecture').removeAttribute('required');
-                document.getElementById('address').removeAttribute('required');
-
-                // Set required attributes for international fields
-                document.getElementById('stateProvince').setAttribute('required', '');
-                document.getElementById('cityDistrict').setAttribute('required', '');
-                document.getElementById('streetAddress').setAttribute('required', '');
-            }
-        });
-    }
+    // Address section is hidden, no handler needed
 }
 
 // Initialize page with URL parameters
@@ -680,45 +716,25 @@ async function initializePage() {
         }
 
         if (!currentUser) {
-            // ❌ 未登录且无token/订单编号 - 拒绝访问
-            console.error('アクセス拒否: ログインまたは有効な予約リンクが必要です');
-
-            // 显示错误消息
-            document.body.innerHTML = `
-                <div style="display: flex; align-items: center; justify-content: center; height: 100vh; font-family: 'Noto Sans JP', sans-serif; background: #f5f5f5;">
-                    <div style="text-align: center; background: white; padding: 40px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); max-width: 500px;">
-                        <div style="font-size: 48px; color: #dc3545; margin-bottom: 20px;">
-                            <i class="fas fa-lock"></i>
-                        </div>
-                        <h2 style="color: #2c2c2c; margin-bottom: 15px;">アクセスが制限されています</h2>
-                        <p style="color: #666; margin-bottom: 25px; line-height: 1.6;">
-                            この予約ページにアクセスするには、有効な予約リンクまたはログインが必要です。
-                        </p>
-                        <div style="display: flex; gap: 15px; justify-content: center;">
-                            <a href="reservation.html" style="background: #8a7a5e; color: white; padding: 12px 30px; border-radius: 6px; text-decoration: none; display: inline-block;">
-                                <i class="fas fa-home"></i> ホームへ戻る
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            `;
-            return; // 停止初始化
+            // ✅ 允许游客访问（不再强制登录）
+            console.log('✓ ゲストとしてアクセス（ログインなし）');
         }
     }
 
-    // ✅ 已登录用户可以正常访问
-    console.log('✓ 登録ユーザーとしてアクセス');
+    // ✅ 允许访问（已登录或游客）
+    console.log('✓ 予約ページにアクセス');
 
     // Get reservation details from URL
     const checkin = urlParams.get('checkin') || getDefaultDate();
     const checkout = urlParams.get('checkout') || getDefaultDate(1);
     const adults = urlParams.get('adults') || '2';
     const children = urlParams.get('children') || '0';
-    const code = urlParams.get('code') || urlParams.get('plan') || 'twin';
+    const code = urlParams.get('code') || 'twin';
     const rooms = urlParams.get('rooms') || '1';
+    const plan = urlParams.get('plan') || null;
 
     // Update reservation info display
-    updateReservationDisplay(checkin, checkout, adults, children, code, rooms);
+    updateReservationDisplay(checkin, checkout, adults, children, code, rooms, plan);
 }
 
 // Handle guest booking token
@@ -782,10 +798,11 @@ async function handleGuestBookingToken(token) {
         const checkout = reservationParams.checkout || getDefaultDate(1);
         const adults = reservationParams.adults || '2';
         const children = reservationParams.children || '0';
-        const code = reservationParams.code || reservationParams.plan || 'twin';
+        const code = reservationParams.code || 'twin';
         const rooms = reservationParams.rooms || '1';
+        const plan = reservationParams.plan || null;
 
-        updateReservationDisplay(checkin, checkout, adults, children, code, rooms);
+        updateReservationDisplay(checkin, checkout, adults, children, code, rooms, plan);
 
         // 保留token在URL中以保持验证状态
         // 不删除token，确保整个预订流程都需要有效token
@@ -1242,8 +1259,8 @@ function formatDateJapanese(dateString) {
     const year = date.getFullYear();
     const month = date.getMonth() + 1;
     const day = date.getDate();
-    const weekdays = ['日', '月', '火', '水', '木', '金', '土'];
-    const weekday = weekdays[date.getDay()];
+    const weekdayKeys = ['weekday_sun', 'weekday_mon', 'weekday_tue', 'weekday_wed', 'weekday_thu', 'weekday_fri', 'weekday_sat'];
+    const weekday = window.i18n ? window.i18n.t(weekdayKeys[date.getDay()]) : ['日', '月', '火', '水', '木', '金', '土'][date.getDay()];
 
     return `${year}年${month}月${day}日（${weekday}）`;
 }
@@ -1256,58 +1273,13 @@ function calculateNights(checkin, checkout) {
     return Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
 }
 
-// Room type mapping
-const ROOM_TYPES = {
-    'twin': { name: 'ツインルーム', capacity: 2 },
-    'double': { name: 'ダブルルーム', capacity: 2 },
-    'triple': { name: 'トリプルルーム', capacity: 3 },
-    'twin_japanese': { name: '和洋室', capacity: 2 },
-    'family': { name: 'ファミリールーム（和室）', capacity: 5 }
-};
+// 房型和计划名称完全从服务器获取，不使用本地映射
 
 // Update reservation info display
-function updateReservationDisplay(checkin, checkout, adults, children, code, rooms = '1') {
-    const checkinElement = document.getElementById('checkinDate');
-    const checkoutElement = document.getElementById('checkoutDate');
-    const nightsElement = document.getElementById('nightsCount');
-    const roomTypeElement = document.getElementById('roomType');
-    const guestCountElement = document.getElementById('guestCount');
-
-    if (checkinElement) checkinElement.textContent = formatDateJapanese(checkin);
-    if (checkoutElement) checkoutElement.textContent = formatDateJapanese(checkout);
-
-    const nights = calculateNights(checkin, checkout);
-    if (nightsElement) nightsElement.textContent = `${nights}泊`;
-
-    // Get room type name from code
-    const roomInfo = ROOM_TYPES[code] || { name: decodeURIComponent(code), capacity: 2 };
-    if (roomTypeElement) {
-        // Show room type with quantity if more than 1 room
-        const roomText = parseInt(rooms) > 1 ? `${roomInfo.name} × ${rooms}室` : roomInfo.name;
-        roomTypeElement.textContent = roomText;
-    }
-
-    // Calculate total guests
-    const totalAdults = parseInt(adults) || 0;
-    const totalChildren = parseInt(children) || 0;
-    const totalGuests = totalAdults + totalChildren;
-
-    // Build guest count text
-    let guestText = '';
-    if (parseInt(rooms) > 1) {
-        // Multiple rooms: show total guests per room
-        guestText = `合計${totalGuests}名（${rooms}室）`;
-    } else {
-        // Single room: show adults and children separately
-        guestText = `大人${adults}名`;
-        if (children && children !== '0') {
-            guestText += ` 子供${children}名`;
-        }
-    }
-    if (guestCountElement) guestCountElement.textContent = guestText;
-
-    // Update total price
-    updateTotalPrice();
+// 房型名称、计划名称、价格由 order-temp.js 从服务器获取并显示
+function updateReservationDisplay(checkin, checkout, adults, children, code, rooms = '1', planCode = null) {
+    // 日期和人数信息可以从 URL 参数显示，其他信息由 order-temp.js 处理
+    console.log('📋 updateReservationDisplay - 数据由服务器提供');
 }
 
 // Setup event listeners
@@ -1401,11 +1373,11 @@ async function nextStep() {
                 showLoading();
 
                 try {
-                    // 1. 收集表单数据并保存到 orders_tmp
+                    // 1. 收集表单数据并保存到 orders 表
                     if (window.OrderTemp && typeof window.OrderTemp.save === 'function') {
-                        console.log('💾 Step 1: Collecting form data and saving to orders_tmp...');
+                        console.log('💾 Step 1: Collecting form data and saving to orders...');
                         await window.OrderTemp.save();
-                        console.log('✅ Step 1: Order saved to orders_tmp successfully');
+                        console.log('✅ Step 1: Order saved to orders successfully');
                     }
 
                     // 2. 进入第二步
@@ -1424,21 +1396,33 @@ async function nextStep() {
             }
             // Step 2 (確認): Save to temp order, initialize Express Checkout, then move to step 3 (支払い・決済)
             else if (currentStep === 2) {
-                console.log('💾 Step 2 → Step 3: Saving order to orders_tmp...');
+                console.log('💾 Step 2 → Step 3: Saving order to orders...');
                 showLoading();
 
                 try {
                     // 保存订单信息到临时订单表
                     if (window.OrderTemp && typeof window.OrderTemp.save === 'function') {
                         await window.OrderTemp.save();
-                        console.log('✅ Order saved to orders_tmp successfully');
+                        console.log('✅ Order saved to orders successfully');
                     }
 
-                    // 初始化 Express Checkout Element 并等待加载完成
-                    console.log('📦 Step 2: Initializing Express Checkout Element...');
-                    if (window.initializeExpressCheckoutElement) {
-                        await window.initializeExpressCheckoutElement();
-                        console.log('✅ Express Checkout Element initialized');
+                    // 0円の場合は Express Checkout を初期化しない（Stripe は 0円を拒否する）
+                    let isZeroAmount = false;
+                    try {
+                        isZeroAmount = getCurrentPaymentAmount() === 0;
+                    } catch (_) {
+                        isZeroAmount = false;
+                    }
+
+                    if (!isZeroAmount) {
+                        // 初始化 Express Checkout Element 并等待加载完成
+                        console.log('📦 Step 2: Initializing Express Checkout Element...');
+                        if (window.initializeExpressCheckoutElement) {
+                            await window.initializeExpressCheckoutElement();
+                            console.log('✅ Express Checkout Element initialized');
+                        }
+                    } else {
+                        console.log('💎 0円決済: Step 2 で Express Checkout 初期化をスキップ');
                     }
 
                     // 进入第三步
@@ -1483,7 +1467,7 @@ async function prevStep() {
         try {
             // 从数据库读取最新数据
             if (window.OrderTemp && typeof window.OrderTemp.load === 'function') {
-                console.log(`📥 Step ${currentStep}: Loading latest data from orders_tmp...`);
+                console.log(`📥 Step ${currentStep}: Loading latest data from orders...`);
                 await window.OrderTemp.load();
                 console.log(`✅ Step ${currentStep}: Data loaded from database`);
             }
@@ -1549,6 +1533,18 @@ async function moveToStep(step) {
 
     // Handle payment processing on step 3 (支払い・決済)
     if (currentStep === 3) {
+        // ポイント全額などで 0円の場合：Stripe/WeChat を初期化せず、直接注文を確定する
+        try {
+            const zeroAmount = getCurrentPaymentAmount() === 0;
+            if (zeroAmount) {
+                await completeZeroAmountOrderAndRedirect();
+                return;
+            }
+        } catch (e) {
+            console.warn('⚠️ Failed to check/complete zero-amount order:', e);
+            // 続行して通常の決済フローへ（表示はエラーになる可能性あり）
+        }
+
         // Payment method selection - no automatic processing yet
         // User will select payment method and then click submit
 
@@ -1609,29 +1605,7 @@ function validateCurrentStep() {
             }
         }
 
-        // Validate address fields based on country selection
-        const country = document.getElementById('country')?.value;
-        if (country === 'japan') {
-            // Validate Japan address fields
-            const postalCode = document.getElementById('postalCode')?.value;
-            const prefecture = document.getElementById('prefecture')?.value;
-            const address = document.getElementById('address')?.value;
-
-            if (!postalCode || !prefecture || !address) {
-                alert('日本の住所情報を入力してください。');
-                return false;
-            }
-        } else {
-            // Validate international address fields
-            const stateProvince = document.getElementById('stateProvince')?.value;
-            const cityDistrict = document.getElementById('cityDistrict')?.value;
-            const streetAddress = document.getElementById('streetAddress')?.value;
-
-            if (!stateProvince || !cityDistrict || !streetAddress) {
-                alert('住所情報を入力してください / Please enter address information.');
-                return false;
-            }
-        }
+        // Address validation disabled (address fields are hidden)
     }
 
     // Step 2 (確認) - no special validation needed, just confirmation display
@@ -1665,6 +1639,13 @@ function validateCurrentStep() {
 
 // Validate payment step
 function validatePaymentStep() {
+    // 0円の場合はオンライン決済の選択は不要（ポイント全額など）
+    try {
+        if (getCurrentPaymentAmount() === 0) return true;
+    } catch (_) {
+        // ignore and fall through
+    }
+
     // Payment method is always 'online' now - only validate that a payment type is selected
     const selectedPaymentType = window.selectedOnlinePaymentType;
 
@@ -1710,6 +1691,75 @@ function validatePaymentStep() {
     return true;
 }
 
+function getCurrentPaymentAmount() {
+    const orderData = window.currentTempOrderData || window.currentOrderData || {};
+    const raw = (orderData.final_amount ?? orderData.total_price ?? orderData.totalPrice ?? null);
+    const amount = raw === null || raw === undefined || raw === '' ? 0 : Math.round(parseFloat(raw) || 0);
+    return Math.max(0, amount);
+}
+
+async function completeZeroAmountOrderAndRedirect() {
+    if (window.__zeroAmountCompleting) return;
+    window.__zeroAmountCompleting = true;
+
+    const paymentSubmitBtn = document.getElementById('paymentSubmitBtn');
+    if (paymentSubmitBtn) {
+        paymentSubmitBtn.disabled = true;
+        paymentSubmitBtn.textContent = window.i18n ? window.i18n.t('processing') : '処理中...';
+    }
+
+    const titleEl = document.getElementById('paymentStatusTitle');
+    const msgEl = document.getElementById('paymentStatusMessage');
+    const contentEl = document.getElementById('paymentMethodContent');
+    if (titleEl) titleEl.textContent = '予約を確定しています...';
+    if (msgEl) msgEl.textContent = 'ポイント決済のためお支払いは不要です。';
+    if (contentEl) contentEl.innerHTML = '<p>0円決済を処理中です。しばらくお待ちください。</p>';
+
+    const tempOrderCode = (window.OrderTemp && typeof window.OrderTemp.getTempOrderCode === 'function')
+        ? window.OrderTemp.getTempOrderCode()
+        : window.currentTempOrderCode;
+
+    if (!tempOrderCode) {
+        window.__zeroAmountCompleting = false;
+        throw new Error('注文番号が見つかりません。ページを更新してもう一度お試しください。');
+    }
+
+    let orderCode;
+    if (window.OrderTemp && typeof window.OrderTemp.completePayment === 'function') {
+        orderCode = await window.OrderTemp.completePayment(null);
+    } else {
+        const apiUrl = window.getApiUrl(`/order-temp/${tempOrderCode}/complete-payment`);
+        const response = await fetch(apiUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify({ stripePaymentId: null })
+        });
+        if (!response.ok) {
+            const errorText = await response.text();
+            window.__zeroAmountCompleting = false;
+            throw new Error(`サーバーエラー: ${response.status} ${response.statusText} ${errorText}`);
+        }
+        const result = await response.json();
+        if (!result.success) {
+            window.__zeroAmountCompleting = false;
+            throw new Error(result.message || 'ポイントの精算に失敗しました');
+        }
+        orderCode = result.data?.orderCode || result.data?.order_code;
+    }
+
+    if (!orderCode) {
+        window.__zeroAmountCompleting = false;
+        throw new Error('订单号未返回（orderCode missing）');
+    }
+
+    const successUrl = (typeof getSuccessReturnUrl === 'function')
+        ? getSuccessReturnUrl(orderCode)
+        : `${window.location.origin}/reservation-success.html?orderCode=${encodeURIComponent(orderCode)}`;
+
+    window.location.href = successUrl;
+}
+
 // Update confirmation summary
 /**
  * 从数据库读取数据并更新确认页面
@@ -1717,6 +1767,23 @@ function validatePaymentStep() {
  */
 async function updateConfirmationSummaryFromDatabase() {
     console.log('📥 Loading confirmation data from database...');
+
+    // TL-Lincoln 模式下从内存读取数据
+    const apiProvider = window.getApiProvider ? window.getApiProvider() : 'local';
+    if (apiProvider === 'tl-lincoln') {
+        console.log('📡 TL-Lincoln mode: メモリからデータを読み込み');
+        const orderData = window.currentOrderData || window.currentTempOrderData || {};
+
+        // 确保房型名称在缓存中（供 updateConfirmationSummary 使用）
+        if (orderData.room_type_name && orderData.room_type_code) {
+            roomDataCache[orderData.room_type_code] = roomDataCache[orderData.room_type_code] || {};
+            roomDataCache[orderData.room_type_code].name = orderData.room_type_name;
+        }
+
+        // 调用通用的确认页面更新函数
+        updateConfirmationSummary();
+        return;
+    }
 
     // 获取临时订单编号
     const tempOrderCode = window.OrderTemp && window.OrderTemp.getTempOrderCode
@@ -1773,14 +1840,14 @@ async function updateConfirmationSummaryFromDatabase() {
                 console.log('✅ Nights set to:', nightsText);
             }
 
-            // 房型名称（从数据库读取，如果没有则从 URL 读取）
+            // 房型名称（从数据库读取，如果没有则从缓存读取）
             if (confirmRoomType) {
                 let roomTypeName = orderData.room_type_name;
                 if (!roomTypeName) {
-                    // 后备方案：从 URL 读取
-                    const urlParams = new URLSearchParams(window.location.search);
-                    roomTypeName = decodeURIComponent(urlParams.get('plan') || 'ツインルーム【セミダブルベッド】');
-                    console.log('⚠️ Room type name not in database, using URL:', roomTypeName);
+                    // 后备方案：从缓存读取
+                    const code = orderData.room_type_code || '';
+                    roomTypeName = (roomDataCache[code] && roomDataCache[code].name) || '';
+                    console.log('⚠️ Room type name not in database, using cache:', roomTypeName);
                 }
                 confirmRoomType.textContent = roomTypeName;
                 console.log('✅ Room type set to:', roomTypeName);
@@ -1951,7 +2018,8 @@ function updateConfirmationSummary() {
     const nights = calculateNights(urlParams.get('checkin') || getDefaultDate(), urlParams.get('checkout') || getDefaultDate(1));
     if (confirmNights) confirmNights.textContent = `${nights}泊`;
 
-    if (confirmRoomType) confirmRoomType.textContent = decodeURIComponent(urlParams.get('plan') || 'ツインルーム【セミダブルベッド】');
+    const code = urlParams.get('code') || 'twin';
+    if (confirmRoomType) confirmRoomType.textContent = (roomDataCache[code] && roomDataCache[code].name) || '';
 
     const adults = urlParams.get('adults') || '2';
     const children = urlParams.get('children') || '0';
@@ -2152,7 +2220,7 @@ async function updatePaymentConfirmation() {
         console.log('⚠️ 订单数据不存在，使用客户端计算');
 
         const urlParams = new URLSearchParams(window.location.search);
-        const code = urlParams.get('code') || urlParams.get('plan') || 'twin';
+        const code = urlParams.get('code') || 'twin';
         const rooms = parseInt(urlParams.get('rooms') || '1');
         const adults = parseInt(urlParams.get('adults') || '2');
         const checkin = urlParams.get('checkin') || '';
@@ -2214,7 +2282,7 @@ async function handlePaymentAndCreateOrder() {
     // Disable button to prevent double submission
     if (paymentSubmitBtn) {
         paymentSubmitBtn.disabled = true;
-        paymentSubmitBtn.textContent = '処理中...';
+        paymentSubmitBtn.textContent = window.i18n ? window.i18n.t('processing') : '処理中...';
     }
 
     try {
@@ -2234,7 +2302,7 @@ async function handlePaymentAndCreateOrder() {
         // Re-enable button
         if (paymentSubmitBtn) {
             paymentSubmitBtn.disabled = false;
-            paymentSubmitBtn.textContent = '決済する';
+            paymentSubmitBtn.textContent = window.i18n ? window.i18n.t('pay_now') : '決済する';
         }
     }
 }
@@ -2265,13 +2333,13 @@ function handleOnlinePayment(paymentType) {
 
     switch (paymentType) {
         case 'wechat':
-            paymentStatusTitle.textContent = 'WeChat Pay決済中...';
-            paymentStatusMessage.textContent = 'QRコードをスキャンしてください';
+            paymentStatusTitle.textContent = window.i18n ? window.i18n.t('wechat_payment_title') : 'WeChat Pay決済中...';
+            paymentStatusMessage.textContent = window.i18n ? window.i18n.t('wechat_payment_message') : 'QRコードをスキャンしてください';
             paymentMethodContent.innerHTML = '<p>WeChat PayアプリでこちらのQRコードをスキャンしてお支払いください。</p>';
             break;
         case 'stripe':
-            paymentStatusTitle.textContent = 'クレジットカード決済中...';
-            paymentStatusMessage.textContent = 'カード情報を処理しています';
+            paymentStatusTitle.textContent = window.i18n ? window.i18n.t('card_payment_title') : 'クレジットカード決済中...';
+            paymentStatusMessage.textContent = window.i18n ? window.i18n.t('card_payment_message') : 'カード情報を処理しています';
             paymentMethodContent.innerHTML = '<p>入力されたクレジットカード情報で決済を処理しています。</p>';
             break;
     }
@@ -2356,105 +2424,23 @@ function updateServicesSummary(services) {
     }
 }
 
-// Update total price
-// Cache for room data to avoid repeated API calls
-let roomDataCache = {};
-
+// Update total price - 价格完全从服务器（OrderTemp）获取
 async function updateTotalPrice(additionalCost = 0) {
-    // Get booking parameters from URL
-    const urlParams = new URLSearchParams(window.location.search);
-    const code = urlParams.get('code') || urlParams.get('plan') || 'twin';
-    const rooms = parseInt(urlParams.get('rooms') || '1');
-    const adults = parseInt(urlParams.get('adults') || '2');
-    const checkin = urlParams.get('checkin') || '';
-    const checkout = urlParams.get('checkout') || '';
+    // 价格由 order-temp.js 的 updatePriceDisplay() 从服务器获取并显示
+    // 这里不再调用 search API，避免价格冲突
+    console.log('💰 updateTotalPrice: 价格由服务器计算，通过 OrderTemp 显示');
 
-    // Calculate number of nights
-    let nights = 1;
-    if (checkin && checkout) {
-        const checkinDate = new Date(checkin);
-        const checkoutDate = new Date(checkout);
-        const timeDiff = checkoutDate - checkinDate;
-        nights = Math.ceil(timeDiff / (1000 * 60 * 60 * 24)) || 1;
-    }
+    // 如果有缓存的订单数据，直接使用
+    const orderData = window.currentOrderData || (window.OrderTemp && window.OrderTemp.getOrderData ? window.OrderTemp.getOrderData() : null);
 
-    // Fetch room data from database API and calculate price based on dates
-    let basePricePerNight = 0; // 不使用默认价格，必须从数据库获取
-    let roomTypeName = '';
-
-    try {
-        // Check cache first
-        if (roomDataCache[code]) {
-            console.log('Using cached data for', code);
-            basePricePerNight = roomDataCache[code].price;
-            roomTypeName = roomDataCache[code].name;
-        } else {
-            // Use search API to get accurate pricing based on dates
-            const searchApiUrl = window.getApiUrl(`/rooms/search?checkin=${checkin}&checkout=${checkout}&adults=${adults}&rooms=1`);
-            console.log('Fetching room search data from API:', searchApiUrl);
-            const searchResponse = await fetch(searchApiUrl);
-
-            if (searchResponse.ok) {
-                const searchResult = await searchResponse.json();
-                console.log('Search API Result:', searchResult);
-
-                if (searchResult.success && searchResult.data && searchResult.data.length > 0) {
-                    // Find the room type we're looking for
-                    const roomData = searchResult.data.find(r => r.room_type_code === code);
-                    if (roomData) {
-                        // Use price_per_night from search result (already includes all adults and date-based pricing)
-                        basePricePerNight = Math.round(roomData.price_per_night);
-                        roomTypeName = roomData.room_type_name;
-                        console.log('Price from search API:', basePricePerNight, 'per night (includes', adults, 'adults)');
-                        console.log('Room type name:', roomTypeName);
-
-                        // Cache the data
-                        roomDataCache[code] = {
-                            price: basePricePerNight,
-                            name: roomTypeName
-                        };
-                    } else {
-                        console.warn('Room type not found in search results');
-                    }
-                } else {
-                    console.warn('Search API returned no rooms');
-                }
-            } else {
-                console.error('Search API request failed with status:', searchResponse.status);
-            }
+    if (orderData && orderData.total_price) {
+        const totalPriceElement = document.getElementById('totalPrice');
+        if (totalPriceElement) {
+            // 优先显示 final_amount（扣除积分后），否则显示 total_price
+            const displayPrice = (orderData.final_amount ?? orderData.total_price);
+            totalPriceElement.innerHTML = `¥${parseInt(displayPrice).toLocaleString()}<span class="tax-included-text">税込</span>`;
+            console.log('💰 显示服务器价格:', displayPrice);
         }
-    } catch (error) {
-        console.error('Room data fetch error:', error);
-        // Use fallback price if API call fails
-    }
-
-    console.log('Final basePricePerNight:', basePricePerNight, 'for room code:', code);
-
-    // Update room type display if we got the name from API
-    if (roomTypeName) {
-        const roomTypeElement = document.getElementById('roomType');
-        if (roomTypeElement) {
-            const roomText = parseInt(rooms) > 1 ? `${roomTypeName} × ${rooms}室` : roomTypeName;
-            roomTypeElement.textContent = roomText;
-        }
-    }
-
-    // Calculate total room price (rooms × nights × price per room)
-    const totalRoomPrice = basePricePerNight * rooms * nights;
-
-    // Calculate service costs per person (已含税)
-    let serviceCostPerPerson = 0;
-    if (document.getElementById('breakfast')?.checked) serviceCostPerPerson += 2200; // 含税
-    if (document.getElementById('dinner')?.checked) serviceCostPerPerson += 4950; // 含税
-
-    const totalServiceCost = (serviceCostPerPerson * adults * nights) +
-                           (document.getElementById('privateBath')?.checked ? 3300 : 0); // 含税
-
-    const total = Math.round(totalRoomPrice + totalServiceCost);
-
-    const totalPriceElement = document.getElementById('totalPrice');
-    if (totalPriceElement) {
-        totalPriceElement.innerHTML = `¥${total.toLocaleString()}<span class="tax-included-text">税込</span>`;
     }
 }
 
@@ -2463,7 +2449,7 @@ function updateReservationInfo() {
     // Get URL parameters for booking details
     const urlParams = new URLSearchParams(window.location.search);
 
-    const code = urlParams.get('code') || urlParams.get('plan') || '';
+    const code = urlParams.get('code') || '';
     const checkin = urlParams.get('checkin') || '';
     const checkout = urlParams.get('checkout') || '';
     const rooms = urlParams.get('rooms') || '1';
@@ -2501,21 +2487,7 @@ function updateReservationInfo() {
         }
     }
 
-    // Update room type
-    if (code) {
-        const roomTypeElement = document.getElementById('roomType');
-        if (roomTypeElement) {
-            const roomTypeNames = {
-                'twin': 'ツインルーム【セミダブルベッド】',
-                'triple': 'トリプルルーム【シングルベッド】',
-                'quad': '和洋室 6帖和室＋洋室ツイン【シングルベッド】',
-                'small_double': 'ファミリー和洋室 15帖和洋室＋洋室ツイン【セミダブルベッド】'
-            };
-            const roomTypeName = roomTypeNames[code] || 'ツインルーム【セミダブルベッド】';
-            roomTypeElement.textContent = roomTypeName;
-            console.log('✓ 更新客室类型:', roomTypeName);
-        }
-    }
+    // 房型名称由 order-temp.js 从服务器获取，这里不设置
 
     // Update guest count
     const guestCountElement = document.getElementById('guestCount');
@@ -2526,6 +2498,13 @@ function updateReservationInfo() {
         }
         guestCountElement.textContent = guestText;
         console.log('✓ 更新宾客人数:', guestText);
+    }
+
+    // Update room count
+    const roomCountElement = document.getElementById('roomCount');
+    if (roomCountElement) {
+        roomCountElement.textContent = `${rooms}室`;
+        console.log('✓ 更新房间数:', `${rooms}室`);
     }
 
     console.log('=== 预约信息更新完成 ===');
@@ -2554,6 +2533,7 @@ function handleFormSubmission(event) {
     clearExpirationTimer();
 
     // Redirect to success page (with order code if available)
+    // 使用不带 .html 后缀的 URL，避免服务器 URL 重写导致参数丢失
     if (window.bookingOrderCode) {
         window.location.href = `reservation-success.html?orderCode=${window.bookingOrderCode}`;
     } else {
@@ -2617,7 +2597,7 @@ function collectFormData() {
         checkoutDate: new URLSearchParams(window.location.search).get('checkout') || getDefaultDate(1),
         adults: new URLSearchParams(window.location.search).get('adults') || '2',
         children: new URLSearchParams(window.location.search).get('children') || '0',
-        roomType: new URLSearchParams(window.location.search).get('plan') || 'ツインルーム【セミダブルベッド】'
+        roomType: (() => { const code = new URLSearchParams(window.location.search).get('code') || 'twin'; return (roomDataCache[code] && roomDataCache[code].name) || ''; })()
     };
 }
 
@@ -2906,6 +2886,8 @@ async function handlePaymentButtonClick(event) {
             creditCardSection.style.display = 'none';
         } else if (selectedType === 'wechat' && qrcodeSection) {
             qrcodeSection.style.display = 'none';
+        } else if (selectedType === 'alipay' && qrcodeSection) {
+            qrcodeSection.style.display = 'none';
         } else if (selectedType === 'link' && linkPaymentSection) {
             linkPaymentSection.style.display = 'none';
         } else if ((selectedType === 'applepay' || selectedType === 'googlepay') && expressPaymentSection) {
@@ -2952,6 +2934,18 @@ async function handlePaymentButtonClick(event) {
         }
         // 调用二维码支付流程
         await proceedWithStripeQRPayment(selectedType);
+    } else if (selectedType === 'alipay') {
+        // 支付宝支付
+        // 显示二维码区域
+        if (qrcodeSection) {
+            qrcodeSection.style.display = 'block';
+        }
+        // 隐藏 Express Checkout Element
+        if (expressCheckoutElement) {
+            expressCheckoutElement.style.display = 'none';
+        }
+        // 调用支付宝支付流程
+        await proceedWithAlipayPayment();
     } else if (selectedType === 'applepay' || selectedType === 'googlepay') {
         // 显示 Express Payment 区域
         if (expressPaymentSection) {
@@ -3082,7 +3076,7 @@ function startQRCodeTimer() {
 
         if (timeLeft <= 0) {
             clearInterval(window.qrCodeTimerInterval);
-            qrcodeTimer.textContent = '有効期限が切れました';
+            qrcodeTimer.textContent = window.i18n ? window.i18n.t('timer_expired') : '有効期限が切れました';
             qrcodeTimer.style.color = '#dc3545';
         }
 
@@ -3184,75 +3178,133 @@ async function proceedWithStripePayment() {
     try {
         console.log('开始Stripe支付流程...');
 
-        // 获取临时订单编号
-        const tempOrderCode = window.OrderTemp && window.OrderTemp.getTempOrderCode
-            ? window.OrderTemp.getTempOrderCode()
-            : window.currentTempOrderCode;
+        // 检查是否为 TL-Lincoln 模式
+        const apiProvider = window.getApiProvider ? window.getApiProvider() : 'local';
+        const isTLLincoln = apiProvider === 'tl-lincoln';
 
-        if (!tempOrderCode) {
-            alert('临时订单不存在，请刷新页面重试');
-            return;
+        let orderData;
+
+        if (isTLLincoln) {
+            // TL-Lincoln 模式：从内存读取订单数据
+            console.log('📡 TL-Lincoln mode: 从内存读取订单数据');
+            const currentOrder = window.currentOrderData || window.currentTempOrderData || {};
+            const urlParams = new URLSearchParams(window.location.search);
+
+            // 生成临时订单号
+            const tlOrderCode = 'TL' + Date.now() + Math.random().toString(36).substr(2, 4).toUpperCase();
+
+            orderData = {
+                userId: null,
+                orderCode: tlOrderCode,
+                bookerEmail: currentOrder.guest_email || '',
+                guestLastName: currentOrder.guest_last_name || '',
+                guestFirstName: currentOrder.guest_first_name || '',
+                guestLastNameKatakana: currentOrder.guest_last_name_katakana || '',
+                guestFirstNameKatakana: currentOrder.guest_first_name_katakana || '',
+                guestPhone: currentOrder.guest_phone || '',
+                phoneCountryCode: currentOrder.phone_country_code || '+81',
+                roomType: currentOrder.room_type_name || '--',
+                roomTypeCode: currentOrder.room_type_code || urlParams.get('code') || '',
+                checkinDate: currentOrder.checkin_date || urlParams.get('checkin') || '',
+                checkoutDate: currentOrder.checkout_date || urlParams.get('checkout') || '',
+                adults: currentOrder.num_adults || parseInt(urlParams.get('adults')) || 2,
+                children: currentOrder.num_children || parseInt(urlParams.get('children')) || 0,
+                numRooms: currentOrder.num_rooms || parseInt(urlParams.get('rooms')) || 1,
+                services: [],
+
+                // 使用内存中的价格
+                totalPrice: parseFloat(currentOrder.total_price) || 0,
+                roomPrice: parseFloat(currentOrder.room_price) || null,
+                final_amount: parseFloat(currentOrder.total_price) || 0,
+                points_used: 0,
+                service_cost: 0,
+
+                // TL-Lincoln 相关
+                tl_room_type_code: currentOrder.tl_room_type_code || '',
+                tl_rate_plan_code: currentOrder.tl_rate_plan_code || currentOrder.plan_code || ''
+            };
+
+            console.log('✅ TL-Lincoln 订单数据:', orderData);
+        } else {
+            // 自社 API 模式：从数据库读取临时订单
+            const tempOrderCode = window.OrderTemp && window.OrderTemp.getTempOrderCode
+                ? window.OrderTemp.getTempOrderCode()
+                : window.currentTempOrderCode;
+
+            if (!tempOrderCode) {
+                alert('临时订单不存在，请刷新页面重试');
+                return;
+            }
+
+            console.log('💳 从数据库读取临时订单数据:', tempOrderCode);
+
+            // 从数据库读取临时订单数据
+            const response = await fetch(window.getApiUrl(`/order-temp/${tempOrderCode}`), {
+                credentials: 'include'
+            });
+            const result = await response.json();
+
+            if (!result.success || !result.data) {
+                alert('无法读取订单数据，请刷新页面重试');
+                return;
+            }
+
+            const tempOrder = result.data;
+            console.log('✅ 临时订单数据:', tempOrder);
+
+            // 准备订单数据（使用临时订单中的数据）
+            orderData = {
+                userId: tempOrder.user_id,
+                bookerEmail: tempOrder.guest_email,
+                guestLastName: tempOrder.guest_last_name,
+                guestFirstName: tempOrder.guest_first_name,
+                guestLastNameKana: tempOrder.guest_last_name_katakana || '',
+                guestFirstNameKana: tempOrder.guest_first_name_katakana || '',
+                roomType: tempOrder.room_type_name || '--',
+                roomTypeCode: tempOrder.room_type_code || '',
+                checkinDate: tempOrder.checkin_date,
+                checkoutDate: tempOrder.checkout_date,
+                adults: tempOrder.num_adults,
+                children: tempOrder.num_children || 0,
+                numRooms: tempOrder.num_rooms || 1,
+                plan_code: tempOrder.plan_code || '',
+                num_nights: tempOrder.num_nights || '',
+                num_children_preschool: tempOrder.num_children_preschool || 0,
+                num_children_elementary: tempOrder.num_children_elementary || 0,
+                services: [],
+
+                // 重要：使用服务器计算的价格
+                totalPrice: parseFloat(tempOrder.total_price),
+                roomPrice: parseFloat(tempOrder.room_price),
+
+                // 关键：添加积分和最终金额相关字段
+                final_amount: parseFloat(tempOrder.final_amount),
+                points_used: parseInt(tempOrder.points_used) || 0,
+                service_cost: parseFloat(tempOrder.service_cost) || 0,
+                breakfastSelected: tempOrder.breakfast_selected || false,
+                dinnerSelected: tempOrder.dinner_selected || false,
+                privateBathSelected: tempOrder.private_bath_selected || false
+            };
+
+            // 添加选择的服务
+            if (tempOrder.breakfast_selected) {
+                orderData.services.push({ name: '朝食バイキング', price: 2000, quantity: parseInt(tempOrder.num_adults) });
+            }
+            if (tempOrder.dinner_selected) {
+                orderData.services.push({ name: '夕食コース', price: 4500, quantity: parseInt(tempOrder.num_adults) });
+            }
+            if (tempOrder.private_bath_selected) {
+                orderData.services.push({ name: '貸切風呂', price: 3000, quantity: 1 });
+            }
+
+            // 使用临时订单编号
+            orderData.orderCode = tempOrder.order_code;
+
+            console.log('💰 订单数据（从数据库）:', orderData);
+            console.log('💰 服务器计算的价格:', tempOrder.total_price);
+            console.log('💰 最终支付金额 (final_amount):', tempOrder.final_amount);
+            console.log('💰 使用的积分 (points_used):', tempOrder.points_used);
         }
-
-        console.log('💳 从数据库读取临时订单数据:', tempOrderCode);
-
-        // 从数据库读取临时订单数据
-        const response = await fetch(window.getApiUrl(`/order-temp/${tempOrderCode}`), {
-            credentials: 'include'
-        });
-        const result = await response.json();
-
-        if (!result.success || !result.data) {
-            alert('无法读取订单数据，请刷新页面重试');
-            return;
-        }
-
-        const tempOrder = result.data;
-        console.log('✅ 临时订单数据:', tempOrder);
-
-        // 准备订单数据（使用临时订单中的数据）
-        const orderData = {
-            userId: tempOrder.user_id,
-            bookerEmail: tempOrder.guest_email,
-            guestLastName: tempOrder.guest_last_name,
-            guestFirstName: tempOrder.guest_first_name,
-            guestLastNameKana: tempOrder.guest_last_name_katakana || '',
-            guestFirstNameKana: tempOrder.guest_first_name_katakana || '',
-            roomType: tempOrder.room_type_name || 'ツインルーム【セミダブルベッド】',
-            checkinDate: tempOrder.checkin_date,
-            checkoutDate: tempOrder.checkout_date,
-            adults: tempOrder.num_adults,
-            children: tempOrder.num_children || 0,
-            services: [],
-
-            // 重要：使用服务器计算的价格
-            totalPrice: parseFloat(tempOrder.total_price),
-            roomPrice: parseFloat(tempOrder.room_price),
-
-            // 关键：添加积分和最终金额相关字段
-            final_amount: parseFloat(tempOrder.final_amount),
-            points_used: parseInt(tempOrder.points_used) || 0,
-            service_cost: parseFloat(tempOrder.service_cost) || 0
-        };
-
-        // 添加选择的服务
-        if (tempOrder.breakfast_selected) {
-            orderData.services.push({ name: '朝食バイキング', price: 2000, quantity: parseInt(tempOrder.num_adults) });
-        }
-        if (tempOrder.dinner_selected) {
-            orderData.services.push({ name: '夕食コース', price: 4500, quantity: parseInt(tempOrder.num_adults) });
-        }
-        if (tempOrder.private_bath_selected) {
-            orderData.services.push({ name: '貸切風呂', price: 3000, quantity: 1 });
-        }
-
-        // 使用临时订单编号
-        orderData.orderCode = tempOrder.order_code;
-
-        console.log('💰 订单数据（从数据库）:', orderData);
-        console.log('💰 服务器计算的价格:', tempOrder.total_price);
-        console.log('💰 最终支付金额 (final_amount):', tempOrder.final_amount);
-        console.log('💰 使用的积分 (points_used):', tempOrder.points_used);
 
         // 调用Stripe支付
         await window.createStripeCheckoutSession(orderData);
@@ -3335,7 +3387,7 @@ async function proceedWithLinkPayment() {
             prefecture: tempOrder.prefecture || '',
             city: tempOrder.city || '',
             addressLine: tempOrder.address_line || '',
-            roomType: tempOrder.room_type_name || decodeURIComponent(urlParams.get('plan') || 'ツインルーム【セミダブルベッド】'),
+            roomType: tempOrder.room_type_name || (roomDataCache[tempOrder.room_type_code] && roomDataCache[tempOrder.room_type_code].name) || '',
             roomTypeCode: tempOrder.room_type_code || '',
             checkinDate: tempOrder.checkin_date,
             checkoutDate: tempOrder.checkout_date,
@@ -3467,7 +3519,7 @@ function calculateMaxUsablePoints() {
     // 最多可用30%
     const maxPoints = Math.min(
         userLoyaltyPoints,
-        Math.floor(currentOrderTotal * 0.3)
+        Math.floor(currentOrderTotal * 1)
     );
 
     document.getElementById('maxUsablePoints').textContent = maxPoints;

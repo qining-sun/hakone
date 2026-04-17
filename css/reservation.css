@@ -104,6 +104,8 @@ body .header-top-container .main-navigation a.active {
     padding: 40px;
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
     border: 1px solid rgba(210, 105, 30, 0.2);
+    box-sizing: border-box;
+    overflow: visible;
 }
 
 .search-title {
@@ -123,6 +125,8 @@ body .header-top-container .main-navigation a.active {
 
 .search-plans-form {
     max-width: 100%;
+    overflow: visible;
+    box-sizing: border-box;
 }
 
 .search-row {
@@ -141,6 +145,237 @@ body .header-top-container .main-navigation a.active {
     flex: 1;
     display: flex;
     flex-direction: column;
+}
+
+/* Guest Selector Popup */
+.guest-selector-group {
+    flex: 1.5;
+    position: relative;
+}
+
+.guest-selector {
+    position: relative;
+}
+
+.guest-selector-display {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 15px;
+    border: 2px solid #e1e1e1;
+    border-radius: 8px;
+    background: #fff;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: 'Noto Sans JP', 'Microsoft YaHei', Arial, sans-serif;
+    font-size: 14px;
+    color: #333;
+}
+
+.guest-selector-display:hover {
+    border-color: #D2691E;
+    box-shadow: 0 0 10px rgba(210, 105, 30, 0.2);
+}
+
+.guest-selector-display.active {
+    border-color: #D2691E;
+    box-shadow: 0 0 0 3px rgba(210, 105, 30, 0.1);
+}
+
+.guest-selector-display i:first-child {
+    color: #D2691E;
+}
+
+.guest-selector-display i:last-child {
+    margin-left: auto;
+    color: #999;
+    font-size: 12px;
+    transition: transform 0.3s ease;
+}
+
+.guest-selector-display.active i:last-child {
+    transform: rotate(180deg);
+}
+
+.guest-selector-popup {
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 0;
+    right: 0;
+    min-width: 0;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+    border: 1px solid #e1e1e1;
+    z-index: 1000;
+    display: none;
+    animation: popupFadeIn 0.2s ease;
+}
+
+.guest-selector-popup.show {
+    display: block;
+}
+
+@keyframes popupFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.guest-popup-header {
+    padding: 12px 16px;
+    background: linear-gradient(135deg, rgba(210, 105, 30, 0.08) 0%, rgba(210, 105, 30, 0.04) 100%);
+    border-bottom: 1px solid #f0f0f0;
+    border-radius: 12px 12px 0 0;
+    font-size: 12px;
+    font-weight: 600;
+    color: #D2691E;
+    font-family: 'Noto Sans JP', 'Microsoft YaHei', Arial, sans-serif;
+}
+
+.guest-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 16px;
+}
+
+.guest-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.guest-label {
+    font-size: 14px;
+    font-weight: 500;
+    color: #333;
+    font-family: 'Noto Sans JP', 'Microsoft YaHei', Arial, sans-serif;
+}
+
+.guest-hint {
+    font-size: 11px;
+    color: #999;
+    font-family: 'Noto Sans JP', 'Microsoft YaHei', Arial, sans-serif;
+}
+
+.guest-hint .hint-free {
+    color: #4CAF50;
+    font-weight: 600;
+}
+
+.guest-hint .hint-discount {
+    color: #FF9800;
+    font-weight: 600;
+}
+
+.guest-hint .hint-full {
+    color: #666;
+    font-weight: 500;
+}
+
+.guest-counter {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.counter-btn {
+    width: 32px;
+    height: 32px;
+    border: 2px solid #e1e1e1;
+    border-radius: 50%;
+    background: #fff;
+    font-size: 16px;
+    font-weight: 600;
+    color: #666;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.counter-btn:hover:not(:disabled) {
+    border-color: #D2691E;
+    color: #D2691E;
+    background: rgba(210, 105, 30, 0.05);
+}
+
+.counter-btn:active:not(:disabled) {
+    transform: scale(0.95);
+}
+
+.counter-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.counter-value {
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+    min-width: 24px;
+    text-align: center;
+    font-family: 'Noto Sans JP', 'Microsoft YaHei', Arial, sans-serif;
+}
+
+.guest-divider {
+    height: 1px;
+    background: #f0f0f0;
+    margin: 0 16px;
+}
+
+.guest-section-title {
+    padding: 10px 16px 6px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #888;
+    font-family: 'Noto Sans JP', 'Microsoft YaHei', Arial, sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.guest-popup-footer {
+    padding: 12px 16px;
+    border-top: 1px solid #f0f0f0;
+}
+
+.guest-confirm-btn {
+    width: 100%;
+    padding: 12px;
+    background: linear-gradient(135deg, #D2691E 0%, #FF8C42 100%);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+    font-family: 'Noto Sans JP', 'Microsoft YaHei', Arial, sans-serif;
+}
+
+.guest-confirm-btn:hover {
+    background: linear-gradient(135deg, #B8621E 0%, #E07B38 100%);
+    box-shadow: 0 4px 15px rgba(210, 105, 30, 0.3);
+}
+
+.guest-confirm-btn:active {
+    transform: scale(0.98);
+}
+
+/* Guest Popup Overlay - Desktop */
+.guest-popup-overlay {
+    display: none;
 }
 
 .search-group label {
@@ -186,7 +421,7 @@ body .header-top-container .main-navigation a.active {
     transition: all 0.3s ease;
     letter-spacing: 0.1em;
     box-shadow: 0 4px 15px rgba(210, 105, 30, 0.3);
-    min-width: 250px;
+    min-width: 200px;
 }
 
 .search-plans-btn:hover {
@@ -287,6 +522,133 @@ body .header-top-container .main-navigation a.active {
     transform: scale(1.05);
 }
 
+/* Image Slider Styles */
+.image-slider {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+.image-slider .slider-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+.image-slider .slider-image {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.image-slider .slider-image.active {
+    opacity: 1;
+}
+
+.image-slider .slider-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 36px;
+    height: 36px;
+    background: rgba(255, 255, 255, 0.9);
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+    opacity: 0;
+    transition: opacity 0.3s ease, background 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.image-slider:hover .slider-btn {
+    opacity: 1;
+}
+
+.image-slider .slider-btn:hover {
+    background: #fff;
+}
+
+.image-slider .slider-btn i {
+    color: #333;
+    font-size: 14px;
+}
+
+.image-slider .slider-prev {
+    left: 10px;
+}
+
+.image-slider .slider-next {
+    right: 10px;
+}
+
+.image-slider .slider-dots {
+    position: absolute;
+    bottom: 12px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 6px;
+    z-index: 10;
+}
+
+.image-slider .slider-dot {
+    width: 8px;
+    height: 8px;
+    background: rgba(255, 255, 255, 0.5);
+    border-radius: 50%;
+    cursor: pointer;
+    transition: background 0.3s ease, transform 0.3s ease;
+}
+
+.image-slider .slider-dot.active {
+    background: #fff;
+    transform: scale(1.2);
+}
+
+.image-slider .slider-dot:hover {
+    background: rgba(255, 255, 255, 0.8);
+}
+
+/* Mobile: Always show slider buttons */
+@media (max-width: 768px) {
+    .image-slider .slider-btn {
+        opacity: 1;
+        width: 32px;
+        height: 32px;
+    }
+
+    .image-slider .slider-btn i {
+        font-size: 12px;
+    }
+
+    .image-slider .slider-prev {
+        left: 8px;
+    }
+
+    .image-slider .slider-next {
+        right: 8px;
+    }
+
+    .image-slider .slider-dots {
+        bottom: 8px;
+    }
+
+    .image-slider .slider-dot {
+        width: 6px;
+        height: 6px;
+    }
+}
+
 .plan-badge {
     position: absolute;
     top: 15px;
@@ -333,6 +695,14 @@ body .header-top-container .main-navigation a.active {
     font-size: 14px;
     color: #666;
     font-weight: 500;
+}
+
+.plan-capacity {
+    font-family: 'Noto Sans JP', 'Microsoft YaHei', Arial, sans-serif;
+    font-size: 13px;
+    color: #8a7a5e;
+    font-weight: 500;
+    margin-top: 4px;
 }
 
 .plan-description {
@@ -550,6 +920,47 @@ body .header-top-container .main-navigation a.active {
 
     .search-group {
         min-width: auto;
+    }
+
+    /* Guest Selector Mobile */
+    .guest-selector-popup {
+        position: fixed;
+        top: auto;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        min-width: 100%;
+        border-radius: 20px 20px 0 0;
+        max-height: 70vh;
+        overflow-y: auto;
+    }
+
+    .guest-selector-popup.show {
+        animation: slideUpPopup 0.3s ease;
+    }
+
+    @keyframes slideUpPopup {
+        from {
+            transform: translateY(100%);
+        }
+        to {
+            transform: translateY(0);
+        }
+    }
+
+    .guest-popup-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 999;
+        display: none;
+    }
+
+    .guest-popup-overlay.show {
+        display: block;
     }
 
     .results-header {
@@ -1201,5 +1612,402 @@ body .header-top-container .main-navigation a.active {
         overflow: hidden;
         position: fixed;
         width: 100%;
+    }
+}
+
+/* ========================================
+   Plan Card with Multiple Plans Layout
+   ======================================== */
+
+.plan-card-with-plans {
+    flex-direction: column;
+}
+
+.plan-card-with-plans .plan-card-main {
+    display: flex;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.plan-card-with-plans .plan-image {
+    width: 280px;
+    min-height: 200px;
+    flex-shrink: 0;
+}
+
+.plan-card-with-plans .plan-details {
+    flex: 1;
+    padding: 25px;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Plan List Section */
+.plan-list-section {
+    background: #fafafa;
+    padding: 0;
+}
+
+.plan-list-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 25px;
+    background: linear-gradient(135deg, rgba(210, 105, 30, 0.08) 0%, rgba(210, 105, 30, 0.04) 100%);
+    border-bottom: 1px solid rgba(210, 105, 30, 0.15);
+}
+
+.plan-list-title {
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    color: #D2691E;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.plan-list-title i {
+    font-size: 14px;
+}
+
+.plan-list-stay-info {
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 13px;
+    color: #666;
+    background: #fff;
+    padding: 6px 14px;
+    border-radius: 20px;
+    border: 1px solid #e0e0e0;
+}
+
+.plan-list-container {
+    padding: 0;
+}
+
+/* Plan List Item */
+.plan-list-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 25px;
+    background: #fff;
+    border-bottom: 1px solid #f0f0f0;
+    transition: all 0.2s ease;
+}
+
+.plan-list-item:last-child {
+    border-bottom: none;
+}
+
+.plan-list-item:hover {
+    background: #fffaf5;
+}
+
+.plan-item-left {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    min-width: 0;
+}
+
+.plan-item-right {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    flex-shrink: 0;
+}
+
+.plan-item-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex: 1;
+    min-width: 0;
+}
+
+.plan-item-name {
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 15px;
+    font-weight: 500;
+    color: #333;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.plan-item-meal {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 15px;
+    font-size: 12px;
+    font-weight: 500;
+    color: #fff;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.plan-item-description {
+    font-family: 'Noto Sans JP', 'Microsoft YaHei', Arial, sans-serif;
+    font-size: 13px;
+    color: #555;
+    line-height: 1.6;
+    margin: 6px 0 10px 0;
+    padding: 8px 12px;
+    background: #f8f6f3;
+    border-left: 3px solid #8a7a5e;
+    border-radius: 0 4px 4px 0;
+    text-align: left;
+}
+
+.plan-item-price {
+    display: flex;
+    align-items: baseline;
+    gap: 4px;
+    padding: 0 30px;
+    flex-shrink: 0;
+}
+
+.plan-item-amount {
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+    color: #D2691E;
+}
+
+.plan-item-tax {
+    font-size: 11px;
+    color: #999;
+}
+
+.plan-item-actions {
+    flex-shrink: 0;
+}
+
+.plan-item-btn {
+    padding: 10px 24px;
+    font-size: 14px;
+    border-radius: 25px;
+}
+
+/* Responsive Design for Plan Cards with Multiple Plans */
+@media (max-width: 992px) {
+    .plan-card-with-plans .plan-card-main {
+        flex-direction: column;
+    }
+
+    .plan-card-with-plans .plan-image {
+        width: 100%;
+        height: 200px;
+    }
+
+    .plan-list-item {
+        flex-wrap: wrap;
+        gap: 12px;
+        padding: 15px 20px;
+    }
+
+    .plan-item-info {
+        flex: 1 1 100%;
+        order: 1;
+    }
+
+    .plan-item-price {
+        flex: 1;
+        order: 2;
+        padding: 0;
+        justify-content: flex-start;
+    }
+
+    .plan-item-actions {
+        order: 3;
+    }
+}
+
+@media (max-width: 768px) {
+    /* 主卡片区域优化 */
+    .plan-card-with-plans .plan-card-main {
+        flex-direction: column;
+    }
+
+    .plan-card-with-plans .plan-image {
+        width: 100%;
+        height: 180px;
+    }
+
+    .plan-card-with-plans .plan-details {
+        padding: 15px;
+    }
+
+    .plan-card-with-plans .plan-header .plan-name {
+        font-size: 1.2rem;
+    }
+
+    .plan-card-with-plans .plan-header .plan-size {
+        font-size: 12px;
+    }
+
+    .plan-card-with-plans .plan-header .plan-capacity {
+        font-size: 11px;
+    }
+
+    .plan-card-with-plans .plan-description {
+        font-size: 13px;
+        margin-bottom: 10px;
+    }
+
+    .plan-card-with-plans .plan-times {
+        padding-top: 10px;
+    }
+
+    .plan-card-with-plans .time-info {
+        font-size: 12px;
+    }
+
+    /* Plan列表区域优化 */
+    .plan-list-header {
+        flex-direction: row;
+        justify-content: space-between;
+        gap: 10px;
+        padding: 10px 15px;
+        align-items: center;
+    }
+
+    .plan-list-title {
+        font-size: 13px;
+    }
+
+    .plan-list-stay-info {
+        font-size: 11px;
+        padding: 4px 10px;
+    }
+
+    /* Plan列表项 - 水平布局优化 */
+    .plan-list-item {
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 10px;
+        padding: 12px 15px;
+    }
+
+    .plan-item-left {
+        width: 100%;
+    }
+
+    .plan-item-right {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .plan-item-info {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+
+    .plan-item-name {
+        font-size: 14px;
+        white-space: normal;
+        flex: 1;
+        min-width: 0;
+    }
+
+    .plan-item-description {
+        font-size: 12px;
+        margin: 5px 0 8px 0;
+        padding: 6px 10px;
+    }
+
+    .plan-item-price {
+        padding: 0;
+        justify-content: flex-start;
+    }
+
+    .plan-item-amount {
+        font-size: 18px;
+    }
+
+    .plan-item-tax {
+        font-size: 10px;
+    }
+
+    .plan-item-btn {
+        padding: 10px 20px;
+        font-size: 13px;
+        white-space: nowrap;
+    }
+}
+
+@media (max-width: 480px) {
+    /* 主卡片进一步优化 */
+    .plan-card-with-plans .plan-image {
+        height: 160px;
+    }
+
+    .plan-card-with-plans .plan-details {
+        padding: 12px;
+    }
+
+    .plan-card-with-plans .plan-header .plan-name {
+        font-size: 1.1rem;
+    }
+
+    .plan-card-with-plans .plan-description {
+        font-size: 12px;
+        line-height: 1.5;
+    }
+
+    .plan-card-with-plans .plan-times .time-info {
+        font-size: 11px;
+    }
+
+    .plan-card-with-plans .plan-times .time-label {
+        width: 100px;
+    }
+
+    /* Plan列表项 - 紧凑布局 */
+    .plan-list-header {
+        padding: 8px 12px;
+    }
+
+    .plan-list-title {
+        font-size: 12px;
+        gap: 6px;
+    }
+
+    .plan-list-title i {
+        font-size: 12px;
+    }
+
+    .plan-list-item {
+        padding: 10px 12px;
+        gap: 8px;
+    }
+
+    .plan-item-info {
+        gap: 6px;
+    }
+
+    .plan-item-name {
+        font-size: 13px;
+    }
+
+    .plan-item-description {
+        font-size: 11px;
+        margin: 4px 0 6px 0;
+        padding: 5px 8px;
+    }
+
+    .plan-item-amount {
+        font-size: 16px;
+    }
+
+    .plan-item-btn {
+        padding: 8px 16px;
+        font-size: 12px;
+        border-radius: 20px;
     }
 }

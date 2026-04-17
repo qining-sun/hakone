@@ -2,6 +2,69 @@
 // 使用 api-config.js 配置或相对路径
 const BOOKING_API_URL = window.API_CONFIG?.BOOKING_API || '/api';
 
+// 获取当前 API Provider
+function getCurrentApiProvider() {
+    return window.getApiProvider ? window.getApiProvider() : 'local';
+}
+
+// 提交 TL-Lincoln 订单API
+async function submitTLLincolnBookingToAPI(bookingData) {
+    try {
+        // 转换数据格式为 TL-Lincoln 需要的格式
+        const tlLincolnData = {
+            checkin: bookingData.checkin_date,
+            checkout: bookingData.checkout_date,
+            roomTypeCode: bookingData.tl_room_type_code || extractTLRoomTypeCode(bookingData.room_type_code),
+            ratePlanCode: bookingData.plan_code,
+            rooms: bookingData.num_rooms || 1,
+            adults: bookingData.num_adults || 2,
+            children: bookingData.num_children || 0,
+            childrenPreschool: bookingData.num_children_preschool || 0,
+            childrenElementary: bookingData.num_children_elementary || 0,
+            breakfastSelected: bookingData.breakfast_selected || false,
+            dinnerSelected: bookingData.dinner_selected || false,
+            planBreakfast: bookingData.plan_breakfast || bookingData.breakfast || false,
+            planDinner: bookingData.plan_dinner || bookingData.dinner || false,
+            guestName: `${bookingData.guest_last_name || ''} ${bookingData.guest_first_name || ''}`.trim() || 'ゲスト',
+            guestNameKana: `${bookingData.guest_last_name_katakana || ''} ${bookingData.guest_first_name_katakana || ''}`.trim(),
+            guestLastName: bookingData.guest_last_name || '',
+            guestFirstName: bookingData.guest_first_name || '',
+            guestLastNameKana: bookingData.guest_last_name_katakana || '',
+            guestFirstNameKana: bookingData.guest_first_name_katakana || '',
+            guestEmail: bookingData.guest_email,
+            guestPhone: bookingData.guest_phone,
+            stripePaymentIntentId: bookingData.payment_id || null
+        };
+
+        console.log('📡 TL-Lincoln 订单提交:', tlLincolnData);
+
+        const response = await fetch(`${BOOKING_API_URL}/tl-lincoln/orders`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json; charset=UTF-8'
+            },
+            body: JSON.stringify(tlLincolnData)
+        });
+
+        const result = await response.json();
+        console.log('📡 TL-Lincoln 订单响应:', result);
+        return result;
+
+    } catch (error) {
+        console.error('TL-Lincoln Order API Error:', error);
+        throw error;
+    }
+}
+
+// 从 room_type_code 中提取 TL-Lincoln 房型代码（去掉 tl_ 前缀）
+function extractTLRoomTypeCode(roomTypeCode) {
+    if (!roomTypeCode) return '';
+    if (roomTypeCode.startsWith('tl_')) {
+        return roomTypeCode.substring(3);
+    }
+    return roomTypeCode;
+}
+
 // 提交访客订单API
 async function submitBookingToAPI(bookingData) {
     try {
@@ -28,6 +91,7 @@ async function submitUserBookingToAPI(bookingData, userId) {
         const requestBody = {
                 user_id: userId,
                 room_type_code: bookingData.room_type_code,
+                plan_code: bookingData.plan_code,
                 checkin_date: bookingData.checkin_date,
                 checkout_date: bookingData.checkout_date,
                 num_rooms: bookingData.num_rooms,
@@ -58,6 +122,7 @@ async function submitUserBookingToAPI(bookingData, userId) {
         };
 
         console.log('>>> 提交用户订单API, 请求体:', requestBody);
+        console.log('>>> plan_code in request:', requestBody.plan_code);
         console.log('>>> payment_id in request:', requestBody.payment_id);
 
         const response = await fetch(`${BOOKING_API_URL}/user-orders`, {
@@ -88,27 +153,40 @@ window.submitFinalBooking = async function() {
         // 显示加载状态
         showLoadingOverlay('予約処理中...');
 
-        // 检查用户是否已登录
-        const currentUser = window.safeStorage ? window.safeStorage.getItem('currentUser') : null;
+        // 获取当前 API Provider
+        const apiProvider = getCurrentApiProvider();
+        console.log('🔗 API Provider:', apiProvider);
+
         let result;
 
-        if (currentUser) {
-            // 用户已登录 - 使用用户订单API
-            try {
-                const userData = JSON.parse(currentUser);
-                console.log('User is logged in, creating user order for:', userData.email);
+        // 根据 API Provider 选择不同的提交方式
+        if (apiProvider === 'tl-lincoln') {
+            // TL-Lincoln 模式 - 使用 TL-Lincoln OTA_HotelRes API
+            console.log('📡 使用 TL-Lincoln API 提交预约');
+            result = await submitTLLincolnBookingToAPI(bookingData);
+        } else {
+            // 自社 API 模式
+            // 检查用户是否已登录
+            const currentUser = window.safeStorage ? window.safeStorage.getItem('currentUser') : null;
 
-                // 调用注册用户订单API
-                result = await submitUserBookingToAPI(bookingData, userData.user_id);
-            } catch (parseError) {
-                console.error('Error parsing user data:', parseError);
-                // 如果解析失败,回退到访客订单
+            if (currentUser) {
+                // 用户已登录 - 使用用户订单API
+                try {
+                    const userData = JSON.parse(currentUser);
+                    console.log('User is logged in, creating user order for:', userData.email);
+
+                    // 调用注册用户订单API
+                    result = await submitUserBookingToAPI(bookingData, userData.user_id);
+                } catch (parseError) {
+                    console.error('Error parsing user data:', parseError);
+                    // 如果解析失败,回退到访客订单
+                    result = await submitBookingToAPI(bookingData);
+                }
+            } else {
+                // 用户未登录 - 使用访客订单API
+                console.log('User is not logged in, creating guest order');
                 result = await submitBookingToAPI(bookingData);
             }
-        } else {
-            // 用户未登录 - 使用访客订单API
-            console.log('User is not logged in, creating guest order');
-            result = await submitBookingToAPI(bookingData);
         }
 
         hideLoadingOverlay();
@@ -154,30 +232,73 @@ function collectBookingData() {
     console.log('urlParams.get("code"):', urlParams.get('code'));
     console.log('document.getElementById("roomTypeCode")?.value:', document.getElementById('roomTypeCode')?.value);
 
+    // 获取 TL-Lincoln 相关数据
+    const currentOrderData = window.currentOrderData || window.currentTempOrderData || {};
+
+    // 判断是否为 TL-Lincoln 模式
+    const apiProvider = window.getApiProvider ? window.getApiProvider() : 'local';
+    const isTLLincoln = apiProvider === 'tl-lincoln';
+
+    if (isTLLincoln) {
+        console.log('📡 TL-Lincoln mode: 从 window.currentOrderData 读取客人信息');
+        console.log('currentOrderData:', currentOrderData);
+    }
+
     const data = {
         // 房间信息 - 优先使用保存的参数
         room_type_code: window.bookingParams?.room_type_code || urlParams.get('code') || document.getElementById('roomTypeCode')?.value,
+        plan_code: window.bookingParams?.plan_code || urlParams.get('plan') || null,
         checkin_date: window.bookingParams?.checkin_date || urlParams.get('checkin') || document.getElementById('checkinDate')?.textContent,
         checkout_date: window.bookingParams?.checkout_date || urlParams.get('checkout') || document.getElementById('checkoutDate')?.textContent,
         num_rooms: window.bookingParams?.num_rooms || parseInt(urlParams.get('rooms')) || 1,
         num_adults: window.bookingParams?.num_adults || parseInt(urlParams.get('adults')) || 2,
         num_children: window.bookingParams?.num_children || parseInt(urlParams.get('children')) || 0,
+        num_children_preschool: currentOrderData.num_children_preschool || window.bookingParams?.num_children_preschool || parseInt(urlParams.get('childrenPreschool')) || 0,
+        num_children_elementary: currentOrderData.num_children_elementary || window.bookingParams?.num_children_elementary || parseInt(urlParams.get('childrenElementary')) || 0,
 
-        // 客人信息
-        guest_last_name: document.getElementById('lastName')?.value || '',
-        guest_first_name: document.getElementById('firstName')?.value || '',
-        guest_last_name_katakana: document.getElementById('lastNameKana')?.value || '',
-        guest_first_name_katakana: document.getElementById('firstNameKana')?.value || '',
-        guest_email: document.getElementById('email')?.value || '',
-        guest_phone: document.getElementById('phone')?.value || '',
-        phone_country_code: document.getElementById('countryCode')?.value || '+81',
+        // TL-Lincoln 相关数据
+        tl_room_type_code: currentOrderData.tl_room_type_code || '',
+        tl_rate_plan_code: currentOrderData.tl_rate_plan_code || '',
 
-        // 地址信息
-        country: document.getElementById('country')?.value || '',
-        postal_code: document.getElementById('postalCode')?.value || '',
-        prefecture: document.getElementById('prefecture')?.value || '',
-        city: document.getElementById('city')?.value || document.getElementById('cityDistrict')?.value || '',
-        address_line: document.getElementById('address')?.value || document.getElementById('streetAddress')?.value || '',
+        // 客人信息 - TL-Lincoln 模式优先从 currentOrderData 读取
+        guest_last_name: isTLLincoln
+            ? (currentOrderData.guest_last_name || document.getElementById('lastName')?.value || '')
+            : (document.getElementById('lastName')?.value || ''),
+        guest_first_name: isTLLincoln
+            ? (currentOrderData.guest_first_name || document.getElementById('firstName')?.value || '')
+            : (document.getElementById('firstName')?.value || ''),
+        guest_last_name_katakana: isTLLincoln
+            ? (currentOrderData.guest_last_name_katakana || document.getElementById('lastNameKana')?.value || '')
+            : (document.getElementById('lastNameKana')?.value || ''),
+        guest_first_name_katakana: isTLLincoln
+            ? (currentOrderData.guest_first_name_katakana || document.getElementById('firstNameKana')?.value || '')
+            : (document.getElementById('firstNameKana')?.value || ''),
+        guest_email: isTLLincoln
+            ? (currentOrderData.guest_email || document.getElementById('email')?.value || '')
+            : (document.getElementById('email')?.value || ''),
+        guest_phone: isTLLincoln
+            ? (currentOrderData.guest_phone || document.getElementById('phone')?.value || '')
+            : (document.getElementById('phone')?.value || ''),
+        phone_country_code: isTLLincoln
+            ? (currentOrderData.phone_country_code || document.getElementById('countryCode')?.value || '+81')
+            : (document.getElementById('countryCode')?.value || '+81'),
+
+        // 地址信息 - TL-Lincoln 模式优先从 currentOrderData 读取
+        country: isTLLincoln
+            ? (currentOrderData.country || document.getElementById('country')?.value || '')
+            : (document.getElementById('country')?.value || ''),
+        postal_code: isTLLincoln
+            ? (currentOrderData.postal_code || document.getElementById('postalCode')?.value || '')
+            : (document.getElementById('postalCode')?.value || ''),
+        prefecture: isTLLincoln
+            ? (currentOrderData.prefecture || document.getElementById('prefecture')?.value || '')
+            : (document.getElementById('prefecture')?.value || ''),
+        city: isTLLincoln
+            ? (currentOrderData.city || document.getElementById('city')?.value || document.getElementById('cityDistrict')?.value || '')
+            : (document.getElementById('city')?.value || document.getElementById('cityDistrict')?.value || ''),
+        address_line: isTLLincoln
+            ? (currentOrderData.address_line || document.getElementById('address')?.value || document.getElementById('streetAddress')?.value || '')
+            : (document.getElementById('address')?.value || document.getElementById('streetAddress')?.value || ''),
 
         // 附加服务
         breakfast_selected: document.getElementById('breakfast')?.checked || false,
@@ -198,6 +319,9 @@ function collectBookingData() {
     };
 
     console.log('=== collectBookingData collected ===', data);
+    console.log('>>> plan_code:', data.plan_code);
+    console.log('>>> urlParams.get("plan"):', urlParams.get('plan'));
+    console.log('>>> window.bookingParams?.plan_code:', window.bookingParams?.plan_code);
     console.log('>>> payment_method:', data.payment_method);
     console.log('>>> payment_id:', data.payment_id);
     console.log('>>> window.lastPaymentIntentId:', window.lastPaymentIntentId);
@@ -345,14 +469,18 @@ function hideLoadingOverlay() {
 
     window.bookingParams = {
         room_type_code: urlParams.get('code'),
+        plan_code: urlParams.get('plan'),
         checkin_date: urlParams.get('checkin'),
         checkout_date: urlParams.get('checkout'),
         num_rooms: parseInt(urlParams.get('rooms')) || 1,
         num_adults: parseInt(urlParams.get('adults')) || 2,
-        num_children: parseInt(urlParams.get('children')) || 0
+        num_children: parseInt(urlParams.get('children')) || 0,
+        num_children_preschool: parseInt(urlParams.get('childrenPreschool')) || 0,
+        num_children_elementary: parseInt(urlParams.get('childrenElementary')) || 0
     };
     console.log('Booking params saved:', window.bookingParams);
     console.log('window.bookingParams.room_type_code:', window.bookingParams.room_type_code);
+    console.log('window.bookingParams.plan_code:', window.bookingParams.plan_code);
 })();
 
 console.log('Booking API integration loaded');

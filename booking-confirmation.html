@@ -5,8 +5,10 @@
   <title>ご予約確認書｜【公式】Trip7箱根温泉ホテル</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="icon" href="img/logo.ico" type="image/x-icon">
+  <script src="js/config.js"></script>
   <script src="js/api-config.js"></script>
-  <script src="js/init.js?v=20251128"></script>
+  <script src="js/i18n.js"></script>
+  <script src="js/init.js?v=20260120"></script>
   <style>
     * {
       box-sizing: border-box;
@@ -250,7 +252,7 @@
   <div class="wrapper">
     <div class="loading" id="loading">
       <div class="spinner"></div>
-      <p>予約情報を読み込んでいます...</p>
+      <p data-i18n="bc_loading">予約情報を読み込んでいます...</p>
     </div>
 
     <div id="content" style="display: none;">
@@ -265,91 +267,91 @@
           </div>
         </div>
         <div class="hotel-contact">
-          〒250-0631 神奈川県足柄下郡箱根町仙石原1245-325<br>
-          TEL: 0460-83-8434 | Email: info@lgdhome.com
+          〒250-0408 神奈川県足柄下郡箱根町<br>
+          TEL: <span class="contact-tel"></span> | Email: <span class="contact-email-support"></span>
         </div>
       </div>
 
       <div class="title">
-        <h1>ご予約確認書</h1>
-        <p>Hotel Reservation & Check-in Confirmation</p>
+        <h1 data-i18n="bc_title">ご予約確認書</h1>
+        <p data-i18n="bc_subtitle">Hotel Reservation & Check-in Confirmation</p>
       </div>
 
       <!-- 基本情報 -->
       <div class="info-grid">
         <div class="info-item">
-          <div class="label">お名前 / Guest Name</div>
+          <div class="label" data-i18n="bc_guest_name">お名前</div>
           <div class="value" id="guestName">-</div>
         </div>
         <div class="info-item">
-          <div class="label">予約番号 / Reservation No.</div>
+          <div class="label" data-i18n="bc_reservation_no">予約番号</div>
           <div class="value highlight" id="orderCode">-</div>
         </div>
         <div class="info-item">
-          <div class="label">チェックイン / Check-in</div>
+          <div class="label" data-i18n="bc_checkin">チェックイン</div>
           <div class="value" id="checkinDate">-</div>
         </div>
         <div class="info-item">
-          <div class="label">チェックアウト / Check-out</div>
+          <div class="label" data-i18n="bc_checkout">チェックアウト</div>
           <div class="value" id="checkoutDate">-</div>
         </div>
         <div class="info-item">
-          <div class="label">連絡先 / Contact</div>
+          <div class="label" data-i18n="bc_contact">連絡先</div>
           <div class="value" id="contact">-</div>
         </div>
       </div>
 
       <!-- 客室情報 -->
       <div class="section">
-        <div class="section-title">客室と料金情報 / Room & Rate Details</div>
+        <div class="section-title" data-i18n="bc_room_rate">客室と料金情報</div>
         <table class="table">
           <thead>
             <tr>
-              <th>客室タイプ / Room Type</th>
-              <th>ご利用人数 / Guests</th>
-              <th>宿泊数 / Nights</th>
-              <th>客室数 / Rooms</th>
-              <th>合計 / Total</th>
+              <th data-i18n="bc_room_type">客室タイプ</th>
+              <th data-i18n="bc_guests">ご利用人数</th>
+              <th data-i18n="bc_nights">宿泊数</th>
+              <th data-i18n="bc_rooms">客室数</th>
+              <th data-i18n="bc_total">合計</th>
             </tr>
           </thead>
           <tbody id="roomInfo">
             <!-- Populated by JavaScript -->
           </tbody>
         </table>
-        <p class="note" id="priceNote">
+        <p class="note" id="priceNote" data-i18n="bc_price_note">
           ※ 以上の金額は予約時の金額です。チェックアウト時の実際の費用は、追加サービスや施設利用により変動する場合があります。
         </p>
       </div>
 
       <!-- 追加サービス -->
       <div class="section" id="servicesSection" style="display: none;">
-        <div class="section-title">追加サービス / Additional Services</div>
+        <div class="section-title" data-i18n="bc_additional_services">追加サービス</div>
         <div id="servicesList"></div>
       </div>
 
       <!-- 特別リクエスト -->
       <div class="section" id="requestsSection" style="display: none;">
-        <div class="section-title">特別リクエスト / Special Requests</div>
+        <div class="section-title" data-i18n="bc_special_requests">特別リクエスト</div>
         <div class="special-box" id="specialRequests"></div>
       </div>
 
       <!-- ご来館時のお願い -->
       <div class="section">
-        <div class="section-title">ご来館時のお願い / Check-in Information</div>
+        <div class="section-title" data-i18n="bc_checkin_info">ご来館時のお願い</div>
         <p class="note">
-          1. チェックイン時刻: 15:00以降 | チェックアウト時刻: 10:00まで<br>
-          2. キャンセルまたは変更：ご予約いただいたチャネルのキャンセルポリシーに従ってください。<br>
-          3. ご不明な点はホテルまでお問い合わせください。
+          1. <span data-i18n="bc_checkin_note1">チェックイン時刻: 15:00以降 | チェックアウト時刻: 10:00まで</span><br>
+          2. <span data-i18n="bc_checkin_note2">キャンセルまたは変更：ご予約いただいたチャネルのキャンセルポリシーに従ってください。</span><br>
+          3. <span data-i18n="bc_checkin_note3">ご不明な点はホテルまでお問い合わせください。</span>
         </p>
       </div>
 
       <div class="actions">
-        <button class="btn btn-print" onclick="window.print()">印刷する / Print</button>
-        <button class="btn btn-back" onclick="goBack()">予約詳細に戻る / Back</button>
+        <button class="btn btn-print" onclick="window.print()" data-i18n="bc_print">印刷する</button>
+        <button class="btn btn-back" onclick="goBack()" data-i18n="bc_back">予約詳細に戻る</button>
       </div>
 
       <div class="footer">
-        <div>印刷日時: <span id="printDate"></span></div>
+        <div><span data-i18n="bc_print_date">印刷日時</span>: <span id="printDate"></span></div>
       </div>
     </div>
   </div>
@@ -361,12 +363,17 @@
 
     // 页面加载
     window.addEventListener('DOMContentLoaded', async function() {
+      // Initialize i18n
+      if (window.i18n) {
+        window.i18n.init();
+      }
+
       // 获取URL参数中的订单代码
       const urlParams = new URLSearchParams(window.location.search);
       const orderCode = urlParams.get('code');
 
       if (!orderCode) {
-        alert('予約番号が見つかりません');
+        alert(window.i18n ? window.i18n.t('bc_no_order') : '予約番号が見つかりません');
         window.location.href = 'user-center.html';
         return;
       }
@@ -393,11 +400,11 @@
           orderData = data.data;
           displayOrderData(orderData);
         } else {
-          throw new Error(data.message || '予約情報の読み込みに失敗しました');
+          throw new Error(data.message || (window.i18n ? window.i18n.t('bc_load_error') : '予約情報の読み込みに失敗しました'));
         }
       } catch (error) {
         console.error('Error:', error);
-        alert('予約情報の読み込みに失敗しました');
+        alert(window.i18n ? window.i18n.t('bc_load_error') : '予約情報の読み込みに失敗しました');
         window.location.href = 'user-center.html';
       }
     }
@@ -418,24 +425,28 @@
         `${order.guest_phone || ''} · ${order.guest_email || ''}`;
 
       // 客室信息
-      const guestText = `大人${order.num_adults}名${order.num_children > 0 ? `, 子供${order.num_children}名` : ''}`;
+      const adultsText = window.i18n ? window.i18n.t('bc_adults').replace('{count}', order.num_adults) : `大人${order.num_adults}名`;
+      const childrenText = order.num_children > 0 ? (window.i18n ? ', ' + window.i18n.t('bc_children').replace('{count}', order.num_children) : `, 子供${order.num_children}名`) : '';
+      const guestText = adultsText + childrenText;
+      const nightsText = window.i18n ? window.i18n.t('bc_nights_unit').replace('{count}', order.num_nights) : `${order.num_nights}泊`;
+      const roomsText = window.i18n ? window.i18n.t('bc_rooms_unit').replace('{count}', order.num_rooms) : `${order.num_rooms}室`;
       const totalAmount = parseFloat(order.final_amount) || parseFloat(order.total_price) || 0;
 
       document.getElementById('roomInfo').innerHTML = `
         <tr>
           <td>${order.room_type_name || order.room_type_code}</td>
           <td>${guestText}</td>
-          <td>${order.num_nights}泊</td>
-          <td>${order.num_rooms}室</td>
+          <td>${nightsText}</td>
+          <td>${roomsText}</td>
           <td class="highlight">¥${formatNumber(totalAmount)}</td>
         </tr>
       `;
 
       // 追加サービス
       const services = [];
-      if (order.breakfast_selected) services.push({ name: '朝食', price: 1500 });
-      if (order.dinner_selected) services.push({ name: '夕食', price: 3000 });
-      if (order.private_bath_selected) services.push({ name: '貸切風呂', price: 2000 });
+      if (order.breakfast_selected) services.push({ name: window.i18n ? window.i18n.t('bc_breakfast') : '朝食', price: 1500 });
+      if (order.dinner_selected) services.push({ name: window.i18n ? window.i18n.t('bc_dinner') : '夕食', price: 3000 });
+      if (order.private_bath_selected) services.push({ name: window.i18n ? window.i18n.t('bc_private_bath') : '貸切風呂', price: 2000 });
 
       if (services.length > 0) {
         document.getElementById('servicesSection').style.display = 'block';

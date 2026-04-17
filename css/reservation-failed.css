@@ -1,90 +1,58 @@
-/* Reservation Success Page Styles */
+/* Reservation Failed Page Styles */
 
 /* Page Layout */
 .page-content {
     margin-top: 0;
 }
 
-/* Success Section */
-.success-section {
+/* Failed Section */
+.failed-section {
     padding: 60px 0;
     background: #f8f8f8;
 }
 
-.success-container {
+.failed-container {
     max-width: 900px;
     margin: 0 auto;
     padding: 0 20px;
 }
 
-/* Success Message */
-.success-message {
+/* Failed Message */
+.failed-message {
     text-align: center;
     background: white;
     padding: 50px 40px;
     border-radius: 20px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
     margin-bottom: 40px;
+    border-top: 4px solid #e74c3c;
 }
 
-.success-icon {
+.failed-icon {
     margin-bottom: 30px;
 }
 
-.success-icon i {
+.failed-icon i {
     font-size: 80px;
-    color: #D2691E;
-    animation: pulse 2s ease-in-out infinite;
+    color: #e74c3c;
 }
 
-/* 等待状态的脉冲动画 */
-@keyframes pulse {
-    0%, 100% {
-        transform: scale(1);
-        opacity: 1;
-    }
-    50% {
-        transform: scale(1.1);
-        opacity: 0.8;
-    }
-}
-
-.success-title {
+.failed-title {
     font-size: 32px;
     color: #333;
     margin-bottom: 15px;
     font-weight: 600;
 }
 
-.success-subtitle {
+.failed-subtitle {
     font-size: 18px;
     color: #666;
-    margin-bottom: 40px;
+    margin-bottom: 0;
+    line-height: 1.6;
 }
 
-.reservation-number {
-    display: inline-block;
-    background: linear-gradient(135deg, #D2691E, #CD853F);
-    color: white;
-    padding: 15px 30px;
-    border-radius: 30px;
-    font-size: 16px;
-    box-shadow: 0 4px 15px rgba(210, 105, 30, 0.2);
-}
-
-.number-label {
-    font-weight: 500;
-    margin-right: 10px;
-}
-
-.number-value {
-    font-weight: bold;
-    font-size: 18px;
-    letter-spacing: 1px;
-}
-
-/* Reservation Details */
-.reservation-details {
+/* Error Details */
+.error-details {
     background: white;
     padding: 40px;
     border-radius: 20px;
@@ -92,67 +60,102 @@
     margin-bottom: 40px;
 }
 
-.details-title {
-    font-size: 24px;
+.error-details .details-title {
+    font-size: 20px;
     color: #333;
-    margin-bottom: 30px;
-    padding-bottom: 15px;
-    border-bottom: 2px solid #D2691E;
-    font-weight: 600;
-}
-
-.details-grid {
-    display: grid;
-    gap: 30px;
-}
-
-.detail-section h4 {
-    font-size: 18px;
-    color: #333;
-    margin-bottom: 20px;
+    margin-bottom: 25px;
     display: flex;
     align-items: center;
     gap: 10px;
     font-weight: 600;
 }
 
-.detail-section h4 i {
-    color: #D2691E;
-    font-size: 20px;
+.error-details .details-title i {
+    color: #e74c3c;
 }
 
-.detail-items {
-    background: #f8f9fa;
+.error-info {
+    background: #fef5f5;
     padding: 20px;
     border-radius: 12px;
+    border: 1px solid #fde2e2;
+    margin-bottom: 25px;
 }
 
-.detail-item {
+.error-item {
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 12px 0;
-    border-bottom: 1px solid rgba(0,0,0,0.1);
+    border-bottom: 1px solid rgba(231, 76, 60, 0.1);
 }
 
-.detail-item:last-child {
+.error-item:last-child {
     border-bottom: none;
 }
 
-.detail-item .label {
+.error-item .label {
     font-weight: 500;
     color: #666;
     font-size: 14px;
 }
 
-.detail-item .value {
+.error-item .value {
     font-weight: 600;
     color: #333;
     font-size: 14px;
+    font-family: monospace;
 }
 
-/* Next Steps */
-.next-steps {
+/* Refund Notice */
+.refund-notice {
+    background: linear-gradient(135deg, #e8f5e9, #f1f8e9);
+    padding: 25px;
+    border-radius: 12px;
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+    border: 1px solid #c8e6c9;
+}
+
+.refund-notice .notice-icon {
+    width: 50px;
+    height: 50px;
+    background: #27ae60;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.refund-notice .notice-icon i {
+    color: white;
+    font-size: 24px;
+}
+
+.refund-notice .notice-content h4 {
+    font-size: 16px;
+    color: #2e7d32;
+    margin-bottom: 10px;
+    font-weight: 600;
+}
+
+.refund-notice .notice-content p {
+    font-size: 14px;
+    color: #555;
+    margin: 0;
+    line-height: 1.6;
+}
+
+.refund-notice .notice-small {
+    font-size: 12px !important;
+    color: #888 !important;
+    margin-top: 8px !important;
+}
+
+/* Reasons Section */
+.reasons-section {
     background: white;
     padding: 40px;
     border-radius: 20px;
@@ -160,7 +163,76 @@
     margin-bottom: 40px;
 }
 
-.steps-title {
+.reasons-title {
+    font-size: 24px;
+    color: #333;
+    margin-bottom: 30px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #e74c3c;
+    font-weight: 600;
+}
+
+.reasons-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.reason-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 12px;
+    border-left: 4px solid #e74c3c;
+}
+
+.reason-item.active {
+    background: #fef5f5;
+    border-left-color: #e74c3c;
+}
+
+.reason-icon {
+    width: 50px;
+    height: 50px;
+    background: linear-gradient(135deg, #e74c3c, #c0392b);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.reason-icon i {
+    color: white;
+    font-size: 22px;
+}
+
+.reason-content h4 {
+    font-size: 16px;
+    color: #333;
+    margin-bottom: 8px;
+    font-weight: 600;
+}
+
+.reason-content p {
+    font-size: 14px;
+    color: #666;
+    line-height: 1.6;
+    margin: 0;
+}
+
+/* Suggestions Section */
+.suggestions-section {
+    background: white;
+    padding: 40px;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    margin-bottom: 40px;
+}
+
+.suggestions-title {
     font-size: 24px;
     color: #333;
     margin-bottom: 30px;
@@ -169,19 +241,19 @@
     font-weight: 600;
 }
 
-.steps-list {
+.suggestions-list {
     display: flex;
     flex-direction: column;
     gap: 25px;
 }
 
-.step-item {
+.suggestion-item {
     display: flex;
     align-items: flex-start;
     gap: 20px;
 }
 
-.step-number {
+.suggestion-number {
     width: 40px;
     height: 40px;
     background: linear-gradient(135deg, #D2691E, #CD853F);
@@ -195,14 +267,14 @@
     flex-shrink: 0;
 }
 
-.step-content h4 {
+.suggestion-content h4 {
     font-size: 16px;
     color: #333;
     margin-bottom: 8px;
     font-weight: 600;
 }
 
-.step-content p {
+.suggestion-content p {
     font-size: 14px;
     color: #666;
     line-height: 1.6;
@@ -338,7 +410,7 @@
 }
 
 .breadcrumb .current {
-    color: #D2691E;
+    color: #e74c3c;
     font-weight: 500;
 }
 
@@ -360,7 +432,7 @@
 }
 
 .reservation-transparent-banner .hero-title {
-    color: #333 !important;
+    color: #e74c3c !important;
     text-shadow: none !important;
 }
 
@@ -372,29 +444,30 @@
 
 /* Responsive Design */
 @media (max-width: 768px) {
-    .success-container {
+    .failed-container {
         padding: 0 15px;
     }
 
-    .success-message {
+    .failed-message {
         padding: 40px 30px;
     }
 
-    .success-title {
-        font-size: 28px;
+    .failed-title {
+        font-size: 24px;
     }
 
-    .success-subtitle {
+    .failed-subtitle {
         font-size: 16px;
     }
 
-    .reservation-details,
-    .next-steps {
+    .error-details,
+    .reasons-section,
+    .suggestions-section {
         padding: 30px;
     }
 
-    .details-title,
-    .steps-title {
+    .reasons-title,
+    .suggestions-title {
         font-size: 20px;
     }
 
@@ -419,45 +492,28 @@
         justify-content: center;
     }
 
-    .steps-list {
+    .reason-item {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+
+    .refund-notice {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+
+    .suggestions-list {
         gap: 20px;
     }
 
-    .step-item {
+    .suggestion-item {
         gap: 15px;
     }
 }
 
-/* Print Styles */
-@media print {
-    .header-top-container,
-    .breadcrumb-section,
-    .action-buttons,
-    .footer-container {
-        display: none !important;
-    }
-
-    .success-section {
-        background: white !important;
-        padding: 20px 0 !important;
-    }
-
-    .success-container {
-        max-width: none !important;
-        padding: 0 !important;
-    }
-
-    .success-message,
-    .reservation-details,
-    .next-steps,
-    .contact-info {
-        box-shadow: none !important;
-        border: 1px solid #ddd !important;
-        margin-bottom: 20px !important;
-    }
-}
-
-/* Hide floating booking button on reservation success page */
+/* Hide floating booking button on this page */
 .floating-booking-btn {
     display: none !important;
 }

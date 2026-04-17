@@ -247,9 +247,10 @@ class FloatingBooking {
 
         // Redirect to appropriate booking page based on login status
         const params = new URLSearchParams(bookingData);
-        const bookingPage = isLoggedIn ? 'booking-user.html' : 'booking.html';
-        console.log(`Redirecting to ${bookingPage} (User logged in: ${isLoggedIn})`);
-        window.location.href = `${bookingPage}?${params.toString()}`;
+        // 直接跳转到 booking 页面，登录检查在该页面进行
+        // 使用不带 .html 后缀的 URL，避免服务器 URL 重写导致参数丢失
+        console.log('Redirecting to booking page');
+        window.location.href = `booking?${params.toString()}`;
     }
 
     validateBookingData(data) {

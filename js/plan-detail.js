@@ -1,5 +1,71 @@
 // Plan Detail Page JavaScript
 
+// 获取 API Provider
+const apiProvider = window.getApiProvider ? window.getApiProvider() : 'local';
+console.log('🔗 API Provider:', apiProvider);
+
+// 从 TL-Lincoln API 获取房型数据
+async function fetchTLLincolnRoomData(roomTypeCode, ratePlanCode, params) {
+    try {
+        const { checkin, checkout, adults, childrenPreschool = 0, childrenElementary = 0 } = params;
+        const qs = new URLSearchParams({
+            checkin,
+            checkout,
+            adults,
+            childrenPreschool,
+            childrenElementary
+        }).toString();
+        const apiUrl = window.getApiUrl(`tl-lincoln/rooms/${roomTypeCode}/${ratePlanCode}?${qs}`);
+
+        console.log('📡 TL-Lincoln Room Detail API:', apiUrl);
+
+        const response = await fetch(apiUrl);
+        const result = await response.json();
+
+        console.log('📥 TL-Lincoln 房型数据:', result);
+
+        if (result.success && result.data) {
+            const roomData = result.data;
+
+            // 创建 TL-Lincoln 房型的 PLAN_DATA 条目
+            const planKey = `tl_${roomTypeCode}_${ratePlanCode}`;
+
+            PLAN_DATA[planKey] = {
+                roomTypeCode: roomData.tl_lincoln_data.roomTypeCode,
+                ratePlanCode: roomData.tl_lincoln_data.ratePlanCode,
+                breadcrumb: `${roomData.room_type_name}【${roomData.plan_name}】`,
+                title: roomData.room_type_name,
+                planName: roomData.plan_name,
+                subtitle: roomData.plan_name,
+                roomSize: '33㎡', // TL-Lincoln 可能不返回这个，使用默认值
+                bedType: roomData.bed_type || 'ベッド',
+                capacity: `最大${roomData.max_occupancy || 2}名様`,
+                view: '山景色ビュー',
+                description: roomData.plan_description || roomData.room_description || '',
+                priceWithTax: roomData.total_price || 0,
+                maxGuests: `最大${roomData.max_occupancy || 2}名様`,
+                meals: roomData.meal_info || '食事なし',
+                area: '33㎡',
+                bedSize: roomData.bed_type || 'ベッド',
+                imagePath: null, // TL-Lincoln 可能需要单独处理图片
+                checkin_time: roomData.checkin_time,
+                checkout_time: roomData.checkout_time,
+                available_rooms: roomData.available_rooms,
+                source: 'tl-lincoln'
+            };
+
+            console.log('✅ TL-Lincoln PLAN_DATA 已更新:', PLAN_DATA[planKey]);
+            return { success: true, planKey };
+        } else {
+            console.warn('⚠️ TL-Lincoln API 返回失败:', result.message);
+            return { success: false };
+        }
+    } catch (error) {
+        console.error('❌ 获取 TL-Lincoln 房型数据失败:', error);
+        return { success: false };
+    }
+}
+
 // 从数据库获取房型数据
 async function fetchAndUpdateRoomData(roomTypeCode) {
     try {
@@ -126,15 +192,32 @@ document.addEventListener('DOMContentLoaded', function() {
         backBtn: document.querySelector('.back-btn')
     };
 
-    // Get URL parameters - 支持两种参数：code (新) 和 plan (旧，用于向后兼容)
+    // Get URL parameters - 支持多种参数格式
     const urlParams = new URLSearchParams(window.location.search);
+
+    // TL-Lincoln 参数
+    const tlRoomTypeCode = urlParams.get('roomTypeCode');
+    const tlRatePlanCode = urlParams.get('ratePlanCode');
+    const checkin = urlParams.get('checkin');
+    const checkout = urlParams.get('checkout');
+    const adults = urlParams.get('adults') || '2';
+    const childrenPreschool = urlParams.get('childrenPreschool') || '0';
+    const childrenElementary = urlParams.get('childrenElementary') || '0';
+
+    // 自社 API 参数
     const roomTypeCode = urlParams.get('code') || urlParams.get('plan') || 'twin';
+
+    // 判断是否使用 TL-Lincoln
+    const isTLLincoln = apiProvider === 'tl-lincoln' && tlRoomTypeCode && tlRatePlanCode;
+
+    console.log('📋 URL Params:', { tlRoomTypeCode, tlRatePlanCode, checkin, checkout, adults, roomTypeCode });
+    console.log('🔗 使用 TL-Lincoln:', isTLLincoln);
 
     // 设置返回按钮链接，保留搜索参数
     if (elements.backBtn) {
         const searchParams = new URLSearchParams();
         // 保留 checkin, checkout, adults, children 等搜索参数
-        ['checkin', 'checkout', 'adults', 'children'].forEach(key => {
+        ['checkin', 'checkout', 'adults', 'children', 'childrenPreschool', 'childrenElementary'].forEach(key => {
             const value = urlParams.get(key);
             if (value) searchParams.set(key, value);
         });
@@ -144,16 +227,38 @@ document.addEventListener('DOMContentLoaded', function() {
         elements.backBtn.href = backUrl;
     }
 
-    // 先用默认数据渲染页面，避免阻塞
-    updatePageContent(roomTypeCode);
+    // 根据 API Provider 获取数据
+    if (isTLLincoln) {
+        // TL-Lincoln 模式
+        const planKey = `tl_${tlRoomTypeCode}_${tlRatePlanCode}`;
 
-    // 请求房型数据
-    fetchAndUpdateRoomData(roomTypeCode).then((roomDataSuccess) => {
-        if (roomDataSuccess) {
-            updatePageContent(roomTypeCode);
-            updateCarouselForPlan(roomTypeCode);
-        }
-    });
+        // 显示加载状态
+        const planTitle = document.querySelector('.plan-title');
+        if (planTitle) planTitle.textContent = '読み込み中...';
+
+        // 获取 TL-Lincoln 房型数据
+        fetchTLLincolnRoomData(tlRoomTypeCode, tlRatePlanCode, { checkin, checkout, adults, childrenPreschool, childrenElementary }).then((result) => {
+            if (result.success) {
+                updatePageContent(result.planKey);
+                updateCarouselForPlan(result.planKey);
+            } else {
+                // 显示错误信息
+                if (planTitle) planTitle.textContent = 'データの取得に失敗しました';
+            }
+        });
+    } else {
+        // 自社 API 模式（原有逻辑）
+        // 先用默认数据渲染页面，避免阻塞
+        updatePageContent(roomTypeCode);
+
+        // 请求房型数据
+        fetchAndUpdateRoomData(roomTypeCode).then((roomDataSuccess) => {
+            if (roomDataSuccess) {
+                updatePageContent(roomTypeCode);
+                updateCarouselForPlan(roomTypeCode);
+            }
+        });
+    }
 
     // 日历功能已禁用
     // setTimeout(() => {
@@ -566,7 +671,8 @@ function renderCalendar(inventoryData, year, month) {
     grid.className = 'calendar-grid';
 
     // Add weekday headers
-    const weekdays = ['日', '月', '火', '水', '木', '金', '土'];
+    const weekdayKeys = ['weekday_sun', 'weekday_mon', 'weekday_tue', 'weekday_wed', 'weekday_thu', 'weekday_fri', 'weekday_sat'];
+    const weekdays = weekdayKeys.map(key => window.i18n ? window.i18n.t(key) : ['日', '月', '火', '水', '木', '金', '土'][weekdayKeys.indexOf(key)]);
     weekdays.forEach((day, index) => {
         const weekdayEl = document.createElement('div');
         weekdayEl.className = 'calendar-weekday';
@@ -633,7 +739,7 @@ function renderCalendar(inventoryData, year, month) {
             const price = Math.floor(inventory.price);
             dayPrice.textContent = `¥${price.toLocaleString()}`;
         } else {
-            dayPrice.textContent = '満室';
+            dayPrice.textContent = window.i18n ? window.i18n.t('room_full') : '満室';
         }
         dayCell.appendChild(dayPrice);
 

@@ -21,6 +21,8 @@ document.addEventListener('DOMContentLoaded', function() {
         const adultsSelect = document.getElementById('adults');
         const childrenSelect = document.getElementById('children');
         const roomsSelect = document.getElementById('rooms');
+        const childrenPreschoolSelect = document.getElementById('childrenPreschool');
+        const childrenElementarySelect = document.getElementById('childrenElementary');
 
         function showResearchReminder() {
             if (!hasSearched) return;
@@ -66,8 +68,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     ">
                         <i class="fas fa-exclamation-triangle" style="color: #856404; font-size: 28px;"></i>
                     </div>
-                    <h3 style="color: #333; font-size: 18px; margin-bottom: 12px; font-weight: 600;">条件が変更されました</h3>
-                    <p style="color: #666; font-size: 14px; margin-bottom: 25px; line-height: 1.6;">人数または部屋数を変更しました。<br>正確な料金を表示するには再検索してください。</p>
+                    <h3 style="color: #333; font-size: 18px; margin-bottom: 12px; font-weight: 600;">${window.i18n ? window.i18n.t('res_conditions_changed') : '条件が変更されました'}</h3>
+                    <p style="color: #666; font-size: 14px; margin-bottom: 25px; line-height: 1.6;">${window.i18n ? window.i18n.t('res_conditions_changed_desc') : '人数または部屋数を変更しました。<br>正確な料金を表示するには再検索してください。'}</p>
                     <div style="display: flex; justify-content: center;">
                         <button id="researchNowBtn" style="
                             background: linear-gradient(135deg, #D2691E 0%, #FF8C42 100%);
@@ -78,7 +80,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             font-size: 14px;
                             font-weight: 600;
                             cursor: pointer;
-                        ">再検索する</button>
+                        ">${window.i18n ? window.i18n.t('res_research_now') : '再検索する'}</button>
                     </div>
                 </div>
             `;
@@ -108,6 +110,12 @@ document.addEventListener('DOMContentLoaded', function() {
         if (roomsSelect) {
             roomsSelect.addEventListener('change', showResearchReminder);
         }
+        if (childrenPreschoolSelect) {
+            childrenPreschoolSelect.addEventListener('change', showResearchReminder);
+        }
+        if (childrenElementarySelect) {
+            childrenElementarySelect.addEventListener('change', showResearchReminder);
+        }
 
         // 从URL读取搜索参数并自动搜索
         const urlParams = new URLSearchParams(window.location.search);
@@ -118,12 +126,20 @@ document.addEventListener('DOMContentLoaded', function() {
             const adults = urlParams.get('adults') || '2';
             const children = urlParams.get('children') || '0';
             const rooms = urlParams.get('rooms') || '1';
+            const childrenPreschool = urlParams.get('childrenPreschool') || '0';
+            const childrenElementary = urlParams.get('childrenElementary') || '0';
 
             document.querySelector('[name="checkin"]').value = checkin;
             document.querySelector('[name="checkout"]').value = checkout;
             document.querySelector('[name="adults"]').value = adults;
             document.querySelector('[name="children"]').value = children;
             document.querySelector('[name="rooms"]').value = rooms;
+
+            // 填充儿童分类参数
+            const childrenPreschoolInput = document.querySelector('[name="childrenPreschool"]');
+            const childrenElementaryInput = document.querySelector('[name="childrenElementary"]');
+            if (childrenPreschoolInput) childrenPreschoolInput.value = childrenPreschool;
+            if (childrenElementaryInput) childrenElementaryInput.value = childrenElementary;
 
             // 自动执行搜索
             performSearch();
@@ -142,77 +158,13 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
+    // 预订按钮：直接跳转到 booking.html，登录检查在该页面进行
     reserveButtons.forEach(button => {
-        button.addEventListener('click', async function() {
+        button.addEventListener('click', function() {
             const planCard = this.closest('.plan-card');
             const planName = planCard.querySelector('.plan-name').textContent;
-
-            // Check if user is logged in using session service
-            let isLoggedIn = false;
-            console.log('sessionService 是否存在:', !!window.sessionService);
-
-            if (window.sessionService) {
-                try {
-                    isLoggedIn = await window.sessionService.isLoggedIn();
-                    console.log('预约按钮被点击, 登录状态:', isLoggedIn);
-                } catch (error) {
-                    console.error('检查登录状态失败:', error);
-                    isLoggedIn = false;
-                }
-            } else {
-                console.warn('sessionService 不存在，默认为未登录');
-                isLoggedIn = false;
-            }
-
-            console.log('最终判断的登录状态:', isLoggedIn);
-
-            if (isLoggedIn) {
-                // User is logged in, go directly to reservation
-                console.log('用户已登录，直接跳转到预约页面');
-                reservePlan(planName);
-            } else {
-                // User is not logged in, redirect to login page
-                console.log('用户未登录，准备跳转到登录页面');
-                console.log('当前 planName:', planName);
-
-                // 获取搜索参数
-                const checkin = document.getElementById('checkin')?.value || '';
-                const checkout = document.getElementById('checkout')?.value || '';
-                const rooms = document.getElementById('rooms')?.value || '1';
-                const adults = document.getElementById('adults')?.value || '2';
-                const children = document.getElementById('children')?.value || '0';
-
-                // 计算房型代码
-                let roomTypeCode = 'twin';
-                if (planName.includes('和洋室') && planName.includes('6帖')) {
-                    roomTypeCode = 'twin_japanese';
-                } else if (planName.includes('ファミリー') || planName.includes('15帖')) {
-                    roomTypeCode = 'family';
-                } else if (planName.includes('トリプルルーム')) {
-                    roomTypeCode = 'triple';
-                }
-
-                // Save the current plan to session storage so we can resume after login
-                try {
-                    sessionStorage.setItem('pendingReservation', JSON.stringify({
-                        redirect: 'booking',  // 标记为预约跳转
-                        plan: planName,
-                        code: roomTypeCode,
-                        checkin: checkin,
-                        checkout: checkout,
-                        rooms: rooms,
-                        adults: adults,
-                        children: children,
-                        returnUrl: window.location.href
-                    }));
-                    console.log('已保存待预约信息到 sessionStorage');
-                } catch (e) {
-                    console.error('保存到 sessionStorage 失败:', e);
-                }
-
-                console.log('即将跳转到 login.html');
-                window.location.href = 'login.html';
-            }
+            console.log('预约按钮被点击, planName:', planName);
+            reservePlan(planName);
         });
     });
 
@@ -227,17 +179,21 @@ document.addEventListener('DOMContentLoaded', function() {
             checkout: formData.get('checkout'),
             rooms: formData.get('rooms'),
             adults: formData.get('adults'),
-            children: formData.get('children')
+            children: formData.get('children'),
+            childrenPreschool: formData.get('childrenPreschool') || '0',
+            childrenElementary: formData.get('childrenElementary') || '0'
         };
 
         // Validate dates
         if (!searchParams.checkin || !searchParams.checkout) {
-            alert('チェックイン・チェックアウト日を選択してください。');
+            const msg = window.i18n ? window.i18n.t('res_select_dates') : 'チェックイン・チェックアウト日を選択してください。';
+            alert(msg);
             return;
         }
 
         if (new Date(searchParams.checkin) >= new Date(searchParams.checkout)) {
-            alert('チェックアウト日はチェックイン日より後の日付を選択してください。');
+            const msg = window.i18n ? window.i18n.t('res_checkout_after_checkin') : 'チェックアウト日はチェックイン日より後の日付を選択してください。';
+            alert(msg);
             return;
         }
 
@@ -250,38 +206,109 @@ document.addEventListener('DOMContentLoaded', function() {
         showLoading();
 
         try {
-            // 调用后端搜索API
-            const queryString = new URLSearchParams(searchParams).toString();
-            // 兼容本地和生产环境（本地是5000端口，生产环境URL已包含/api）
-            const apiBase = window.API_BASE_URL.includes('/api') ? window.API_BASE_URL : `${window.API_BASE_URL}/api`;
-            const response = await fetch(`${apiBase}/rooms/search?${queryString}`);
-            const result = await response.json();
+            // 获取 API Provider 设置
+            const apiProvider = window.getApiProvider ? window.getApiProvider() : 'local';
+            console.log('🔗 API Provider:', apiProvider);
 
-            console.log('房间搜索结果:', result);
+            const queryString = new URLSearchParams(searchParams).toString();
+            const apiBase = window.API_BASE_URL.includes('/api') ? window.API_BASE_URL : `${window.API_BASE_URL}/api`;
+
+            let response;
+            let result;
+
+            if (apiProvider === 'tl-lincoln') {
+                // 使用 TL-Lincoln API (OTA_HotelAvail)
+                console.log('📡 使用 TL-Lincoln OTA_HotelAvail API');
+                response = await fetch(`${apiBase}/tl-lincoln/rooms/search?${queryString}`, {
+                    headers: window.getApiHeaders ? window.getApiHeaders() : {}
+                });
+                result = await response.json();
+                console.log('TL-Lincoln 搜索结果:', result);
+            } else {
+                // 使用自社 API
+                console.log('📡 使用自社 API');
+                response = await fetch(`${apiBase}/rooms/search?${queryString}`, {
+                    headers: window.getApiHeaders ? window.getApiHeaders() : {}
+                });
+                result = await response.json();
+                console.log('自社 API 搜索结果:', result);
+            }
 
             if (result.success) {
                 // 标记已搜索
                 hasSearched = true;
                 // 显示搜索结果
-                displaySearchResults(result.data, searchParams);
+                displaySearchResults(result.data, searchParams, result.notice);
             } else {
-                alert(result.message || '検索に失敗しました');
+                const failMsg = window.i18n ? window.i18n.t('res_search_failed') : '検索に失敗しました';
+                alert(result.message || failMsg);
             }
         } catch (error) {
             console.error('搜索错误:', error);
-            alert('検索中にエラーが発生しました。もう一度お試しください。');
+            const errorMsg = window.i18n ? window.i18n.t('res_search_error') : '検索中にエラーが発生しました。もう一度お試しください。';
+            alert(errorMsg);
         } finally {
             hideLoading();
         }
     }
 
+    // 按房型分组
+    function groupRoomsByType(rooms) {
+        const grouped = {};
+        rooms.forEach(room => {
+            const key = room.room_type_code;
+            if (!grouped[key]) {
+                grouped[key] = {
+                    room_type_code: room.room_type_code,
+                    room_type_name: room.room_type_name,
+                    image_path: room.image_path,
+                    image_urls: room.image_urls || [],
+                    bed_type: room.bed_type,
+                    non_smoking: room.non_smoking,
+                    room_description: room.room_description,
+                    description: room.description,
+                    checkin_time: room.checkin_time,
+                    checkout_time: room.checkout_time,
+                    available_rooms: room.available_rooms,
+                    sold_out: room.sold_out || false,
+                    plans: []
+                };
+            }
+            // 添加计划信息
+            grouped[key].plans.push({
+                plan_code: room.plan_code || room.tl_lincoln_data?.ratePlanCode || null,
+                plan_name: room.plan_name || '素泊まりプラン',
+                description: room.plan_description || '',
+                meal_description: room.meal_description || '素泊まり',
+                breakfast: room.breakfast,
+                dinner: room.dinner,
+                total_price: room.total_price_for_rooms || room.total_price,
+                tl_lincoln_data: room.tl_lincoln_data || null
+            });
+            // 更新可用房间数（取最小值）
+            if (room.available_rooms < grouped[key].available_rooms) {
+                grouped[key].available_rooms = room.available_rooms;
+            }
+        });
+        return Object.values(grouped);
+    }
+
     // 显示搜索结果
-    function displaySearchResults(rooms, searchParams) {
+    function displaySearchResults(rooms, searchParams, notice) {
         const plansList = document.getElementById('plansList');
         const resultsCount = document.getElementById('resultsCount');
 
         // 清空现有结果
         plansList.innerHTML = '';
+
+        // 显示通告
+        if (notice) {
+            const noticeDiv = document.createElement('div');
+            noticeDiv.style.cssText = 'width:100%;background:#fff8e1;border:1px solid #ffe082;border-radius:8px;padding:20px 24px;margin-bottom:20px;';
+            noticeDiv.innerHTML = '<div style="font-weight:bold;color:#e65100;margin-bottom:10px;">' + notice.title + '</div>' +
+                '<div style="color:#555;white-space:pre-line;line-height:1.8;">' + notice.message + '</div>';
+            plansList.appendChild(noticeDiv);
+        }
 
         // 如果没有结果
         if (rooms.length === 0) {
@@ -296,12 +323,19 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
 
-        // 更新结果计数
-        resultsCount.textContent = rooms.length;
+        // 按房型分组
+        const groupedRooms = groupRoomsByType(rooms);
 
-        // 生成房间卡片
-        rooms.forEach((room, index) => {
-            const card = createRoomCard(room, searchParams);
+        // 有库存的排前面，售罄的排后面
+        groupedRooms.sort((a, b) => (a.sold_out ? 1 : 0) - (b.sold_out ? 1 : 0));
+
+        // 更新结果计数（显示有库存的房型数量）
+        const availableCount = groupedRooms.filter(r => !r.sold_out).length;
+        resultsCount.textContent = availableCount;
+
+        // 生成房间卡片（带多个 plan）
+        groupedRooms.forEach((roomGroup, index) => {
+            const card = createRoomCardWithPlans(roomGroup, searchParams);
             card.style.opacity = '0';
             card.style.transform = 'translateY(20px)';
             card.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
@@ -323,10 +357,83 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 100);
     }
 
+    // 为动态生成的按钮添加事件委托（只绑定一次）
+    const plansList = document.getElementById('plansList');
+    if (plansList && !plansList.dataset.eventBound) {
+        plansList.dataset.eventBound = 'true';
+        plansList.addEventListener('click', function(e) {
+            const detailBtn = e.target.closest('.plan-detail-btn');
+            const reserveBtn = e.target.closest('.plan-reserve-btn');
+
+            if (detailBtn) {
+                const roomName = detailBtn.dataset.roomName;
+                const roomCode = detailBtn.dataset.roomCode;
+                // TL-Lincoln: 获取房型代码和计划代码
+                const tlRoomType = detailBtn.dataset.tlRoomType || null;
+                const tlRatePlan = detailBtn.dataset.tlRatePlan || null;
+
+                console.log('详情按钮点击:', roomName, roomCode, 'TL:', tlRoomType, tlRatePlan);
+                showPlanDetails(roomName, { tlRoomType, tlRatePlan });
+            }
+
+            if (reserveBtn) {
+                const roomName = reserveBtn.dataset.roomName;
+                const roomCode = reserveBtn.dataset.roomCode;
+                // TL-Lincoln: 直接从按钮获取 plan_code
+                const planCode = reserveBtn.dataset.planCode || null;
+                const tlRoomType = reserveBtn.dataset.tlRoomType || null;
+
+                console.log('预约按钮点击:', roomName, roomCode, '计划:', planCode);
+                handleReservationWithCode(roomCode, roomName, planCode, tlRoomType);
+            }
+        });
+    }
+
+    // 使用房型代码进行预约（更可靠）
+    function handleReservationWithCode(roomCode, roomName, planCode) {
+        console.log('=== handleReservationWithCode 被调用 ===');
+        console.log('roomCode:', roomCode);
+        console.log('roomName:', roomName);
+        console.log('planCode:', planCode);
+        console.log('当前 URL:', window.location.href);
+        console.log('window.location.search:', window.location.search);
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const params = new URLSearchParams();
+
+        // 获取参数并打印调试信息
+        const checkin = urlParams.get('checkin') || '';
+        const checkout = urlParams.get('checkout') || '';
+        console.log('从 URL 获取的 checkin:', checkin);
+        console.log('从 URL 获取的 checkout:', checkout);
+
+        params.append('checkin', checkin);
+        params.append('checkout', checkout);
+        params.append('rooms', urlParams.get('rooms') || '1');
+        params.append('adults', urlParams.get('adults') || '2');
+        params.append('children', urlParams.get('children') || '0');
+        params.append('childrenPreschool', urlParams.get('childrenPreschool') || '0');
+        params.append('childrenElementary', urlParams.get('childrenElementary') || '0');
+        params.append('code', roomCode);
+
+        // 如果有计划代码，添加到参数
+        if (planCode) {
+            params.append('plan', planCode);
+        }
+
+        // 跳转到 booking.html
+        const finalURL = `booking.html?${params.toString()}`;
+        console.log('最终跳转 URL:', finalURL);
+        window.location.href = finalURL;
+    }
+
     // 创建房间卡片
     function createRoomCard(room, searchParams) {
         const card = document.createElement('div');
         card.className = 'plan-card';
+
+        // 判断是否为 TL-Lincoln 数据（通过 room_type_code 前缀判断）
+        const isTLLincoln = room.room_type_code && room.room_type_code.startsWith('tl_');
 
         // 优先使用数据库的图片路径，如果没有则使用默认映射
         const roomImages = {
@@ -339,83 +446,111 @@ document.addEventListener('DOMContentLoaded', function() {
         // 使用数据库的 image_path，如果没有则使用默认映射
         const imageSrc = room.image_path || roomImages[room.room_type_code] || 'img/rooms/double/room_2_500.jpg';
 
-        if (room.image_path) {
-            console.log('✅ 使用数据库图片:', room.image_path);
+        // 房型尺寸和床型信息
+        let roomSize;
+        if (isTLLincoln && room.bed_type) {
+            roomSize = room.bed_type;
+            if (room.non_smoking !== undefined) {
+                roomSize += room.non_smoking ? '・禁煙' : '・喫煙可';
+            }
         } else {
-            console.log('⚠️ 使用默认图片映射');
+            const roomSizeInfo = {
+                'twin': '33m²・セミダブルベッド×2',
+                'triple': '33m²・シングルベッド×3',
+                'twin_japanese': '33m²・6帖和室＋洋室ツイン',
+                'family': '15帖和洋室＋洋室ツイン・セミダブルベッド×2'
+            };
+            roomSize = roomSizeInfo[room.room_type_code] || '33m²';
         }
 
-        // 房型尺寸和床型信息
-        const roomSizeInfo = {
-            'twin': '33m²・セミダブルベッド×2',
-            'triple': '33m²・シングルベッド×3',
-            'twin_japanese': '33m²・6帖和室＋洋室ツイン',
-            'family': '15帖和洋室＋洋室ツイン・セミダブルベッド×2'
-        };
-
-        const roomSize = roomSizeInfo[room.room_type_code] || '33m²';
+        // 构建描述内容
+        let descriptionHtml = '';
+        if (isTLLincoln && room.room_description) {
+            descriptionHtml = `<div class="room-desc">${room.room_description}</div>`;
+        } else {
+            descriptionHtml = room.description || '';
+        }
 
         // 计算住宿晚数
         const checkinDate = new Date(searchParams.checkin);
         const checkoutDate = new Date(searchParams.checkout);
         const nights = Math.ceil((checkoutDate - checkinDate) / (1000 * 60 * 60 * 24));
 
-        // 格式化价格
-        const pricePerNight = Math.floor(room.price_per_night || room.price_with_tax);
         const totalPrice = Math.floor(room.total_price_for_rooms || room.total_price);
         const adults = parseInt(searchParams.adults) || 2;
-        const rooms = parseInt(searchParams.rooms) || 1;
-        const totalGuests = adults * rooms; // 总人数 = 大人数 × 房间数
-        const pricePerPerson = Math.floor(totalPrice / totalGuests);
+        const children = parseInt(searchParams.children) || 0;
+        const roomsCount = parseInt(searchParams.rooms) || 1;
+
+        // 房型定员信息
+        const roomCapacityInfo = {
+            'twin': '定員2名',
+            'triple': '定員3名',
+            'twin_japanese': '定員4名',
+            'family': '定員4名'
+        };
+        const roomCapacity = roomCapacityInfo[room.room_type_code] || '定員2名';
+
+        const limitedBadge = window.i18n ? window.i18n.t('res_limited_availability') : '残りわずか';
+        const checkinLabel = window.i18n ? window.i18n.t('res_checkin_label') : 'チェックイン：';
+        const checkoutLabel = window.i18n ? window.i18n.t('res_checkout_label') : 'チェックアウト：';
+
+        // Check-in/Check-out 时间
+        const checkinTime = room.checkin_time || '15:00～';
+        const checkoutTime = room.checkout_time || '～10:00';
+
+        // TL-Lincoln: 显示计划名称和餐食信息
+        let planInfoHtml = '';
+        if (isTLLincoln) {
+            planInfoHtml = `
+                <div class="plan-name-sub" style="font-size: 14px; color: #D2691E; font-weight: 500; margin-top: 5px;">${room.plan_name || ''}</div>
+                <div class="meal-info" style="margin-top: 8px;">
+                    <span style="display: inline-block; background: ${room.breakfast || room.dinner ? '#D2691E' : '#999'}; color: white; padding: 2px 10px; border-radius: 12px; font-size: 12px;">
+                        ${room.meal_description || '素泊まり'}
+                    </span>
+                </div>
+            `;
+        }
 
         card.innerHTML = `
             <div class="plan-image">
                 <img src="${imageSrc}" alt="${room.room_type_name}" class="room-image">
-                ${room.available_rooms <= 3 ? '<div class="plan-badge">残りわずか</div>' : ''}
+                ${room.available_rooms <= 3 ? `<div class="plan-badge">${limitedBadge}</div>` : ''}
             </div>
-            <div class="plan-details">
+            <div class="plan-details" style="flex: 1;">
                 <div class="plan-header">
                     <h4 class="plan-name">${room.room_type_name}</h4>
                     <div class="plan-size">${roomSize}</div>
+                    <div class="plan-capacity">${roomCapacity}</div>
                 </div>
-                <div class="plan-description">
-                    ${room.description || ''}
+                ${planInfoHtml}
+                <div class="plan-description" style="margin-top: 8px;">
+                    ${descriptionHtml}
                 </div>
-                <div class="plan-features">
-                    <div class="feature-item">
-                        <i class="fas fa-tv"></i>
-                        <span>地デジ対応22インチTV</span>
-                    </div>
-                    <div class="feature-item">
-                        <i class="fas fa-wifi"></i>
-                        <span>無料Wi-Fi完備</span>
-                    </div>
-                </div>
-                <div class="plan-times">
+                <div class="plan-times" style="margin-top: 10px;">
                     <div class="time-info">
-                        <span class="time-label">チェックイン：</span>
-                        <span>15:00～</span>
+                        <span class="time-label">${checkinLabel}</span>
+                        <span>${checkinTime}</span>
                     </div>
                     <div class="time-info">
-                        <span class="time-label">チェックアウト：</span>
-                        <span>～10:00</span>
+                        <span class="time-label">${checkoutLabel}</span>
+                        <span>${checkoutTime}</span>
                     </div>
                 </div>
             </div>
             <div class="plan-pricing">
                 <div class="price-section">
-                    <div class="price-per-person">
-                        <span class="price-label">おひとり様</span>
-                        <span class="price-amount">¥${pricePerPerson.toLocaleString()}<span class="tax-included-label">（税込）</span></span>
-                    </div>
                     <div class="total-price">
-                        <span class="total-label">合計（${nights}泊・${rooms}室・${totalGuests}名様）</span>
-                        <span class="total-amount">¥${totalPrice.toLocaleString()}<span class="tax-included-label">（税込）</span></span>
+                        <span class="total-label">${(() => {
+                            const adultsText = `大人${adults}名`;
+                            const childrenText = children > 0 ? `・子供${children}名` : '';
+                            return `合計（${nights}泊・${roomsCount}室・${adultsText}${childrenText}）`;
+                        })()}</span>
+                        <span class="total-amount">${totalPrice > 0 ? `¥${totalPrice.toLocaleString()}` : '料金未定'}<span class="tax-included-label">${totalPrice > 0 ? '（税込）' : ''}</span></span>
                     </div>
                 </div>
                 <div class="plan-actions">
-                    <button class="plan-detail-btn" onclick="showPlanDetails('${room.room_type_name}')">詳細を見る</button>
-                    <button class="plan-reserve-btn" onclick="handleReservation('${room.room_type_name}')">予約する</button>
+                    <button class="plan-detail-btn" data-room-code="${room.room_type_code}" data-room-name="${room.room_type_name.replace(/'/g, '&#39;')}" ${isTLLincoln ? `data-tl-room-type="${room.tl_lincoln_data?.roomTypeCode || ''}" data-tl-rate-plan="${room.tl_lincoln_data?.ratePlanCode || ''}"` : ''}>詳細を見る</button>
+                    <button class="plan-reserve-btn" data-room-code="${room.room_type_code}" data-room-name="${room.room_type_name.replace(/'/g, '&#39;')}" data-plan-code="${room.plan_code || room.tl_lincoln_data?.ratePlanCode || ''}" ${isTLLincoln ? `data-tl-room-type="${room.tl_lincoln_data?.roomTypeCode || ''}"` : ''}>予約する</button>
                 </div>
             </div>
         `;
@@ -423,8 +558,257 @@ document.addEventListener('DOMContentLoaded', function() {
         return card;
     }
 
+    // 创建带多个 Plan 列表的房间卡片
+    function createRoomCardWithPlans(roomGroup, searchParams) {
+        const card = document.createElement('div');
+        card.className = 'plan-card plan-card-with-plans';
 
-    function showPlanDetails(planName) {
+        // 判断是否为 TL-Lincoln 数据
+        const isTLLincoln = roomGroup.room_type_code && roomGroup.room_type_code.startsWith('tl_');
+
+        // 图片路径
+        const roomImages = {
+            'twin': 'img/rooms/double/room_2_500.jpg',
+            'triple': 'img/rooms/triple/room_3_500.jpg',
+            'twin_japanese': 'img/rooms/twin_japanese/room_wayou500.jpg',
+            'family': 'img/rooms/family/room_family_500.jpg'
+        };
+        const defaultImage = roomGroup.image_path || roomImages[roomGroup.room_type_code] || 'img/rooms/double/room_2_500.jpg';
+
+        // 图片数组（支持多张图片轮播）
+        const imageUrls = roomGroup.image_urls && roomGroup.image_urls.length > 0
+            ? roomGroup.image_urls
+            : [defaultImage];
+        const hasMultipleImages = imageUrls.length > 1;
+
+        // 房型尺寸信息
+        let roomSize;
+        if (isTLLincoln && roomGroup.bed_type) {
+            roomSize = roomGroup.bed_type;
+            if (roomGroup.non_smoking !== undefined) {
+                roomSize += roomGroup.non_smoking ? '・禁煙' : '・喫煙可';
+            }
+        } else {
+            const roomSizeInfo = {
+                'twin': '33m²・セミダブルベッド×2',
+                'triple': '33m²・シングルベッド×3',
+                'twin_japanese': '33m²・6帖和室＋洋室ツイン',
+                'family': '15帖和洋室＋洋室ツイン・セミダブルベッド×2'
+            };
+            roomSize = roomSizeInfo[roomGroup.room_type_code] || '33m²';
+        }
+
+        // 房型定员信息
+        const roomCapacityInfo = {
+            'twin': '定員2名',
+            'triple': '定員3名',
+            'twin_japanese': '定員4名',
+            'family': '定員4名'
+        };
+        const roomCapacity = roomCapacityInfo[roomGroup.room_type_code] || '定員2名';
+
+        // 描述
+        let descriptionHtml = '';
+        if (isTLLincoln && roomGroup.room_description) {
+            descriptionHtml = `<div class="room-desc">${roomGroup.room_description}</div>`;
+        } else {
+            descriptionHtml = roomGroup.description || '';
+        }
+
+        // 计算住宿信息
+        const checkinDate = new Date(searchParams.checkin);
+        const checkoutDate = new Date(searchParams.checkout);
+        const nights = Math.ceil((checkoutDate - checkinDate) / (1000 * 60 * 60 * 24));
+        const adults = parseInt(searchParams.adults) || 2;
+        const children = parseInt(searchParams.children) || 0;
+        const roomsCount = parseInt(searchParams.rooms) || 1;
+
+        const limitedBadge = window.i18n ? window.i18n.t('res_limited_availability') : '残りわずか';
+        const checkinLabel = window.i18n ? window.i18n.t('res_checkin_label') : 'チェックイン：';
+        const checkoutLabel = window.i18n ? window.i18n.t('res_checkout_label') : 'チェックアウト：';
+        const checkinTime = roomGroup.checkin_time || '15:00～';
+        const checkoutTime = roomGroup.checkout_time || '～10:00';
+
+        // 判断是否售罄
+        const isSoldOut = roomGroup.sold_out === true;
+
+        // 生成 Plan 列表 HTML
+        const plansListHtml = roomGroup.plans.map((plan, index) => {
+            const totalPrice = Math.floor(plan.total_price);
+            const mealBadgeColor = (plan.breakfast || plan.dinner) ? '#D2691E' : '#999';
+            const mealText = plan.meal_description || '素泊まり';
+
+            // 获取 TL-Lincoln 数据
+            const tlRoomType = plan.tl_lincoln_data?.roomTypeCode || '';
+            const tlRatePlan = plan.tl_lincoln_data?.ratePlanCode || '';
+
+            const planDescription = plan.description || '';
+
+            if (isSoldOut) {
+                return `
+                    <div class="plan-list-item ${index === 0 ? 'first' : ''}" style="opacity: 0.5;">
+                        <div class="plan-item-left">
+                            <div class="plan-item-info">
+                                <span class="plan-item-name">${plan.plan_name}</span>
+                            </div>
+                            ${planDescription ? `<div class="plan-item-description">${planDescription}</div>` : ''}
+                        </div>
+                        <div class="plan-item-right">
+                            <div class="plan-item-price">
+                                <span class="plan-item-amount sold-out-label" style="color: #cc0000; font-weight: bold;">売り切れ</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            return `
+                <div class="plan-list-item ${index === 0 ? 'first' : ''}">
+                    <div class="plan-item-left">
+                        <div class="plan-item-info">
+                            <span class="plan-item-name">${plan.plan_name}</span>
+                        </div>
+                        ${planDescription ? `<div class="plan-item-description">${planDescription}</div>` : ''}
+                    </div>
+                    <div class="plan-item-right">
+                        <div class="plan-item-price">
+                            <span class="plan-item-amount">${totalPrice > 0 ? `¥${totalPrice.toLocaleString()}` : '料金未定'}</span>
+                            <span class="plan-item-tax">${totalPrice > 0 ? '（税込）' : ''}</span>
+                        </div>
+                        <div class="plan-item-actions">
+                            <button class="plan-reserve-btn plan-item-btn"
+                                data-room-code="${roomGroup.room_type_code}"
+                                data-room-name="${roomGroup.room_type_name.replace(/'/g, '&#39;')}"
+                                data-plan-code="${plan.plan_code || tlRatePlan}"
+                                data-tl-room-type="${tlRoomType}">
+                                予約する
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }).join('');
+
+        // 住宿信息文本
+        const stayInfoText = (() => {
+            const adultsText = `大人${adults}名`;
+            const childrenText = children > 0 ? `・子供${children}名` : '';
+            return `${nights}泊・${roomsCount}室・${adultsText}${childrenText}`;
+        })();
+
+        // 生成图片轮播 HTML
+        const imageSliderHtml = hasMultipleImages ? `
+            <div class="image-slider" data-current="0">
+                <div class="slider-container">
+                    ${imageUrls.map((url, i) => `<img src="${url}" alt="${roomGroup.room_type_name}" class="slider-image ${i === 0 ? 'active' : ''}" data-index="${i}">`).join('')}
+                </div>
+                <button class="slider-btn slider-prev" aria-label="前の画像"><i class="fas fa-chevron-left"></i></button>
+                <button class="slider-btn slider-next" aria-label="次の画像"><i class="fas fa-chevron-right"></i></button>
+                <div class="slider-dots">
+                    ${imageUrls.map((_, i) => `<span class="slider-dot ${i === 0 ? 'active' : ''}" data-index="${i}"></span>`).join('')}
+                </div>
+            </div>
+        ` : `<img src="${imageUrls[0]}" alt="${roomGroup.room_type_name}" class="room-image">`;
+
+        card.innerHTML = `
+            <div class="plan-card-main"${isSoldOut ? ' style="opacity: 0.6;"' : ''}>
+                <div class="plan-image">
+                    ${imageSliderHtml}
+                    ${isSoldOut ? '<div class="plan-badge" style="background: #cc0000;">売り切れ</div>' : (roomGroup.available_rooms <= 3 ? `<div class="plan-badge">${limitedBadge}</div>` : '')}
+                </div>
+                <div class="plan-details">
+                    <div class="plan-header">
+                        <h4 class="plan-name">${roomGroup.room_type_name}</h4>
+                        <div class="plan-size">${roomSize}</div>
+                        <div class="plan-capacity">${roomCapacity}</div>
+                    </div>
+                    <div class="plan-description" style="margin-top: 8px;">
+                        ${descriptionHtml}
+                    </div>
+                    <div class="plan-times" style="margin-top: 10px;">
+                        <div class="time-info">
+                            <span class="time-label">${checkinLabel}</span>
+                            <span>${checkinTime}</span>
+                        </div>
+                        <div class="time-info">
+                            <span class="time-label">${checkoutLabel}</span>
+                            <span>${checkoutTime}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="plan-list-section">
+                <div class="plan-list-header">
+                    <span class="plan-list-title"><i class="fas fa-list-ul"></i> プラン一覧</span>
+                    <span class="plan-list-stay-info">${stayInfoText}</span>
+                </div>
+                <div class="plan-list-container">
+                    ${plansListHtml}
+                </div>
+            </div>
+        `;
+
+        // 添加图片轮播事件处理
+        if (hasMultipleImages) {
+            const slider = card.querySelector('.image-slider');
+            const images = slider.querySelectorAll('.slider-image');
+            const dots = slider.querySelectorAll('.slider-dot');
+            const prevBtn = slider.querySelector('.slider-prev');
+            const nextBtn = slider.querySelector('.slider-next');
+            let currentIndex = 0;
+
+            const showImage = (index) => {
+                images.forEach((img, i) => img.classList.toggle('active', i === index));
+                dots.forEach((dot, i) => dot.classList.toggle('active', i === index));
+                currentIndex = index;
+            };
+
+            prevBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const newIndex = currentIndex === 0 ? images.length - 1 : currentIndex - 1;
+                showImage(newIndex);
+            });
+
+            nextBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const newIndex = currentIndex === images.length - 1 ? 0 : currentIndex + 1;
+                showImage(newIndex);
+            });
+
+            dots.forEach((dot, i) => {
+                dot.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    showImage(i);
+                });
+            });
+
+            // 支持触摸滑动
+            let touchStartX = 0;
+            slider.addEventListener('touchstart', (e) => {
+                touchStartX = e.touches[0].clientX;
+            }, { passive: true });
+
+            slider.addEventListener('touchend', (e) => {
+                const touchEndX = e.changedTouches[0].clientX;
+                const diff = touchStartX - touchEndX;
+                if (Math.abs(diff) > 50) {
+                    if (diff > 0) {
+                        // 向左滑 → 下一张
+                        const newIndex = currentIndex === images.length - 1 ? 0 : currentIndex + 1;
+                        showImage(newIndex);
+                    } else {
+                        // 向右滑 → 上一张
+                        const newIndex = currentIndex === 0 ? images.length - 1 : currentIndex - 1;
+                        showImage(newIndex);
+                    }
+                }
+            }, { passive: true });
+        }
+
+        return card;
+    }
+
+    function showPlanDetails(planName, tlLincolnData = {}) {
         // Get current search parameters to pass to detail page
         const searchParams = new URLSearchParams();
         const formData = new FormData(searchForm);
@@ -448,30 +832,43 @@ document.addEventListener('DOMContentLoaded', function() {
         const checkout = (isValidDate(urlCheckout) ? urlCheckout : null) || formData.get('checkout') || document.getElementById('checkout')?.value;
         const adults = urlParams.get('adults')?.replace(/\D/g, '') || formData.get('adults') || '2';
         const children = urlParams.get('children')?.replace(/\D/g, '') || formData.get('children') || '0';
+        const childrenPreschool = urlParams.get('childrenPreschool')?.replace(/\D/g, '') || formData.get('childrenPreschool') || '0';
+        const childrenElementary = urlParams.get('childrenElementary')?.replace(/\D/g, '') || formData.get('childrenElementary') || '0';
 
         if (checkin) searchParams.append('checkin', checkin);
         if (checkout) searchParams.append('checkout', checkout);
         if (adults) searchParams.append('adults', adults);
         if (children) searchParams.append('children', children);
+        if (childrenPreschool) searchParams.append('childrenPreschool', childrenPreschool);
+        if (childrenElementary) searchParams.append('childrenElementary', childrenElementary);
 
-        // Map plan name to plan type for URL (匹配数据库中的实际代码)
-        // 注意：检查顺序很重要，更具体的条件要放在前面
-        let planType = 'twin';
-        if (planName.includes('和洋室') && planName.includes('6帖')) {
-            planType = 'twin_japanese';
-        } else if (planName.includes('ファミリー') || planName.includes('15帖')) {
-            planType = 'family';
-        } else if (planName.includes('トリプルルーム')) {
-            planType = 'triple';
-        }
+        // 检查是否为 TL-Lincoln 模式
+        const { tlRoomType, tlRatePlan } = tlLincolnData;
+        const isTLLincoln = tlRoomType && tlRatePlan;
 
         console.log('=== showPlanDetails Debug ===');
         console.log('planName:', planName);
-        console.log('planType:', planType);
-        console.log('includes 和洋室:', planName.includes('和洋室'));
-        console.log('includes 6帖:', planName.includes('6帖'));
+        console.log('TL-Lincoln:', isTLLincoln, { tlRoomType, tlRatePlan });
 
-        searchParams.append('plan', planType);
+        if (isTLLincoln) {
+            // TL-Lincoln 模式：使用 roomTypeCode 和 ratePlanCode 参数
+            searchParams.append('roomTypeCode', tlRoomType);
+            searchParams.append('ratePlanCode', tlRatePlan);
+        } else {
+            // 自社 API 模式：使用 plan 参数
+            // Map plan name to plan type for URL (匹配数据库中的实际代码)
+            let planType = 'twin';
+            if (planName.includes('和洋室') && planName.includes('6帖')) {
+                planType = 'twin_japanese';
+            } else if (planName.includes('ファミリー') || planName.includes('15帖')) {
+                planType = 'family';
+            } else if (planName.includes('トリプルルーム')) {
+                planType = 'triple';
+            }
+
+            console.log('planType:', planType);
+            searchParams.append('plan', planType);
+        }
 
         // Redirect to plan detail page
         window.location.href = `plan-detail.html?${searchParams.toString()}`;
@@ -480,7 +877,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // 暴露为全局函数，供动态生成的卡片使用
     window.showPlanDetails = showPlanDetails;
 
-    async function reservePlan(planName) {
+    function reservePlan(planName) {
         const searchParams = new URLSearchParams();
 
         // 优先从 URL 参数获取日期，其次从表单获取
@@ -503,6 +900,8 @@ document.addEventListener('DOMContentLoaded', function() {
         const rooms = urlParams.get('rooms')?.replace(/\D/g, '') || document.getElementById('rooms')?.value || '1';
         const adults = urlParams.get('adults')?.replace(/\D/g, '') || document.getElementById('adults')?.value || '2';
         const children = urlParams.get('children')?.replace(/\D/g, '') || document.getElementById('children')?.value || '0';
+        const childrenPreschool = urlParams.get('childrenPreschool')?.replace(/\D/g, '') || document.getElementById('childrenPreschool')?.value || '0';
+        const childrenElementary = urlParams.get('childrenElementary')?.replace(/\D/g, '') || document.getElementById('childrenElementary')?.value || '0';
 
         // 添加基本参数到 URL
         if (checkin) searchParams.append('checkin', checkin);
@@ -510,6 +909,8 @@ document.addEventListener('DOMContentLoaded', function() {
         if (rooms) searchParams.append('rooms', rooms);
         if (adults) searchParams.append('adults', adults);
         if (children) searchParams.append('children', children);
+        if (childrenPreschool) searchParams.append('childrenPreschool', childrenPreschool);
+        if (childrenElementary) searchParams.append('childrenElementary', childrenElementary);
 
         // Map plan name to room type code (匹配数据库中的实际代码)
         // 注意：检查顺序很重要，更具体的条件要放在前面
@@ -522,7 +923,6 @@ document.addEventListener('DOMContentLoaded', function() {
             roomTypeCode = 'triple';  // トリプルルーム
         }
 
-        searchParams.append('plan', planName);
         searchParams.append('code', roomTypeCode);  // 添加房型代码
 
         // 添加详细的调试日志
@@ -535,22 +935,9 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         console.log('完整 URL 参数字符串:', searchParams.toString());
 
-        // Check if user is logged in using session service
-        let isLoggedIn = false;
-        if (window.sessionService) {
-            try {
-                isLoggedIn = await window.sessionService.isLoggedIn();
-                console.log('reservePlan 登录状态:', isLoggedIn);
-            } catch (error) {
-                console.error('检查登录状态失败:', error);
-            }
-        }
-
-        // Redirect to appropriate booking page
-        const bookingPage = isLoggedIn ? 'booking-user.html' : 'booking.html';
-        console.log(`Redirecting to ${bookingPage} (User logged in: ${isLoggedIn})`);
-        const finalURL = `${bookingPage}?${searchParams.toString()}`;
-        console.log('最终跳转 URL:', finalURL);
+        // 直接跳转到 booking 页面
+        const finalURL = `booking.html?${searchParams.toString()}`;
+        console.log('跳转到预订页面:', finalURL);
         window.location.href = finalURL;
     }
 
@@ -638,7 +1025,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 e.preventDefault();
                 // Redirect to forgot password page
                 const returnUrl = encodeURIComponent(window.location.href);
-                window.location.href = `../hotel/forgot-password.html?return=${returnUrl}&plan=${encodeURIComponent(selectedPlanName)}`;
+                window.location.href = `../hotel/forgot-password.html?return=${returnUrl}`;
             });
         }
 
@@ -664,7 +1051,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 // Disable button and show loading state
                 sendGuestLinkBtn.disabled = true;
-                sendGuestLinkBtn.textContent = '送信中...';
+                sendGuestLinkBtn.textContent = window.i18n ? window.i18n.t('sending') : '送信中...';
                 statusDiv.innerHTML = '';
 
                 try {
@@ -675,10 +1062,6 @@ document.addEventListener('DOMContentLoaded', function() {
                         if (value) {
                             searchParams.append(key, value);
                         }
-                    }
-
-                    if (selectedPlanName) {
-                        searchParams.append('plan', selectedPlanName);
                     }
 
                     // Send request to backend API
@@ -702,7 +1085,8 @@ document.addEventListener('DOMContentLoaded', function() {
                         emailInput.value = '';
 
                         // Show success toast
-                        showSuccessToast('予約リンクをメールで送信しました');
+                        const successMsg = window.i18n ? window.i18n.t('res_link_sent') : '予約リンクをメールで送信しました';
+                        showSuccessToast(successMsg);
 
                         // Close modal after 2 seconds
                         setTimeout(() => {
@@ -711,15 +1095,17 @@ document.addEventListener('DOMContentLoaded', function() {
                         }, 2000);
                     } else {
                         // Error
-                        statusDiv.innerHTML = `<span style="color: #dc3545;">${result.message || '送信に失敗しました'}</span>`;
+                        const failMsg = window.i18n ? window.i18n.t('res_send_failed') : '送信に失敗しました';
+                        statusDiv.innerHTML = `<span style="color: #dc3545;">${result.message || failMsg}</span>`;
                     }
                 } catch (error) {
                     console.error('Error sending guest booking link:', error);
-                    statusDiv.innerHTML = '<span style="color: #dc3545;">送信中にエラーが発生しました</span>';
+                    const errorMsg = window.i18n ? window.i18n.t('res_search_error') : '送信中にエラーが発生しました';
+                    statusDiv.innerHTML = `<span style="color: #dc3545;">${errorMsg}</span>`;
                 } finally {
                     // Re-enable button
                     sendGuestLinkBtn.disabled = false;
-                    sendGuestLinkBtn.textContent = '予約リンクを送信';
+                    sendGuestLinkBtn.textContent = window.i18n ? window.i18n.t('send_booking_link') : '予約リンクを送信';
                 }
             });
         }
@@ -730,7 +1116,7 @@ document.addEventListener('DOMContentLoaded', function() {
             googleBtn.addEventListener('click', function() {
                 // Redirect to Google OAuth login
                 const returnUrl = encodeURIComponent(window.location.href);
-                window.location.href = `../hotel/login.html?provider=google&return=${returnUrl}&plan=${encodeURIComponent(selectedPlanName)}`;
+                window.location.href = `../hotel/login.html?provider=google&return=${returnUrl}`;
             });
         }
 
@@ -740,7 +1126,7 @@ document.addEventListener('DOMContentLoaded', function() {
             yahooBtn.addEventListener('click', function() {
                 // Redirect to Yahoo OAuth login
                 const returnUrl = encodeURIComponent(window.location.href);
-                window.location.href = `../hotel/login.html?provider=yahoo&return=${returnUrl}&plan=${encodeURIComponent(selectedPlanName)}`;
+                window.location.href = `../hotel/login.html?provider=yahoo&return=${returnUrl}`;
             });
         }
 
@@ -750,7 +1136,7 @@ document.addEventListener('DOMContentLoaded', function() {
             lineBtn.addEventListener('click', function() {
                 // Redirect to LINE OAuth login
                 const returnUrl = encodeURIComponent(window.location.href);
-                window.location.href = `../hotel/login.html?provider=line&return=${returnUrl}&plan=${encodeURIComponent(selectedPlanName)}`;
+                window.location.href = `../hotel/login.html?provider=line&return=${returnUrl}`;
             });
         }
 
@@ -760,7 +1146,7 @@ document.addEventListener('DOMContentLoaded', function() {
             appleBtn.addEventListener('click', function() {
                 // Redirect to Apple Sign In
                 const returnUrl = encodeURIComponent(window.location.href);
-                window.location.href = `../hotel/login.html?provider=apple&return=${returnUrl}&plan=${encodeURIComponent(selectedPlanName)}`;
+                window.location.href = `../hotel/login.html?provider=apple&return=${returnUrl}`;
             });
         }
 
@@ -1265,88 +1651,44 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 // 全局函数：处理预订按钮点击（用于动态生成的卡片）
-window.handleReservation = async function(planName) {
-    console.log('handleReservation 被调用, planName:', planName);
+// 直接跳转到 booking.html，登录检查在该页面进行
+window.handleReservation = function(planName) {
+    console.log('=== handleReservation 被调用 ===');
+    console.log('planName:', planName);
+    console.log('window.reservePlanGlobal 存在:', !!window.reservePlanGlobal);
 
-    // Check if user is logged in using session service
-    let isLoggedIn = false;
-    if (window.sessionService) {
-        try {
-            isLoggedIn = await window.sessionService.isLoggedIn();
-            console.log('handleReservation 登录状态:', isLoggedIn);
-        } catch (error) {
-            console.error('检查登录状态失败:', error);
-            isLoggedIn = false;
-        }
+    // 直接调用 reservePlan 跳转到 booking.html
+    if (window.reservePlanGlobal) {
+        window.reservePlanGlobal(planName);
     } else {
-        console.warn('sessionService 不存在，默认为未登录');
-        isLoggedIn = false;
-    }
+        console.error('❌ window.reservePlanGlobal 未定义！');
+        // 备用方案：直接构建URL跳转
+        const urlParams = new URLSearchParams(window.location.search);
+        const params = new URLSearchParams();
 
-    console.log('handleReservation 最终判断的登录状态:', isLoggedIn);
+        params.append('checkin', urlParams.get('checkin') || '');
+        params.append('checkout', urlParams.get('checkout') || '');
+        params.append('rooms', urlParams.get('rooms') || '1');
+        params.append('adults', urlParams.get('adults') || '2');
+        params.append('children', urlParams.get('children') || '0');
+        params.append('childrenPreschool', urlParams.get('childrenPreschool') || '0');
+        params.append('childrenElementary', urlParams.get('childrenElementary') || '0');
 
-    if (isLoggedIn) {
-        // User is logged in, go directly to reservation
-        console.log('用户已登录，直接跳转到预约页面');
-        if (window.reservePlanGlobal) {
-            window.reservePlanGlobal(planName);
-        }
-    } else {
-        // User is not logged in, redirect to login page
-        console.log('用户未登录，准备跳转到登录页面');
-        console.log('当前 planName:', planName);
-
-        // 获取搜索参数
-        const checkin = document.getElementById('checkin')?.value || '';
-        const checkout = document.getElementById('checkout')?.value || '';
-        const rooms = document.getElementById('rooms')?.value || '1';
-        const adults = document.getElementById('adults')?.value || '2';
-        const children = document.getElementById('children')?.value || '0';
-
-        // 计算房型代码
+        // 确定房型代码
         let roomTypeCode = 'twin';
-        if (planName.includes('和洋室') && planName.includes('6帖')) {
+        if (planName && planName.includes('和洋室') && planName.includes('6帖')) {
             roomTypeCode = 'twin_japanese';
-        } else if (planName.includes('ファミリー') || planName.includes('15帖')) {
+        } else if (planName && (planName.includes('ファミリー') || planName.includes('15帖'))) {
             roomTypeCode = 'family';
-        } else if (planName.includes('トリプルルーム')) {
+        } else if (planName && planName.includes('トリプルルーム')) {
             roomTypeCode = 'triple';
         }
+        params.append('code', roomTypeCode);
 
-        // Save the current plan to session storage so we can resume after login
-        try {
-            sessionStorage.setItem('pendingReservation', JSON.stringify({
-                redirect: 'booking',  // 标记为预约跳转
-                plan: planName,
-                code: roomTypeCode,
-                checkin: checkin,
-                checkout: checkout,
-                rooms: rooms,
-                adults: adults,
-                children: children,
-                returnUrl: window.location.href
-            }));
-            console.log('已保存待预约信息到 sessionStorage:', {
-                planName, roomTypeCode, checkin, checkout, rooms, adults, children
-            });
-        } catch (e) {
-            console.error('保存到 sessionStorage 失败:', e);
-        }
-
-        // 构建登录页URL，带上预约参数
-        const loginParams = new URLSearchParams();
-        loginParams.append('redirect', 'booking');
-        loginParams.append('plan', planName);
-        loginParams.append('code', roomTypeCode);
-        if (checkin) loginParams.append('checkin', checkin);
-        if (checkout) loginParams.append('checkout', checkout);
-        loginParams.append('rooms', rooms);
-        loginParams.append('adults', adults);
-        loginParams.append('children', children);
-
-        const loginUrl = `login.html?${loginParams.toString()}`;
-        console.log('即将跳转到登录页面:', loginUrl);
-        window.location.href = loginUrl;
+        // 跳转到 booking.html
+        const finalURL = `booking.html?${params.toString()}`;
+        console.log('使用备用方案跳转:', finalURL);
+        window.location.href = finalURL;
     }
 };
 

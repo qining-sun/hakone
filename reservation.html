@@ -7,10 +7,10 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>宿泊プラン一覧｜【公式】Trip7箱根温泉ホテル</title>
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="css/modern-navbar.css?v=20251201v49">
-    <link rel="stylesheet" href="css/footer.css">
-    <link rel="stylesheet" href="css/reservation.css?v=20251128v8">
+    <link rel="stylesheet" href="css/style.css?v=20260208">
+    <link rel="stylesheet" href="css/modern-navbar.css?v=20260208">
+    <link rel="stylesheet" href="css/footer.css?v=20260208">
+    <link rel="stylesheet" href="css/reservation.css?v=20260208b">
 
     <!-- Config file must be loaded first -->
     <script src="js/config.js"></script>
@@ -24,19 +24,20 @@
     <div id="loadingScreen" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #fff; display: flex; align-items: center; justify-content: center; z-index: 9999; transition: opacity 0.3s ease, visibility 0.3s ease;">
         <div style="text-align: center;">
             <div class="spinner" style="width: 50px; height: 50px; border: 4px solid #f3f3f3; border-top: 4px solid #8a7a5e; border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 20px;"></div>
-            <p style="color: #666; font-size: 16px;">データを読み込んでいます...</p>
+            <p style="color: #666; font-size: 16px;" data-i18n="loading_data">データを読み込んでいます...</p>
         </div>
     </div>
 
+    <!-- Navbar loaded by template (outside mainContent to avoid display:none affecting overflow detection) -->
+    <div id="navbar-placeholder"></div>
+
     <!-- Main Content (hidden until loaded) -->
     <div id="mainContent" style="display: none;">
-    <!-- Navbar loaded by template -->
-    <div id="navbar-placeholder"></div>
 
     <!-- Universal Hero Banner -->
     <div class="universal-hero-banner height-small">
         <div class="hero-background">
-            <img src="img/hero-background.jpg" alt="宿泊プラン一覧横幅" class="hero-bg-image">
+            <img src="img/hero-background.jpg?v=20260120" alt="宿泊プラン一覧横幅" class="hero-bg-image">
             <div class="hero-overlay"></div>
         </div>
         <div class="hero-content">
@@ -64,28 +65,28 @@
                 <div class="search-plans-container">
                     <h2 class="search-title">
                         <i class="fas fa-search"></i>
-                        <span data-i18n="search.title">プラン検索</span>
+                        <span data-i18n="plan_search">プラン検索</span>
                     </h2>
 
                     <form class="search-plans-form" id="plansSearchForm">
                         <div class="search-row">
                             <div class="search-group date-range-group">
-                                <label data-i18n="search.dates">チェックイン / チェックアウト</label>
+                                <label data-i18n="search_dates">チェックイン / チェックアウト</label>
                                 <div class="custom-date-picker" id="customDatePicker">
                                     <div class="date-input-wrapper">
                                         <div class="date-input-box" id="checkinBox">
-                                            <div class="date-input-label">チェックイン</div>
-                                            <div class="date-input-value" id="checkinDisplay">日付を選択</div>
+                                            <div class="date-input-label" data-i18n="checkin">チェックイン</div>
+                                            <div class="date-input-value" id="checkinDisplay" data-i18n="select_date">日付を選択</div>
                                         </div>
                                         <div class="date-separator">
                                             <i class="fas fa-arrow-right"></i>
                                         </div>
                                         <div class="date-input-box" id="checkoutBox">
-                                            <div class="date-input-label">チェックアウト</div>
-                                            <div class="date-input-value" id="checkoutDisplay">日付を選択</div>
+                                            <div class="date-input-label" data-i18n="checkout">チェックアウト</div>
+                                            <div class="date-input-value" id="checkoutDisplay" data-i18n="select_date">日付を選択</div>
                                         </div>
                                         <div class="nights-badge" id="nightsBadge" style="display: none;">
-                                            <span id="nightsCount">0</span>泊
+                                            <span id="nightsCount">0</span><span data-i18n="nights">泊</span>
                                         </div>
                                     </div>
 
@@ -93,7 +94,7 @@
                                     <div class="calendar-popup" id="calendarPopup" style="display: none;">
                                         <!-- Mobile Panel Header -->
                                         <div class="calendar-panel-header">
-                                            <h3 class="calendar-panel-title">日付を選択</h3>
+                                            <h3 class="calendar-panel-title" data-i18n="calendar_title">日付を選択</h3>
                                             <button type="button" class="calendar-close-btn" id="calendarCloseBtn">
                                                 <i class="fas fa-times"></i>
                                             </button>
@@ -109,13 +110,13 @@
                                                     <div class="calendar-nav-placeholder"></div>
                                                 </div>
                                                 <div class="calendar-weekdays">
-                                                    <div class="calendar-weekday">日</div>
-                                                    <div class="calendar-weekday">月</div>
-                                                    <div class="calendar-weekday">火</div>
-                                                    <div class="calendar-weekday">水</div>
-                                                    <div class="calendar-weekday">木</div>
-                                                    <div class="calendar-weekday">金</div>
-                                                    <div class="calendar-weekday">土</div>
+                                                    <div class="calendar-weekday" data-i18n="weekday_sun">日</div>
+                                                    <div class="calendar-weekday" data-i18n="weekday_mon">月</div>
+                                                    <div class="calendar-weekday" data-i18n="weekday_tue">火</div>
+                                                    <div class="calendar-weekday" data-i18n="weekday_wed">水</div>
+                                                    <div class="calendar-weekday" data-i18n="weekday_thu">木</div>
+                                                    <div class="calendar-weekday" data-i18n="weekday_fri">金</div>
+                                                    <div class="calendar-weekday" data-i18n="weekday_sat">土</div>
                                                 </div>
                                                 <div class="calendar-days" id="calendarDays"></div>
                                             </div>
@@ -129,13 +130,13 @@
                                                     </button>
                                                 </div>
                                                 <div class="calendar-weekdays">
-                                                    <div class="calendar-weekday">日</div>
-                                                    <div class="calendar-weekday">月</div>
-                                                    <div class="calendar-weekday">火</div>
-                                                    <div class="calendar-weekday">水</div>
-                                                    <div class="calendar-weekday">木</div>
-                                                    <div class="calendar-weekday">金</div>
-                                                    <div class="calendar-weekday">土</div>
+                                                    <div class="calendar-weekday" data-i18n="weekday_sun">日</div>
+                                                    <div class="calendar-weekday" data-i18n="weekday_mon">月</div>
+                                                    <div class="calendar-weekday" data-i18n="weekday_tue">火</div>
+                                                    <div class="calendar-weekday" data-i18n="weekday_wed">水</div>
+                                                    <div class="calendar-weekday" data-i18n="weekday_thu">木</div>
+                                                    <div class="calendar-weekday" data-i18n="weekday_fri">金</div>
+                                                    <div class="calendar-weekday" data-i18n="weekday_sat">土</div>
                                                 </div>
                                                 <div class="calendar-days" id="calendarDays2"></div>
                                             </div>
@@ -144,23 +145,23 @@
                                         <div class="calendar-confirm-section">
                                             <div class="calendar-selected-dates" id="calendarSelectedDates">
                                                 <div class="selected-date-item">
-                                                    <span class="selected-label">チェックイン</span>
-                                                    <span class="selected-value" id="mobileSelectedCheckin">日付を選択</span>
+                                                    <span class="selected-label" data-i18n="checkin">チェックイン</span>
+                                                    <span class="selected-value" id="mobileSelectedCheckin" data-i18n="select_date">日付を選択</span>
                                                 </div>
                                                 <div class="selected-date-arrow">
                                                     <i class="fas fa-arrow-right"></i>
                                                 </div>
                                                 <div class="selected-date-item">
-                                                    <span class="selected-label">チェックアウト</span>
-                                                    <span class="selected-value" id="mobileSelectedCheckout">日付を選択</span>
+                                                    <span class="selected-label" data-i18n="checkout">チェックアウト</span>
+                                                    <span class="selected-value" id="mobileSelectedCheckout" data-i18n="select_date">日付を選択</span>
                                                 </div>
                                                 <div class="selected-nights" id="mobileSelectedNights" style="display: none;">
-                                                    <span id="mobileSelectedNightsCount">0</span>泊
+                                                    <span id="mobileSelectedNightsCount">0</span><span data-i18n="nights">泊</span>
                                                 </div>
                                             </div>
                                             <button type="button" class="calendar-confirm-btn" id="calendarConfirmBtn">
                                                 <i class="fas fa-check"></i>
-                                                <span>日付を確定</span>
+                                                <span data-i18n="calendar_confirm">日付を確定</span>
                                             </button>
                                         </div>
                                     </div>
@@ -169,40 +170,80 @@
                                 <input type="hidden" id="checkout" name="checkout">
                             </div>
                             <div class="search-group">
-                                <label data-i18n="search.rooms">部屋数</label>
+                                <label data-i18n="rooms">部屋数</label>
                                 <select id="rooms" name="rooms">
-                                    <option value="1" selected>1室</option>
-                                    <option value="2">2室</option>
-                                    <option value="3">3室</option>
-                                    <option value="4">4室</option>
+                                    <option value="1" selected data-i18n="room_1">1室</option>
+                                    <option value="2" data-i18n="room_2">2室</option>
+                                    <option value="3" data-i18n="room_3">3室</option>
+                                    <option value="4" data-i18n="room_4">4室</option>
                                 </select>
                             </div>
-                            <div class="search-group">
-                                <label data-i18n="search.adults">大人</label>
-                                <select id="adults" name="adults">
-                                    <option value="1">1名</option>
-                                    <option value="2" selected>2名</option>
-                                    <option value="3">3名</option>
-                                    <option value="4">4名</option>
-                                    <option value="5">5名</option>
-                                    <option value="6">6名</option>
-                                </select>
-                            </div>
-                            <div class="search-group">
-                                <label data-i18n="search.children">子供（12歳以下）</label>
-                                <select id="children" name="children">
-                                    <option value="0" selected>0名</option>
-                                    <option value="1">1名</option>
-                                    <option value="2">2名</option>
-                                    <option value="3">3名</option>
-                                </select>
+                            <div class="search-group guest-selector-group">
+                                <label data-i18n="guests">ゲスト</label>
+                                <div class="guest-selector" id="guestSelector">
+                                    <div class="guest-selector-display" id="guestSelectorDisplay">
+                                        <i class="fas fa-user"></i>
+                                        <span id="guestSummary">大人 2名 · 子供 0名（1部屋あたり）</span>
+                                        <i class="fas fa-chevron-down"></i>
+                                    </div>
+                                    <div class="guest-selector-popup" id="guestSelectorPopup">
+                                        <div class="guest-popup-header">
+                                            <span data-i18n="per_room">1部屋あたり</span>
+                                        </div>
+                                        <div class="guest-row">
+                                            <div class="guest-info">
+                                                <span class="guest-label" data-i18n="adults">大人</span>
+                                            </div>
+                                            <div class="guest-counter">
+                                                <button type="button" class="counter-btn minus" data-target="adults">－</button>
+                                                <span class="counter-value" id="adultsCount">2</span>
+                                                <button type="button" class="counter-btn plus" data-target="adults">＋</button>
+                                            </div>
+                                        </div>
+                                        <div class="guest-divider"></div>
+                                        <div class="guest-section-title" data-i18n="children">子供</div>
+                                        <div class="guest-row">
+                                            <div class="guest-info">
+                                                <span class="guest-label" data-i18n="children_preschool">就学前</span>
+                                                <span class="guest-hint"><span data-i18n="age_0_5">0〜5歳</span> · <span class="hint-free" data-i18n="hint_cosleep_free">添い寝無料</span></span>
+                                            </div>
+                                            <div class="guest-counter">
+                                                <button type="button" class="counter-btn minus" data-target="childrenPreschool">－</button>
+                                                <span class="counter-value" id="childrenPreschoolCount">0</span>
+                                                <button type="button" class="counter-btn plus" data-target="childrenPreschool">＋</button>
+                                            </div>
+                                        </div>
+                                        <div class="guest-row">
+                                            <div class="guest-info">
+                                                <span class="guest-label" data-i18n="children_elementary">小学生</span>
+                                                <span class="guest-hint"><span data-i18n="age_6_12">6〜12歳</span> · <span class="hint-discount" data-i18n="hint_adult_70">大人料金の70%</span></span>
+                                            </div>
+                                            <div class="guest-counter">
+                                                <button type="button" class="counter-btn minus" data-target="childrenElementary">－</button>
+                                                <span class="counter-value" id="childrenElementaryCount">0</span>
+                                                <button type="button" class="counter-btn plus" data-target="childrenElementary">＋</button>
+                                            </div>
+                                        </div>
+                                        <div class="guest-popup-footer">
+                                            <button type="button" class="guest-confirm-btn" id="guestConfirmBtn">
+                                                <i class="fas fa-check"></i>
+                                                <span data-i18n="confirm">確定</span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Hidden inputs for form submission -->
+                                <input type="hidden" id="adults" name="adults" value="2">
+                                <input type="hidden" id="children" name="children" value="0">
+                                <input type="hidden" id="childrenPreschool" name="childrenPreschool" value="0">
+                                <input type="hidden" id="childrenElementary" name="childrenElementary" value="0">
                             </div>
                         </div>
 
                         <div class="search-row search-button-row">
                             <button type="submit" class="search-plans-btn">
                                 <i class="fas fa-search"></i>
-                                <span data-i18n="search.button">検索する</span>
+                                <span data-i18n="search">検索する</span>
                             </button>
                         </div>
                     </form>
@@ -214,9 +255,9 @@
         <div class="plans-results-section">
             <div class="container">
                 <div class="results-header">
-                    <h3 class="results-title" data-i18n="results.count">検索結果</h3>
+                    <h3 class="results-title" data-i18n="results_title">検索結果</h3>
                     <div class="results-count">
-                        <span id="resultsCount">0</span><span data-i18n="results.showing">件のプランが見つかりました</span>
+                        <span id="resultsCount">0</span><span data-i18n="results_showing">件のプランが見つかりました</span>
                     </div>
                 </div>
 
@@ -224,8 +265,8 @@
                     <!-- 初期状態: 検索を促すメッセージ -->
                     <div style="text-align: center; padding: 80px 20px; width: 100%;">
                         <i class="fas fa-search" style="font-size: 4rem; color: #D2691E; margin-bottom: 20px;"></i>
-                        <h3 style="color: #666; margin-bottom: 15px; font-size: 1.5rem;">宿泊プランを検索してください</h3>
-                        <p style="color: #999; font-size: 1rem;">チェックイン・チェックアウト日、人数を入力して検索ボタンを押してください</p>
+                        <h3 style="color: #666; margin-bottom: 15px; font-size: 1.5rem;" data-i18n="reservation_search_prompt">宿泊プランを検索してください</h3>
+                        <p style="color: #999; font-size: 1rem;" data-i18n="reservation_search_hint">チェックイン・チェックアウト日、人数を入力して検索ボタンを押してください</p>
                     </div>
                 </div>
             </div>
@@ -632,8 +673,9 @@
         }
 
         .date-range-group #dateRange {
-            width: 320px;
-            min-width: 320px;
+            width: 100%;
+            max-width: 320px;
+            min-width: 0;
         }
 
         .nights-display {
@@ -672,7 +714,7 @@
 
         .field-group input {
             width: 100%;
-            min-width: 280px;
+            min-width: 0;
             padding: 12px;
             border: 1px solid #ddd;
             border-radius: 6px;
@@ -984,6 +1026,8 @@
             padding: 20px;
             z-index: 1000;
             animation: calendarSlideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            max-width: calc(100vw - 40px);
+            box-sizing: border-box;
         }
 
         .calendar-dual-container {
@@ -993,7 +1037,7 @@
 
         .calendar-month-panel {
             flex: 1;
-            min-width: 360px;
+            min-width: 280px;
         }
 
         .calendar-nav-placeholder {
@@ -1076,224 +1120,126 @@
         }
 
         .calendar-days {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 0;
+            display: grid !important;
+            grid-template-columns: repeat(7, 1fr) !important;
+            gap: 0 !important;
         }
 
         .calendar-day {
-            aspect-ratio: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            border-radius: 0;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            border: none;
-            position: relative;
-            background: white;
-            padding: 5px 4px;
-            min-width: 52px;
-            min-height: 52px;
-        }
-
-        .day-number {
-            font-size: 14px;
-            font-weight: 600;
-            margin-bottom: 2px;
-        }
-
-        .day-price {
-            font-size: 9px;
-            font-weight: 500;
-            color: #8a7a5e;
-            white-space: nowrap;
-        }
-
-        .day-price.holiday-price {
-            color: #e53935;
-            font-weight: 600;
-        }
-
-        .day-price.no-stock {
-            color: #999;
-            font-weight: 400;
-            font-size: 9px;
+            display: block !important;
+            text-align: center !important;
+            padding: 10px 0 !important;
+            margin: 0 !important;
+            border-radius: 4px !important;
+            font-size: 14px !important;
+            font-weight: 600 !important;
+            color: #333 !important;
+            cursor: pointer !important;
+            background: white !important;
+            position: relative !important;
+            min-height: auto !important;
+            width: auto !important;
+            height: auto !important;
+            line-height: normal !important;
         }
 
         .calendar-day:hover:not(.disabled):not(.other-month):not(.empty-cell) {
-            background: linear-gradient(135deg, #f0e9dc 0%, #e8dfc8 100%);
-            z-index: 2;
+            background: #f0e9dc !important;
         }
 
         .calendar-day.today:not(.range-start):not(.range-end):not(.in-range):not(.disabled) {
-            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
-            color: #1565c0;
-            font-weight: 700;
+            background: #e3f2fd !important;
+            color: #1565c0 !important;
+            font-weight: 700 !important;
         }
 
-        .calendar-day.today:not(.range-start):not(.range-end):not(.in-range):not(.disabled)::after {
-            content: '';
-            position: absolute;
-            bottom: 4px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 6px;
-            height: 6px;
-            background: #1976d2;
-            border-radius: 50%;
-        }
-
-        .calendar-day.selected {
-            background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
-            color: white;
-            font-weight: 700;
+        .calendar-day.selected,
+        .calendar-day.range-start,
+        .calendar-day.range-end {
+            background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%) !important;
+            color: white !important;
+            font-weight: 700 !important;
         }
 
         .calendar-day.in-range {
-            background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
-            color: #1e3a8a;
-        }
-
-        .calendar-day.range-start,
-        .calendar-day.range-end {
-            background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
-            color: white;
-            font-weight: 700;
-        }
-
-        /* 选中日期的价格颜色 */
-        .calendar-day.selected .day-price,
-        .calendar-day.range-start .day-price,
-        .calendar-day.range-end .day-price {
-            color: rgba(255, 255, 255, 0.9);
-            font-weight: 600;
-        }
-
-        /* 范围内日期的价格颜色 */
-        .calendar-day.in-range .day-price {
-            color: #1e3a8a;
-            font-weight: 600;
+            background: #dbeafe !important;
+            color: #1e3a8a !important;
         }
 
         .calendar-day.disabled {
-            color: #bbb !important;
-            cursor: not-allowed;
-            background: #f0f0f0 !important;
-        }
-
-        .calendar-day.disabled .day-number {
-            color: #bbb !important;
-        }
-
-        .calendar-day.disabled .day-price {
             color: #ccc !important;
+            cursor: not-allowed !important;
+            background: #f5f5f5 !important;
         }
 
         .calendar-day.disabled:hover {
-            background: #f0f0f0 !important;
+            background: #f5f5f5 !important;
         }
 
-        /* 过去的日期统一为灰色，覆盖周末颜色 */
         .calendar-day.disabled.sunday,
         .calendar-day.disabled.saturday {
-            color: #bbb !important;
-            background: #f0f0f0 !important;
+            color: #ccc !important;
         }
 
-        .calendar-day.disabled.sunday .day-number,
-        .calendar-day.disabled.saturday .day-number {
-            color: #bbb !important;
-        }
-
-        /* 没有库存的日期 */
         .calendar-day.no-inventory {
-            color: #bbb !important;
-            background: #f0f0f0 !important;
-        }
-
-        .calendar-day.no-inventory .day-number {
-            color: #bbb !important;
+            color: #ccc !important;
+            background: #f5f5f5 !important;
         }
 
         .calendar-day.other-month {
-            color: #bbb;
-            opacity: 0.4;
+            color: #bbb !important;
+            opacity: 0.4 !important;
         }
 
-        .calendar-day.sunday {
-            color: #e53935;
+        .calendar-day.sunday:not(.disabled):not(.range-start):not(.range-end):not(.in-range) {
+            color: #e53935 !important;
         }
 
-        .calendar-day.saturday {
-            color: #1e88e5;
+        .calendar-day.saturday:not(.disabled):not(.range-start):not(.range-end):not(.in-range) {
+            color: #1e88e5 !important;
         }
 
-        /* Empty cells - no inventory records */
         .calendar-day.empty-cell {
-            background: transparent;
-            border: none;
-            cursor: default;
-            opacity: 0;
-            pointer-events: none;
+            background: transparent !important;
+            cursor: default !important;
+            opacity: 0 !important;
+            pointer-events: none !important;
         }
 
-        /* Hover Preview Styles */
         .calendar-day.preview-range {
-            background: linear-gradient(135deg, #fff8f0 0%, #fff0e0 100%);
-            color: #8a7a5e;
-            border-color: rgba(138, 122, 94, 0.2);
-            animation: previewPulse 0.3s ease;
+            background: #fff0e0 !important;
+            color: #8a7a5e !important;
         }
 
         .calendar-day.preview-end {
-            background: linear-gradient(135deg, #d4c4a8 0%, #b8a888 100%);
-            color: white;
-            font-weight: 700;
-            box-shadow: 0 4px 16px rgba(138, 122, 94, 0.3);
-            transform: scale(1.05);
-            animation: previewBounce 0.3s ease;
+            background: #d4c4a8 !important;
+            color: white !important;
+            font-weight: 700 !important;
         }
 
-        @keyframes previewPulse {
-            0% {
-                transform: scale(1);
+        /* Tablet Responsive - single month calendar */
+        @media (max-width: 900px) {
+            .calendar-dual-container {
+                flex-direction: column;
+                gap: 16px;
             }
-            50% {
-                transform: scale(1.02);
-            }
-            100% {
-                transform: scale(1);
-            }
-        }
 
-        @keyframes previewBounce {
-            0% {
-                transform: scale(1);
+            .calendar-month-panel {
+                min-width: auto;
             }
-            50% {
-                transform: scale(1.08);
-            }
-            100% {
-                transform: scale(1.05);
-            }
-        }
 
-        /* Nights Display (old style kept for compatibility) */
-        .nights-display {
-            background: #8a7a5e;
-            color: white;
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-size: 13px;
-            font-weight: 600;
-            white-space: nowrap;
-            min-width: 50px;
-            text-align: center;
-            flex-shrink: 0;
+            .calendar-popup {
+                max-width: calc(100vw - 40px);
+            }
+
+            .calendar-nav-placeholder {
+                display: none;
+            }
+
+            .calendar-month-panel:first-child .calendar-header,
+            .calendar-month-panel:last-child .calendar-header {
+                justify-content: space-between;
+            }
         }
 
         /* Mobile Responsive */
@@ -1376,17 +1322,8 @@
             }
 
             .calendar-day {
-                min-width: 42px;
-                min-height: 42px;
-                font-size: 14px;
-            }
-
-            .day-price {
-                font-size: 7px;
-            }
-
-            .day-price.no-stock {
-                font-size: 7px;
+                padding: 8px 0 !important;
+                font-size: 13px !important;
             }
 
             .date-input-wrapper {
@@ -1529,16 +1466,16 @@
     </style>
 
     <script src="js/storage-helper.js"></script>
-    <script src="js/custom-calendar.js?v=20251201v1"></script>
+    <script src="js/custom-calendar.js?v=20260208c"></script>
     </div>
     <!-- End Main Content -->
 
-    <script src="js/init.js?v=20251201"></script>
+    <script src="js/init.js?v=20260115"></script>
     <script src="js/session-service.js"></script>
-    <script src="js/load-navbar.js?v=20251201v21"></script>
+    <script src="js/load-navbar.js?v=20260130"></script>
     <script src="js/load-footer.js"></script>
     <script src="js/main.js"></script>
-    <script src="js/reservation.js?v=20251201v2"></script>
+    <script src="js/reservation.js?v=20260302b"></script>
     <!-- <script src="js/room-search.js"></script> -->
 
     <!-- Modern Navbar Initialization -->
@@ -1573,6 +1510,202 @@
                 }
             });
         }
+    })();
+    </script>
+
+    <!-- Guest Selector -->
+    <script>
+    (function() {
+        const guestSelector = document.getElementById('guestSelector');
+        const guestDisplay = document.getElementById('guestSelectorDisplay');
+        const guestPopup = document.getElementById('guestSelectorPopup');
+        const guestSummary = document.getElementById('guestSummary');
+        const confirmBtn = document.getElementById('guestConfirmBtn');
+
+        // Get initial values from URL parameters (clamped to limits)
+        const urlParams = new URLSearchParams(window.location.search);
+        const initialAdults = Math.min(Math.max(parseInt(urlParams.get('adults')) || 2, 1), 4);
+        const initialPreschool = Math.min(Math.max(parseInt(urlParams.get('childrenPreschool')) || 0, 0), 2);
+        const initialElementary = Math.min(Math.max(parseInt(urlParams.get('childrenElementary')) || 0, 0), 2);
+
+        // Guest counts
+        // 人数上限: 大人のみ=計4名, 大人+子ども=計8名(大人4,就学前2,小学生2)
+        const MAX_TOTAL = 8;
+        const guests = {
+            adults: { min: 1, max: 4, value: initialAdults },
+            childrenPreschool: { min: 0, max: 2, value: initialPreschool },
+            childrenElementary: { min: 0, max: 2, value: initialElementary }
+        };
+
+        // Create overlay for mobile
+        let overlay = document.querySelector('.guest-popup-overlay');
+        if (!overlay) {
+            overlay = document.createElement('div');
+            overlay.className = 'guest-popup-overlay';
+            document.body.appendChild(overlay);
+        }
+
+        // Scroll lock counter (shared with calendar)
+        window.scrollLockCount = window.scrollLockCount || 0;
+
+        function lockScroll() {
+            window.scrollLockCount++;
+            if (window.scrollLockCount === 1) {
+                document.body.style.overflow = 'hidden';
+            }
+        }
+
+        function unlockScroll() {
+            window.scrollLockCount = Math.max(0, window.scrollLockCount - 1);
+            if (window.scrollLockCount === 0) {
+                document.body.style.overflow = '';
+            }
+        }
+
+        // Toggle popup
+        function togglePopup(show) {
+            if (show) {
+                guestPopup.classList.add('show');
+                guestDisplay.classList.add('active');
+                overlay.classList.add('show');
+                lockScroll();
+            } else {
+                guestPopup.classList.remove('show');
+                guestDisplay.classList.remove('active');
+                overlay.classList.remove('show');
+                unlockScroll();
+            }
+        }
+
+        // Update summary text
+        function updateSummary() {
+            const adults = guests.adults.value;
+            const totalChildren = guests.childrenPreschool.value +
+                                  guests.childrenElementary.value;
+
+            // Get translated labels
+            const adultsLabel = window.i18n ? window.i18n.t('adults') : '大人';
+            const childrenLabel = window.i18n ? window.i18n.t('children') : '子供';
+            const personUnit = window.i18n ? window.i18n.t('person_unit') : '名';
+            const perRoomLabel = window.i18n ? window.i18n.t('per_room') : '1部屋あたり';
+
+            let text = `${adultsLabel} ${adults}${personUnit} · ${childrenLabel} ${totalChildren}${personUnit}（${perRoomLabel}）`;
+            guestSummary.textContent = text;
+
+            // Update hidden inputs and trigger change events
+            const adultsInput = document.getElementById('adults');
+            const childrenInput = document.getElementById('children');
+            const preschoolInput = document.getElementById('childrenPreschool');
+            const elementaryInput = document.getElementById('childrenElementary');
+
+            // Check if values changed
+            const adultsChanged = adultsInput.value != guests.adults.value;
+            const childrenChanged = childrenInput.value != totalChildren;
+            const preschoolChanged = preschoolInput.value != guests.childrenPreschool.value;
+            const elementaryChanged = elementaryInput.value != guests.childrenElementary.value;
+
+            // Update values
+            adultsInput.value = guests.adults.value;
+            childrenInput.value = totalChildren; // 儿童总数
+            preschoolInput.value = guests.childrenPreschool.value;
+            elementaryInput.value = guests.childrenElementary.value;
+
+            // Trigger change events if values changed
+            if (adultsChanged) adultsInput.dispatchEvent(new Event('change', { bubbles: true }));
+            if (childrenChanged) childrenInput.dispatchEvent(new Event('change', { bubbles: true }));
+            if (preschoolChanged) preschoolInput.dispatchEvent(new Event('change', { bubbles: true }));
+            if (elementaryChanged) elementaryInput.dispatchEvent(new Event('change', { bubbles: true }));
+        }
+
+        // Update counter display and button states
+        function updateCounter(target) {
+            const countEl = document.getElementById(target + 'Count');
+            const guest = guests[target];
+            countEl.textContent = guest.value;
+
+            const totalGuests = guests.adults.value + guests.childrenPreschool.value + guests.childrenElementary.value;
+
+            // Update all button states (total limit affects all plus buttons)
+            Object.keys(guests).forEach(key => {
+                const g = guests[key];
+                const minusBtn = document.querySelector(`.counter-btn.minus[data-target="${key}"]`);
+                const plusBtn = document.querySelector(`.counter-btn.plus[data-target="${key}"]`);
+                minusBtn.disabled = g.value <= g.min;
+                plusBtn.disabled = g.value >= g.max || totalGuests >= MAX_TOTAL;
+            });
+        }
+
+        // Handle counter buttons
+        document.querySelectorAll('.counter-btn').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                const target = this.dataset.target;
+                const guest = guests[target];
+
+                if (this.classList.contains('plus') && guest.value < guest.max) {
+                    guest.value++;
+                } else if (this.classList.contains('minus') && guest.value > guest.min) {
+                    guest.value--;
+                }
+
+                updateCounter(target);
+                updateSummary();
+            });
+        });
+
+        // Toggle on display click
+        guestDisplay.addEventListener('click', function(e) {
+            e.stopPropagation();
+            const isOpen = guestPopup.classList.contains('show');
+            togglePopup(!isOpen);
+        });
+
+        // Confirm button
+        confirmBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            togglePopup(false);
+        });
+
+        // Close on overlay click
+        overlay.addEventListener('click', function() {
+            togglePopup(false);
+        });
+
+        // Close on outside click (desktop)
+        document.addEventListener('click', function(e) {
+            if (!guestSelector.contains(e.target) && !overlay.contains(e.target)) {
+                togglePopup(false);
+            }
+        });
+
+        // Prevent popup from closing when clicking inside
+        guestPopup.addEventListener('click', function(e) {
+            e.stopPropagation();
+        });
+
+        // Initialize
+        Object.keys(guests).forEach(key => updateCounter(key));
+
+        // Wait for i18n to be fully ready
+        function initWithI18n() {
+            // Check if i18n is ready and has translations loaded
+            if (window.i18n && window.i18n.t && window.i18n.currentLang) {
+                // Test if translation actually works
+                const testTranslation = window.i18n.t('adults');
+                if (testTranslation && testTranslation !== 'adults') {
+                    updateSummary();
+                    return;
+                }
+            }
+            setTimeout(initWithI18n, 100);
+        }
+        initWithI18n();
+
+        // Re-update summary when language changes
+        window.addEventListener('languageChanged', updateSummary);
+
+        // Also listen for i18n ready event
+        window.addEventListener('i18nReady', updateSummary);
     })();
     </script>
 
