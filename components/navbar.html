@@ -1,3 +1,36 @@
+<!-- "近日公開" バッジ専用スタイル -->
+<style>
+    .coming-soon-badge {
+        position: absolute;
+        top: -4px;
+        right: -6px;
+        background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+        color: #fff;
+        font-size: 9px;
+        font-weight: 700;
+        padding: 2px 6px;
+        border-radius: 10px;
+        white-space: nowrap;
+        line-height: 1.2;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        letter-spacing: 0.5px;
+        transform: rotate(8deg);
+        z-index: 1;
+        pointer-events: none;
+    }
+    .nav-item-reserve,
+    .bottom-nav-btn.reserve-btn .reserve-default {
+        position: relative;
+    }
+    /* モバイル底部バー側の位置微調整 */
+    .bottom-nav-btn.reserve-btn .coming-soon-badge {
+        top: -2px;
+        right: 10%;
+        font-size: 8px;
+        padding: 1px 5px;
+    }
+</style>
+
 <!-- 开发环境测试模式横条（仅开发环境显示） -->
 <div class="dev-mode-bar" id="devModeBar" style="display: none;">
     <div class="dev-mode-container">
@@ -82,6 +115,7 @@
                 <a href="reservation.html" class="nav-item nav-item-reserve" data-page="reservation">
                     <i class="fas fa-calendar-check"></i>
                     <span data-i18n="nav_reservation">予約</span>
+                    <span class="coming-soon-badge" data-i18n="coming_soon">近日公開</span>
                 </a>
 
                 <!-- Mobile Menu Actions - Only visible on mobile -->
@@ -282,6 +316,7 @@
         <div class="reserve-default">
             <i class="fas fa-calendar-check"></i>
             <span data-i18n="nav_reservation">宿泊予約</span>
+            <span class="coming-soon-badge" data-i18n="coming_soon">近日公開</span>
         </div>
         <div class="reserve-close">
             <i class="fas fa-times"></i>
