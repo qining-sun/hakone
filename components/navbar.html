@@ -37,19 +37,10 @@
             <!-- Dual Logo -->
             <div class="navbar-logo">
                 <a href="index.html" class="dual-logo-container">
-                    <!-- Group Logo -->
-                    <div class="logo-group">
-                        <!-- <img src="img/logo.png" alt="集団ロゴ" class="logo-img logo-img-group"> -->
-                    </div>
-                    <!-- Hotel Logo -->
                     <div class="logo-hotel">
                         <img src="img/logo6.png" alt="Trip7箱根仙石原温泉ホテル" class="logo-img logo-img-hotel">
                     </div>
                 </a>
-                <div class="logo-tagline">
-                    <p class="tagline-text">箱根仙石原、高原の温泉</p>
-                    <p class="tagline-sub">自然と共に味わう癒しのひととき</p>
-                </div>
             </div>
 
             <!-- Navigation Links (icon on top, text below) -->
@@ -82,18 +73,16 @@
                     <i class="fas fa-route"></i>
                     <span data-i18n="nav_access">アクセス</span>
                 </a>
-                <a href="reservation.html" class="nav-item nav-item-reserve nav-item-external" data-page="reservation">
-                    <i class="fas fa-calendar-check"></i>
-                    <span data-i18n="nav_reservation">予約</span>
-                    <span class="badge-external">近日公開</span>
-                </a>
                 <!-- SHOP DISABLED FOR NOW
                 <a href="shop.html" class="nav-item" data-page="shop">
                     <i class="fas fa-store"></i>
                     <span data-i18n="nav_shop">ショップ</span>
                 </a>
                 -->
-            
+                <a href="reservation.html" class="nav-item nav-item-reserve" data-page="reservation">
+                    <i class="fas fa-calendar-check"></i>
+                    <span data-i18n="nav_reservation">予約</span>
+                </a>
 
                 <!-- Mobile Menu Actions - Only visible on mobile -->
                 <div class="mobile-menu-actions">
@@ -108,10 +97,10 @@
 
                     <div class="mobile-menu-divider"></div>
 
-                    <a href="tel:025-788-1125" class="mobile-phone-link">
+                    <a href="tel:0460-83-8434" class="mobile-phone-link">
                         <i class="fas fa-phone"></i>
                         <span data-i18n="phone_reservation">電話予約</span>
-                        <span class="phone-number">025-788-1125</span>
+                        <span class="phone-number">0460-83-8434</span>
                     </a>
 
                     <!-- Mobile Language Switcher - Compact Dropdown -->
@@ -322,7 +311,6 @@
     <!-- 滚动时显示的logo行 -->
     <div class="bottom-nav-logo-row" id="bottomNavLogoRow">
         <a href="index.html" class="bottom-nav-logos">
-            <img src="img/logo.png" alt="Trip7" class="bottom-nav-logo">
             <img src="img/logo2.png" alt="箱根仙石原温泉ホテル" class="bottom-nav-logo-hotel">
         </a>
     </div>
@@ -347,6 +335,7 @@
         </button>
     </div>
     <div class="ai-chat-messages" id="aiChatMessages">
+        <!-- Welcome message -->
         <div class="ai-message">
             <div class="ai-message-avatar">
                 <img src="img/logo.ico" alt="AI">
@@ -360,6 +349,7 @@
                 <div class="ai-message-time">今</div>
             </div>
         </div>
+        <!-- Quick action buttons -->
         <div class="ai-quick-actions">
             <button class="ai-quick-btn" data-action="reservation">
                 <i class="fas fa-calendar-check"></i>

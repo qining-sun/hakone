@@ -2,13 +2,13 @@
 <style>
 @media (max-width: 768px) {
     .footer-contact-info {
-        text-align: center !important;
+        text-align: left !important;
     }
     .footer-contact-info li {
-        text-align: center !important;
+        text-align: left !important;
     }
     .footer-contact-info .footer-phone {
-        justify-content: center !important;
+        justify-content: flex-start !important;
     }
 }
 </style>
@@ -18,86 +18,76 @@
             <!-- Footer Brand Section -->
             <div class="footer-section footer-brand-section">
                 <div class="footer-logo-container">
-                    <img src="img/logo6.png" alt="湯沢温泉ホテル" class="footer-logo">
+                    <img src="img/logo4.png" alt="Trip7箱根仙石原温泉ホテル" class="footer-logo">
                 </div>
-                <p class="footer-tagline" style="text-align: center;">心安らぐ温泉の宿</p>
-                <ul class="footer-contact-info" style="text-align: center;">
-                    <li class="footer-phone" style="justify-content: center; display: flex;"><i class="fa fa-phone"></i> 0460-83-8434</li>
-                    <li style="font-size: 12px; color: #999;">受付時間：9:00〜18:00（土日祝日を除く）</li>
-                    <li>info@lgdhome.com</li>
-                    <li>〒250-0631  神奈川県足柄下郡箱根町仙石原1245-325</li>
+                <p class="footer-tagline" style="text-align: left; color: #999; font-size: 0.9em; margin-top: 8px;">心安らぐ温泉の宿</p>
+                <ul class="footer-contact-info" style="text-align: left;">
+                    <li class="footer-phone" style="justify-content: flex-start; display: flex;"><i class="fa fa-phone"></i> TEL 0460-83-8434</li>
+                    <li class="footer-reception-hours" style="padding-left: 20px; font-size: 0.85em; color: #999;" data-i18n="footer_reception_hours">受付時間 9:00〜18:00（土日祝日を除く）</li>
+                    <li><i class="fa fa-envelope"></i> info@lgdhome.com</li>
+                    <li data-i18n="footer_address">〒250-0631 神奈川県足柄下郡箱根町仙石原1245-325</li>
                 </ul>
             </div>
 
             <div class="footer-section">
-                <h4>ホテル情報</h4>
+                <h4 data-i18n="footer_hotel_info">ホテル情報</h4>
                 <ul>
-                    <li><a href="rooms.html">客室</a></li>
-                    <li><a href="dining.html">レストラン</a></li>
-                    <li><a href="onsen.html">温泉</a></li>
-                    <li><a href="facilities.html">施設</a></li>
+                    <li><a href="rooms.html" data-i18n="footer_rooms">客室</a></li>
+                    <li><a href="dining.html" data-i18n="footer_restaurant">レストラン</a></li>
+                    <li><a href="onsen.html" data-i18n="footer_onsen">温泉</a></li>
+                    <li><a href="facilities.html" data-i18n="footer_facilities">施設</a></li>
                 </ul>
             </div>
             <div class="footer-section">
-                <h4>観光・アクセス</h4>
+                <h4 data-i18n="footer_tourism_access">観光・アクセス</h4>
                 <ul>
-                    <li><a href="area.html">周辺観光</a></li>
-                    <li><a href="access.html">交通アクセス</a></li>
+                    <li><a href="area.html" data-i18n="footer_area_guide">周辺観光</a></li>
+                    <li><a href="access.html" data-i18n="footer_access">交通アクセス</a></li>
                 </ul>
-                 <h4 style="margin-top: 20px;" data-i18n="footer_guide">ご利用案内</h4>
+                <h4 style="margin-top: 20px;" data-i18n="footer_guide">ご利用案内</h4>
                 <ul>
                     <li><a href="order-lookup.html" data-i18n="footer_order_lookup">予約照会</a></li>
-                    <!-- <li><a href="faq.html" data-i18n="footer_faq">よくあるご質問</a></li> -->
                     <li><a href="contact.html" data-i18n="footer_contact">お問い合わせ</a></li>
                     <li><a href="terms.html" data-i18n="footer_terms">利用規約</a></li>
                     <li><a href="privacy.html" data-i18n="footer_privacy">プライバシーポリシー</a></li>
                     <li><a href="tokushoho.html" data-i18n="footer_tokushoho">特定商取引法に基づく表記</a></li>
-                </ul> 
-                <!-- <h4 style="margin-top: 20px;">ご利用案内</h4>
-                <ul>
-                    < <li><a href="tokushoho.html">特定商取引法に基づく表記</a></li> -->
-                </ul> 
+                </ul>
             </div>
             <div class="footer-section footer-payment-social">
-                <h4>支払方法</h4>
-                <div class="payment-methods">
-                    <img src="img/footer/visa.svg" alt="Visa" class="payment-icon">
-                    <img src="img/footer/mastercard.svg" alt="Mastercard" class="payment-icon">
-                    <img src="img/footer/jcb.svg" alt="JCB" class="payment-icon">
-                    <img src="img/footer/americanexpress.svg" alt="American Express" class="payment-icon">
-                    <img src="img/footer/applepay.svg" alt="Apple Pay" class="payment-icon">
-                    <img src="img/footer/googlepay.svg" alt="Google Pay" class="payment-icon">
-                    <img src="img/footer/wechatpay.svg" alt="WeChat Pay" class="payment-icon">
+                <h4 data-i18n="footer_payment">支払方法</h4>
+                <div class="payment-group">
+                    <div class="payment-label"><i class="fas fa-globe"></i> <span data-i18n="footer_payment_online">オンライン決済</span></div>
+                    <div class="payment-icons">
+                        <img src="img/footer/visa.svg" alt="Visa" title="Visa">
+                        <img src="img/footer/mastercard.svg" alt="Mastercard" title="Mastercard">
+                        <img src="img/footer/jcb.svg" alt="JCB" title="JCB">
+                        <img src="img/footer/americanexpress.svg" alt="American Express" title="American Express">
+                        <img src="img/footer/creditcard_diners.svg" alt="Diners Club" title="Diners Club">
+                        <img src="img/footer/applepay.svg" alt="Apple Pay" title="Apple Pay">
+                        <img src="img/footer/googlepay.svg" alt="Google Pay" title="Google Pay">
+                        <img src="img/footer/wechatpay.svg" alt="WeChat Pay" title="WeChat Pay">
+                        <img src="img/footer/alipay.svg" alt="Alipay" title="Alipay">
+                        <img src="img/footer/link.png" alt="Link" title="Link">
+                    </div>
                 </div>
-                <!-- フォローする - 暂时屏蔽
-                <h4 class="follow-title">フォローする</h4>
-                <div class="social-links">
-                    <a href="#" title="Facebook">
-                        <img src="img/footer/facebook.svg" alt="Facebook" class="social-icon-svg">
-                    </a>
-                    <a href="#" title="Twitter/X">
-                        <img src="img/footer/x.svg" alt="X" class="social-icon-svg">
-                    </a>
-                    <a href="#" title="Instagram">
-                        <img src="img/footer/instagram.svg" alt="Instagram" class="social-icon-svg">
-                    </a>
-                    <a href="#" title="微信 (WeChat)">
-                        <img src="img/footer/wechat.svg" alt="WeChat" class="social-icon-svg">
-                    </a>
-                    <a href="#" title="微博 (Weibo)">
-                        <img src="img/footer/weibo.svg" alt="Weibo" class="social-icon-svg">
-                    </a>
-                    <a href="#" title="小红书 (Xiaohongshu)">
-                        <img src="img/footer/xiaohongshu.svg" alt="Xiaohongshu" class="social-icon-svg">
-                    </a>
+                <div class="payment-group">
+                    <div class="payment-label"><i class="fas fa-store"></i> <span data-i18n="footer_payment_onsite">現地決済</span></div>
+                    <div class="payment-icons">
+                        <img src="img/footer/visa.svg" alt="Visa" title="Visa">
+                        <img src="img/footer/mastercard.svg" alt="Mastercard" title="Mastercard">
+                        <img src="img/footer/jcb.svg" alt="JCB" title="JCB">
+                        <img src="img/footer/americanexpress.svg" alt="American Express" title="American Express">
+                        <img src="img/footer/applepay.svg" alt="Apple Pay" title="Apple Pay">
+                        <img src="img/footer/googlepay.svg" alt="Google Pay" title="Google Pay">
+                        <img src="img/footer/wechatpay.svg" alt="WeChat Pay" title="WeChat Pay">
+                    </div>
                 </div>
-                -->
             </div>
         </div>
 
         <!-- Copyright -->
         <div class="footer-copyright">
-            <p>© 2026 Trip7箱根仙石原温泉ホテル All Rights Reserved.</p>
+            <p data-i18n="footer_copyright">© 2026 Trip7箱根仙石原温泉ホテル All Rights Reserved.</p>
         </div>
     </footer>
 </div>

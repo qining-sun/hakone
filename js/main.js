@@ -317,45 +317,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Concept image hover effect - Yuzawamd style
-    const conceptImage = document.querySelector('.concept-section .feature-image img');
-    if (conceptImage) {
-        conceptImage.addEventListener('mouseenter', function() {
-            this.style.transform = 'scale(1.02)';
-            this.style.transition = 'transform 0.8s ease';
-            this.style.filter = 'brightness(1.1)';
-        });
 
-        conceptImage.addEventListener('mouseleave', function() {
-            this.style.transform = 'scale(1)';
-            this.style.filter = 'brightness(1)';
-        });
-    }
-
-    // Add highlight effect when section is in center of viewport
-    window.addEventListener('scroll', function() {
-        const featureSections = document.querySelectorAll('.feature-section');
-        const windowHeight = window.innerHeight;
-        const windowCenter = windowHeight / 2;
-
-        featureSections.forEach((section) => {
-            const rect = section.getBoundingClientRect();
-            const sectionCenter = rect.top + (rect.height / 2);
-
-            // Check if section center is near viewport center
-            const distanceFromCenter = Math.abs(sectionCenter - windowCenter);
-
-            if (distanceFromCenter < 200 && section.classList.contains('in-view')) {
-                // Section is centered - add highlight
-                section.style.transform = 'translateY(0) scale(1.02)';
-                section.style.boxShadow = '0 20px 60px rgba(0,0,0,0.1)';
-            } else if (section.classList.contains('in-view')) {
-                // Section is visible but not centered
-                section.style.transform = 'translateY(0) scale(1)';
-                section.style.boxShadow = 'none';
-            }
-        });
-    });
 });
 
 // Export for other pages to use

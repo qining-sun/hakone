@@ -21,8 +21,19 @@
                 }
                 return response.text();
             })
-            .then(html => {
+            .then(async html => {
                 footerPlaceholder.innerHTML = html;
+                // 填充联系信息（需要先确保配置已加载）
+                if (typeof loadConfig === 'function') {
+                    await loadConfig();
+                }
+                if (typeof fillContactInfo === 'function') {
+                    fillContactInfo();
+                }
+                // 应用翻译
+                if (typeof updatePageLanguage === 'function') {
+                    updatePageLanguage();
+                }
                 console.log('Footer loaded successfully');
             })
             .catch(error => {

@@ -1,6 +1,6 @@
 /**
  * 临时订单管理模块
- * 用于 booking-user.html 页面
+ * 用于 booking.html 页面
  * 提供自动保存、恢复订单草稿、支付后转移订单等功能
  */
 
@@ -25,6 +25,15 @@ async function initOrderTemp() {
     console.log('🔄 Initializing Order Temp module...');
     console.log('📍 Current URL:', window.location.href);
 
+    // TL-Lincoln 模式下不使用临时订单系统
+    const apiProvider = window.getApiProvider ? window.getApiProvider() : 'local';
+    if (apiProvider === 'tl-lincoln') {
+        console.log('📡 TL-Lincoln mode: 临時注文システムをスキップ');
+        await initTLLincolnMode();
+        console.log('✅ Order Temp module initialized (TL-Lincoln mode)');
+        return;
+    }
+
     // 检查 URL 是否有临时订单编号（支持 temp_order 和 order_code 两种参数名）
     const urlParams = new URLSearchParams(window.location.search);
     const orderCodeFromUrl = urlParams.get('temp_order') || urlParams.get('order_code');
@@ -42,6 +51,114 @@ async function initOrderTemp() {
     }
 
     console.log('✅ Order Temp module initialized');
+}
+
+/**
+ * TL-Lincoln 模式初始化
+ * 通过 API 获取房间详情信息
+ */
+async function initTLLincolnMode() {
+    const urlParams = new URLSearchParams(window.location.search);
+
+    // 从 URL 获取基本参数
+    const roomTypeCode = urlParams.get('code') || '';
+    const planCode = urlParams.get('plan') || '';
+    const checkin = urlParams.get('checkin') || '';
+    const checkout = urlParams.get('checkout') || '';
+    const rooms = parseInt(urlParams.get('rooms') || '1');
+    const adults = parseInt(urlParams.get('adults') || '2');
+    const children = parseInt(urlParams.get('children') || '0');
+    const childrenPreschool = parseInt(urlParams.get('childrenPreschool') || '0');
+    const childrenElementary = parseInt(urlParams.get('childrenElementary') || '0');
+
+    // 提取 TL-Lincoln 房型代码（去掉 tl_ 前缀）
+    const tlRoomTypeCode = roomTypeCode.startsWith('tl_') ? roomTypeCode.substring(3) : roomTypeCode;
+
+    // 计算泊数
+    let numNights = 1;
+    if (checkin && checkout) {
+        const checkinDate = new Date(checkin);
+        const checkoutDate = new Date(checkout);
+        numNights = Math.ceil((checkoutDate - checkinDate) / (1000 * 60 * 60 * 24));
+    }
+
+    console.log('📡 TL-Lincoln mode: 調用 API 获取房间详情...');
+    console.log('📋 Parameters:', { tlRoomTypeCode, planCode, checkin, checkout, adults, numNights });
+
+    let orderData = {
+        room_type_code: roomTypeCode,
+        plan_code: planCode,
+        checkin_date: checkin,
+        checkout_date: checkout,
+        num_rooms: rooms,
+        num_adults: adults,
+        num_children: children,
+        num_children_preschool: childrenPreschool,
+        num_children_elementary: childrenElementary,
+        num_nights: numNights,
+        tl_room_type_code: tlRoomTypeCode,
+        tl_rate_plan_code: planCode
+    };
+
+    try {
+        // 调用 TL-Lincoln API 获取房间详情（rooms / 儿童パラメータも渡す）
+        const detailQs = new URLSearchParams({
+            checkin,
+            checkout,
+            adults,
+            childrenPreschool,
+            childrenElementary,
+            rooms
+        }).toString();
+        const apiUrl = ORDER_TEMP_CONFIG.getUrl(`/tl-lincoln/rooms/${tlRoomTypeCode}/${planCode}?${detailQs}`);
+        console.log('🌐 Fetching room details from:', apiUrl);
+
+        const response = await fetch(apiUrl);
+        const result = await response.json();
+
+        if (result.success && result.data) {
+            console.log('✅ TL-Lincoln room details:', result.data);
+
+            // 合并 API 返回的数据
+            orderData = {
+                ...orderData,
+                room_type_name: result.data.room_type_name || '',
+                plan_name: result.data.plan_name || '',
+                room_description: result.data.room_description || '',
+                plan_description: result.data.plan_description || '',
+                meal_description: result.data.meal_description || '',
+                total_price: result.data.total_price_for_rooms || result.data.total_price || 0,
+                total_price_for_rooms: result.data.total_price_for_rooms || result.data.total_price || 0,
+                available_rooms: result.data.available_rooms || 0,
+                image_path: result.data.image_path || '',
+                image_urls: result.data.image_urls || [],
+                breakfast: result.data.breakfast || false,
+                dinner: result.data.dinner || false,
+                plan_breakfast: result.data.breakfast || false,  // プラン自体が朝食込み
+                plan_dinner: result.data.dinner || false,        // プラン自体が夕食込み
+                checkin_time: result.data.checkin_time || '',
+                checkout_time: result.data.checkout_time || ''
+            };
+        } else {
+            console.warn('⚠️ Failed to get room details from API:', result.message);
+        }
+    } catch (error) {
+        console.error('❌ Error fetching TL-Lincoln room details:', error);
+    }
+
+    console.log('📋 TL-Lincoln order data:', orderData);
+
+    // 设置全局变量让页面可以显示
+    window.currentOrderData = orderData;
+    window.currentTempOrderCode = 'tl-lincoln-temp'; // 虚拟订单号
+    window.currentTempOrderData = orderData; // 供其他模块使用
+
+    // 缓存订单数据
+    cachedOrderData = orderData;
+
+    // 更新页面显示
+    updateReservationInfoFromOrder(orderData);
+    updatePriceDisplay(orderData);
 }
 
 /**
@@ -96,12 +213,15 @@ async function createInitialTempOrder() {
 
         // 存储预订基本信息到内存（从 URL 参数读取一次）
         bookingParams = {
-            room_type_code: urlParams.get('code') || urlParams.get('plan') || 'twin',
+            room_type_code: urlParams.get('code') || 'twin',
+            plan_code: urlParams.get('plan') || null,
             checkin_date: urlParams.get('checkin') || '',
             checkout_date: urlParams.get('checkout') || '',
             num_rooms: parseInt(urlParams.get('rooms') || '1'),
             num_adults: parseInt(urlParams.get('adults') || '2'),
-            num_children: parseInt(urlParams.get('children') || '0')
+            num_children: parseInt(urlParams.get('children') || '0'),
+            num_children_preschool: parseInt(urlParams.get('childrenPreschool') || '0'),
+            num_children_elementary: parseInt(urlParams.get('childrenElementary') || '0')
         };
 
         console.log('📋 Stored booking params in memory:', bookingParams);
@@ -165,6 +285,12 @@ async function createInitialTempOrder() {
 
         // 发送请求创建临时订单
         console.log('🌐 Sending request to:', ORDER_TEMP_CONFIG.getUrl('/order-temp'));
+        console.log('📤 发送的订单数据:', JSON.stringify(orderData, null, 2));
+        console.log('👶 儿童参数:', {
+            num_children: orderData.num_children,
+            num_children_preschool: orderData.num_children_preschool,
+            num_children_elementary: orderData.num_children_elementary
+        });
         const response = await fetch(ORDER_TEMP_CONFIG.getUrl('/order-temp'), {
             method: 'POST',
             headers: {
@@ -201,6 +327,10 @@ async function createInitialTempOrder() {
 
     } catch (error) {
         console.error('❌ Error creating initial temp order:', error);
+        // 调用全局错误处理，不显示页面
+        if (window.__handleBookingError) {
+            window.__handleBookingError('临时订单创建失败: ' + error.message);
+        }
     }
 }
 
@@ -211,11 +341,48 @@ async function createInitialTempOrder() {
 // ==================== 保存订单草稿 ====================
 
 /**
- * 保存订单草稿到 orders_tmp 表
+ * 保存订单草稿到 orders 表
  */
 async function saveOrderDraft() {
     try {
         console.log('💾 Saving order draft...');
+
+        // TL-Lincoln 模式下不使用临时订单，将客人信息保存到内存
+        const apiProvider = window.getApiProvider ? window.getApiProvider() : 'local';
+        if (apiProvider === 'tl-lincoln') {
+            console.log('📡 TL-Lincoln mode: 客人信息保存到内存');
+
+            // 从表单收集客人信息并保存到 window.currentOrderData
+            const orderData = window.currentOrderData || {};
+
+            // 客人信息
+            orderData.guest_last_name = document.getElementById('lastName')?.value || '';
+            orderData.guest_first_name = document.getElementById('firstName')?.value || '';
+            orderData.guest_last_name_katakana = document.getElementById('lastNameKana')?.value || '';
+            orderData.guest_first_name_katakana = document.getElementById('firstNameKana')?.value || '';
+            orderData.guest_email = document.getElementById('email')?.value || '';
+            orderData.guest_phone = document.getElementById('phone')?.value || '';
+            orderData.phone_country_code = document.getElementById('countryCode')?.value || '+81';
+
+            // 地址信息
+            orderData.country = document.getElementById('country')?.value || '';
+            orderData.postal_code = document.getElementById('postalCode')?.value || '';
+            orderData.prefecture = document.getElementById('prefecture')?.value || '';
+            orderData.city = document.getElementById('city')?.value || document.getElementById('cityDistrict')?.value || '';
+            orderData.address_line = document.getElementById('address')?.value || document.getElementById('streetAddress')?.value || '';
+
+            // 更新全局变量
+            window.currentOrderData = orderData;
+            window.currentTempOrderData = orderData;
+
+            console.log('✅ TL-Lincoln 客人信息已保存:', {
+                name: `${orderData.guest_last_name} ${orderData.guest_first_name}`,
+                email: orderData.guest_email,
+                phone: orderData.guest_phone
+            });
+
+            return { success: true, data: orderData };
+        }
 
         // 如果没有临时订单编号，无法保存
         if (!tempOrderCode) {
@@ -265,6 +432,7 @@ async function saveOrderDraft() {
 
             // 预订基本信息（房型和人数从数据库，日期从 URL 避免时区问题）
             room_type_code: existingOrder.room_type_code,
+            plan_code: existingOrder.plan_code || null,
             checkin_date: checkinDate,
             checkout_date: checkoutDate,
             num_rooms: existingOrder.num_rooms,
@@ -416,12 +584,15 @@ function collectFormData() {
         console.warn('⚠️ No booking params in memory, trying to read from URL...');
         const urlParams = new URLSearchParams(window.location.search);
         bookingData = {
-            room_type_code: urlParams.get('code') || urlParams.get('plan') || 'twin',
+            room_type_code: urlParams.get('code') || 'twin',
+            plan_code: urlParams.get('plan') || null,
             checkin_date: urlParams.get('checkin') || '',
             checkout_date: urlParams.get('checkout') || '',
             num_rooms: parseInt(urlParams.get('rooms') || '1'),
             num_adults: parseInt(urlParams.get('adults') || '2'),
-            num_children: parseInt(urlParams.get('children') || '0')
+            num_children: parseInt(urlParams.get('children') || '0'),
+            num_children_preschool: parseInt(urlParams.get('childrenPreschool') || '0'),
+            num_children_elementary: parseInt(urlParams.get('childrenElementary') || '0')
         };
     }
 
@@ -544,7 +715,7 @@ function calculateFinalAmount() {
 
 /**
  * 加载订单草稿
- * 从 orders_tmp 表恢复之前保存的订单信息
+ * 从 orders 表恢复之前保存的订单信息
  */
 async function loadOrderDraft() {
     if (!tempOrderCode) {
@@ -574,11 +745,14 @@ async function loadOrderDraft() {
             // 恢复预订基本信息到内存
             bookingParams = {
                 room_type_code: result.data.room_type_code,
+                plan_code: result.data.plan_code || null,
                 checkin_date: result.data.checkin_date,
                 checkout_date: result.data.checkout_date,
                 num_rooms: result.data.num_rooms,
                 num_adults: result.data.num_adults,
-                num_children: result.data.num_children || 0
+                num_children: result.data.num_children || 0,
+                num_children_preschool: result.data.num_children_preschool || 0,
+                num_children_elementary: result.data.num_children_elementary || 0
             };
             console.log('📋 Restored booking params from database:', bookingParams);
 
@@ -595,20 +769,24 @@ async function loadOrderDraft() {
 
             console.log('✅ Form filled with database data');
         } else {
-            console.warn('⚠️ Order draft not found or expired');
+            console.error('❌ Order draft not found or expired:', result.message);
             // 清除内存中的订单编号
             tempOrderCode = null;
             window.currentTempOrderCode = null;
             bookingParams = null;
 
-            // 如果订单不存在或已过期，使用默认倒计时
-            if (window.startExpirationTimer) {
-                window.startExpirationTimer();
+            // 订单加载失败，调用全局错误处理
+            if (window.__handleBookingError) {
+                window.__handleBookingError(result.message || '予約情報が見つからないか、有効期限が切れています');
             }
         }
 
     } catch (error) {
         console.error('❌ Error loading order draft:', error);
+        // 调用全局错误处理，不显示页面
+        if (window.__handleBookingError) {
+            window.__handleBookingError('訂単情報の読み込みに失敗しました: ' + error.message);
+        }
     }
 }
 
@@ -736,18 +914,11 @@ function updateReservationInfoFromOrder(orderData) {
         console.log('✓ 更新宿泊数:', `${orderData.num_nights}泊`);
     }
 
-    // 更新房型
+    // 更新房型 - 从服务器获取
     const roomTypeElement = document.getElementById('roomType');
-    if (roomTypeElement && orderData.room_type_code) {
-        const roomTypeNames = {
-            'twin': 'ツインルーム【セミダブルベッド】',
-            'triple': 'トリプルルーム【シングルベッド】',
-            'twin_japanese': '和洋室　6帖和室＋洋室ツイン【シングルベッド】',
-            'family': 'ファミリー和洋室　15帖和洋室＋洋室ツイン【セミダブルベッド】'
-        };
-        const roomTypeName = roomTypeNames[orderData.room_type_code] || orderData.room_type_code;
-        roomTypeElement.textContent = roomTypeName;
-        console.log('✓ 更新客室类型:', roomTypeName);
+    if (roomTypeElement && orderData.room_type_name) {
+        roomTypeElement.textContent = orderData.room_type_name;
+        console.log('✓ 更新客室类型:', orderData.room_type_name);
     }
 
     // 更新人数
@@ -768,6 +939,21 @@ function updateReservationInfoFromOrder(orderData) {
         console.log('✓ 更新房间数:', `${orderData.num_rooms}室`);
     }
 
+    // 更新宿泊计划 - 从服务器获取
+    const planNameElement = document.getElementById('planName');
+    const planInfoRow = document.getElementById('planInfoRow');
+    if (orderData.plan_name) {
+        if (planNameElement) {
+            planNameElement.textContent = orderData.plan_name;
+        }
+        if (planInfoRow) {
+            planInfoRow.style.display = '';
+        }
+        console.log('✓ 更新宿泊计划:', orderData.plan_name);
+    } else if (planInfoRow) {
+        planInfoRow.style.display = 'none';
+    }
+
     console.log('📅 Reservation info updated from order data');
 }
 
@@ -778,17 +964,15 @@ function updateReservationInfoFromOrder(orderData) {
 function updatePriceDisplay(orderData) {
     // 保存订单数据和总额到全局变量，供积分计算使用
     window.currentTempOrderData = orderData;
-    if (typeof window.currentOrderTotal !== 'undefined') {
-        window.currentOrderTotal = parseInt(orderData.total_price) || 0;
-        console.log('💰 Updated currentOrderTotal to:', window.currentOrderTotal);
-    }
+    window.currentOrderTotal = parseInt(orderData.total_price) || 0;
+    console.log('💰 Updated currentOrderTotal to:', window.currentOrderTotal);
 
     // 更新右侧预订信息卡的价格 - 显示最终金额（扣除积分后）
     const totalPriceElement = document.getElementById('totalPrice');
     if (totalPriceElement) {
         // 优先显示 final_amount（扣除积分后的金额），如果不存在则显示 total_price
-        const displayPrice = orderData.final_amount || orderData.total_price;
-        if (displayPrice) {
+        const displayPrice = (orderData.final_amount ?? orderData.total_price);
+        if (displayPrice !== null && displayPrice !== undefined) {
             totalPriceElement.textContent = `¥${parseFloat(displayPrice).toLocaleString()}`;
             console.log('💰 Updated price display:', {
                 total_price: orderData.total_price,
@@ -897,6 +1081,13 @@ function getOrderData() {
 async function deleteTempOrder() {
     if (!tempOrderCode) return;
 
+    // TL-Lincoln 模式下不删除临时订单（因为没有创建）
+    const apiProvider = window.getApiProvider ? window.getApiProvider() : 'local';
+    if (apiProvider === 'tl-lincoln') {
+        console.log('📡 TL-Lincoln mode: 臨時注文削除をスキップ');
+        return;
+    }
+
     try {
         await fetch(
             ORDER_TEMP_CONFIG.getUrl(`/order-temp/${tempOrderCode}`),
@@ -914,6 +1105,16 @@ async function deleteTempOrder() {
     }
 }
 
+// ==================== 获取预订参数 ====================
+
+/**
+ * 获取当前预订参数（从内存中）
+ * @returns {Object|null} 预订参数对象
+ */
+function getBookingParams() {
+    return bookingParams;
+}
+
 // ==================== 导出 ====================
 
 // 将函数暴露到全局作用域
@@ -924,7 +1125,8 @@ window.OrderTemp = {
     completePayment: completePayment,
     getTempOrderCode: getTempOrderCode,
     getOrderData: getOrderData,
-    deleteTempOrder: deleteTempOrder
+    deleteTempOrder: deleteTempOrder,
+    getBookingParams: getBookingParams
 };
 
 console.log('📦 Order Temp module loaded');

@@ -1,6 +1,6 @@
 /**
  * 🤖 AI客服集成服务
- * Trip7湯沢天空温泉ホテル< - AI智能客服
+ * Trip7箱根仙石原温泉ホテル< - AI智能客服
  */
 
 class AIFrontdeskService {
@@ -412,7 +412,7 @@ class SimpleChatUI {
             <div id="ai-chat-window" class="ai-chat-window">
                 <div class="chat-header">
                     <div class="chat-title">
-                        <span class="hotel-name">Trip7湯沢天空温泉ホテル</span>
+                        <span class="hotel-name">Trip7箱根仙石原温泉ホテル</span>
                         <span class="ai-name">Trip7 AI</span>
                     </div>
                     <div class="header-controls">
@@ -434,7 +434,7 @@ class SimpleChatUI {
                     <div class="ai-message">
                         <div class="message-avatar"><img src="img/logo.ico" alt="AI客服" class="ai-avatar-icon"></div>
                         <div class="message-content" id="welcome-message">
-                            Trip7湯沢天空温泉ホテルへようこそ！私はTrip7湯沢天空温泉ホテルのフロント助手の小飛です。お手伝いできることがございましたら、お気軽にお声かけください！
+                            Trip7箱根仙石原温泉ホテルへようこそ！私はTrip7箱根仙石原温泉ホテルのフロント助手の小飛です。お手伝いできることがございましたら、お気軽にお声かけください！
                         </div>
                     </div>
                 </div>
@@ -667,14 +667,14 @@ class SimpleChatUI {
             },
             'jp': {
                 flag: '🇯🇵',
-                welcome: 'Trip7湯沢天空温泉ホテルへようこそ！私はAI助手です。お手伝いできることがございましたら、お気軽にお声かけください！',
+                welcome: 'Trip7箱根仙石原温泉ホテルへようこそ！私はAI助手です。お手伝いできることがございましたら、お気軽にお声かけください！',
                 placeholder: 'ご質問をお聞かせください...',
                 sendBtn: '送信',
                 loading: 'AI処理中'
             },
             'en': {
                 flag: '🇺🇸',
-                welcome: 'Welcome to Yuzawa Machizukuri! I am an AI assistant. How can I help you today?',
+                welcome: 'Welcome to Trip7 Hakone Sengokuhara Onsen Hotel! I am an AI assistant. How can I help you today?',
                 placeholder: 'Please enter your question...',
                 sendBtn: 'Send',
                 loading: 'AI Processing'
@@ -703,7 +703,7 @@ class SimpleChatUI {
 // 🧪 测试Markdown功能的辅助函数
 window.testMarkdown = function() {
     const testMessages = [
-        "## 湯沢ホテル案内\n\n温泉地の**温泉ホテル**へようこそ！\n\n### 主要设施\n\n1. **展望露天風呂** - 24時間利用可能\n2. **アートギャラリー** - 地元芸術家の作品展示\n3. **レストラン** - 地元食材を使った料理\n\n> お客様に最高のサービスを提供いたします。\n\n詳細は `reception@hotel.com` までお問い合わせください。",
+        "## 箱根ホテル案内\n\n温泉地の**温泉ホテル**へようこそ！\n\n### 主要设施\n\n1. **展望露天風呂** - 24時間利用可能\n2. **アートギャラリー** - 地元芸術家の作品展示\n3. **レストラン** - 地元食材を使った料理\n\n> お客様に最高のサービスを提供いたします。\n\n詳細は `reception@hotel.com` までお問い合わせください。",
         "**客室料金**\n\n- スタンダード: ¥12,000~/泊\n- デラックス: ¥18,000~/泊  \n- スイート: ¥25,000~/泊\n\n```\n特別割引: 連泊割引10%OFF\n```\n\n*料金は税込み表示です*",
         "### チェックイン・アウト\n\n- **チェックイン**: 15:00\n- **チェックアウト**: 11:00\n\n---\n\n### アクセス\n\n最寄り駅から`無料送迎バス`で15分です。"
     ];

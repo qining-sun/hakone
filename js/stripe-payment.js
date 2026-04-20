@@ -5,12 +5,11 @@
 window.API_BASE_URL = window.API_BASE_URL || window.API_CONFIG?.BOOKING_API || '/api';
 
 // 获取支付成功后的回调URL（自动适配开发/生产环境）
+// 直接跳转到前端成功页面，订单转移由 Webhook 异步处理
+// 使用不带 .html 后缀的 URL，避免服务器 URL 重写导致参数丢失
 function getSuccessReturnUrl(orderCode) {
     const origin = window.location.origin;
-    const isProduction = origin.includes('yuzawamd.com');
-    // 生产环境直接在根目录，开发环境在 /yuzawa/ 目录下
-    const basePath = isProduction ? '' : '/yuzawa';
-    return `${origin}${basePath}/reservation-success.html?orderCode=${orderCode}`;
+    return `${origin}/reservation-success.html?orderCode=${orderCode}`;
 }
 
 let stripe = null;
@@ -85,6 +84,16 @@ async function initializeStripePaymentForm(orderData) {
 
         console.log('初始化Stripe支付表单...', orderData);
 
+        // 确保 Stripe 已初始化
+        if (!stripe) {
+            console.log('Stripe 未初始化，正在初始化...');
+            await initializeStripe();
+        }
+
+        if (!stripe) {
+            throw new Error('Stripe の初期化に失敗しました');
+        }
+
         // 验证必填字段
         if (!orderData) {
             throw new Error('订单数据缺失 (orderData is missing)');
@@ -106,7 +115,71 @@ async function initializeStripePaymentForm(orderData) {
         const totalAmount = calculateTotalAmount(orderData);
         console.log('计算的总金额:', totalAmount);
 
-        if (!totalAmount || totalAmount <= 0) {
+        // 积分全额支付（¥0）：跳过 Stripe，直接完成订单
+        if (totalAmount === 0) {
+            console.log('💎 检测到 ¥0 支付，跳过 Stripe，直接完成订单');
+
+            // 获取临时订单号
+            const tempOrderCode = window.OrderTemp && window.OrderTemp.getTempOrderCode
+                ? window.OrderTemp.getTempOrderCode()
+                : orderData.orderCode || window.currentTempOrderCode;
+
+            if (!tempOrderCode) {
+                throw new Error('注文番号が見つかりません。ページを更新してもう一度お試しください。');
+            }
+
+            // 显示加载状态
+            const submitBtn = document.getElementById('stripe-submit-btn');
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.textContent = '処理中...';
+            }
+
+            try {
+                // 调用后端接口完成订单（不创建 Stripe PaymentIntent）
+                const apiUrl = window.getApiUrl(`/order-temp/${tempOrderCode}/complete-payment`);
+                console.log('💎 ポイント全額（0円）決済: 注文を確定します。', tempOrderCode);
+
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify({
+                        // 0円の場合は Stripe PaymentIntent を作成しない
+                        stripePaymentId: null
+                    })
+                });
+
+                // 先检查 HTTP 状态码
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    console.error('❌ サーバーエラー:', response.status, errorText);
+                    throw new Error(`サーバーエラー: ${response.status} ${response.statusText}`);
+                }
+
+                const result = await response.json();
+
+                if (result.success) {
+                    console.log('✅ ポイント全额決済完了:', result.data);
+
+                    // 跳转成功页
+                    const orderCode = result.data.orderCode;
+                    const successUrl = getSuccessReturnUrl(orderCode);
+                    console.log('🚀 跳转成功页:', successUrl);
+                    window.location.href = successUrl;
+                    return;
+                } else {
+                    throw new Error(result.message || 'ポイントの精算に失敗しました');
+                }
+
+            } catch (error) {
+                console.error('❌ ポイント決済エラー:', error);
+                alert('ポイントの精算に失敗しました: ' + error.message);
+                throw error;
+            }
+        }
+
+        if (!totalAmount || totalAmount < 0) {
             throw new Error('金额计算错误 (Invalid amount calculated): ' + totalAmount);
         }
 
@@ -181,6 +254,13 @@ async function initializeStripePaymentForm(orderData) {
             },
             body: JSON.stringify(paymentData)
         });
+
+        // 先检查 HTTP 状态码
+        if (!response.ok) {
+            const errorText = await response.text();
+            console.error('❌ API エラー:', response.status, errorText);
+            throw new Error(`サーバーエラー: ${response.status} ${response.statusText}`);
+        }
 
         const result = await response.json();
 
@@ -360,6 +440,8 @@ async function handleStripePayment(event) {
             : (window.currentTempOrderData?.order_code || window.bookingOrderCode || '');
 
         // 使用 Payment Element 确认支付
+        // 使用 redirect: 'if_required'，只有需要额外验证（如3D Secure）时才重定向
+        // 这样可以在前端处理订单转移和支付捕获
         const { error, paymentIntent } = await stripe.confirmPayment({
             elements,
             confirmParams: {
@@ -368,7 +450,7 @@ async function handleStripePayment(event) {
                     billing_details: billingDetails
                 }
             },
-            redirect: 'always'
+            redirect: 'if_required'
         });
 
         if (error) {
@@ -396,16 +478,17 @@ async function handleStripePayment(event) {
                     await stripe.handleNextAction({clientSecret: paymentIntent.client_secret});
                 }
             }
-            // 支付成功
-            else if (paymentIntent.status === 'succeeded') {
-                console.log('支付成功！准备创建订单...');
+            // 支付成功（自动捕获模式）或授权成功（手动捕获模式）
+            else if (paymentIntent.status === 'succeeded' || paymentIntent.status === 'requires_capture') {
+                const isManualCapture = paymentIntent.status === 'requires_capture';
+                console.log(isManualCapture ? '💳 授权成功（手动捕获模式），准备转移订单并捕获支付...' : '支付成功！准备创建订单...');
                 try {
                     // 保存 PaymentIntent ID 用于可能的退款和订单记录
                     window.lastPaymentIntentId = paymentIntent.id;
                     console.log('✓ 已保存 PaymentIntent ID:', window.lastPaymentIntentId);
                     console.log('PaymentIntent 完整信息:', paymentIntent);
 
-                    // 创建订单（如果还未创建）
+                    // 创建订单（如果还未创建）- 后端会处理支付捕获
                     await createOrderAfterPayment(paymentIntent);
 
                     // 验证订单号是否已设置
@@ -433,9 +516,10 @@ async function handleStripePayment(event) {
         }
 
     } catch (error) {
-        console.error('Stripe支付确认错误:', error);
-        showStripeError('決済処理に失敗しました。\n\nエラー: ' + error.message);
+        console.error('Payment Error:', error);
+        alert(error.message);
 
+        // 关键：出错时务必恢复按钮！
         const submitBtn = document.getElementById('stripe-submit-btn');
         if (submitBtn) {
             submitBtn.disabled = false;
@@ -544,7 +628,7 @@ function showQRCodeInline(qrCodeUrl, paymentName, paymentIntentId) {
 
         if (timeLeft <= 0) {
             clearInterval(window.qrTimerInterval);
-            timerElement.textContent = '有効期限が切れました';
+            timerElement.textContent = window.i18n ? window.i18n.t('timer_expired') : '有効期限が切れました';
             timerElement.style.color = '#dc3545';
         }
 
@@ -583,7 +667,10 @@ function startPaymentPolling(paymentIntentId) {
                 await createOrderAfterPayment(result.data);
 
                 // 跳转到成功页面（带订单号）
-                window.location.href = `reservation-success.html?orderCode=${window.bookingOrderCode}`;
+                const successUrl = window.isTLLincolnOrder
+                    ? `reservation-success.html?orderCode=${window.bookingOrderCode}&source=tl-lincoln`
+                    : `reservation-success.html?orderCode=${window.bookingOrderCode}`;
+                window.location.href = successUrl;
             }
         } catch (error) {
             console.error('轮询错误:', error);
@@ -640,8 +727,9 @@ async function initializeLinkPaymentForm(orderData) {
             throw new Error('预订者邮箱缺失');
         }
 
-        // 使用 final_amount（已扣除积分的最终金额），如果没有则用 totalPrice
-        const totalAmount = Math.round(orderData.final_amount || orderData.totalPrice || calculateTotalAmount(orderData));
+        // 使用 final_amount（已扣除积分的最终金额），如果没有则用 totalPrice（注意：0 也是有效金额）
+        const rawAmount = (orderData.final_amount ?? orderData.totalPrice);
+        const totalAmount = Math.round(parseFloat(rawAmount ?? calculateTotalAmount(orderData)));
         console.log('💰 Link支付金额:', totalAmount, '(final_amount:', orderData.final_amount, ', totalPrice:', orderData.totalPrice, ')');
 
         if (!totalAmount || totalAmount <= 0) {
@@ -712,6 +800,13 @@ async function initializeLinkPaymentForm(orderData) {
             },
             body: JSON.stringify(paymentData)
         });
+
+        // 先检查 HTTP 状态码
+        if (!response.ok) {
+            const errorText = await response.text();
+            console.error('❌ API エラー:', response.status, errorText);
+            throw new Error(`サーバーエラー: ${response.status} ${response.statusText}`);
+        }
 
         const result = await response.json();
 
@@ -922,7 +1017,7 @@ async function createStripeCheckoutSession(orderData) {
 // 计算总金额（日元，不含小数点）
 // 优先使用服务器计算的final_amount（扣除积分后的金额），确保支付金额准确
 function calculateTotalAmount(orderData) {
-    // 1. 最优先：使用 final_amount（来自orders_tmp，已扣除积分）
+    // 1. 最优先：使用 final_amount（来自orders表，已扣除积分）
     if (orderData.final_amount !== null && orderData.final_amount !== undefined) {
         const amount = Math.round(parseFloat(orderData.final_amount));
         console.log('💰 使用 final_amount (已扣除积分):', amount);
@@ -930,7 +1025,7 @@ function calculateTotalAmount(orderData) {
         return amount;
     }
 
-    // 2. 次优先：使用 totalPrice（来自orders_pending，已扣除积分）
+    // 2. 次优先：使用 totalPrice（来自orders表，已扣除积分）
     if (orderData.totalPrice) {
         const amount = Math.round(parseFloat(orderData.totalPrice));
         console.log('💰 使用 totalPrice (已扣除积分):', amount);
@@ -1052,12 +1147,19 @@ async function proceedWithStripeQRPayment(paymentType) {
         // 准备完整订单数据（字段名与数据库保持一致）- QR Payment
         const urlParams = new URLSearchParams(window.location.search);
 
-        // 使用已创建的临时订单的 orderCode，而不是生成新的
-        const existingOrderCode = window.currentTempOrderData?.order_code;
+        // 使用已创建的临时订单的 orderCode，或者在 TL-Lincoln 模式下生成临时订单号
+        let existingOrderCode = window.currentTempOrderData?.order_code;
+        const apiProvider = window.getApiProvider ? window.getApiProvider() : 'local';
         if (!existingOrderCode) {
-            throw new Error('临时订单未创建，请先完成预订信息填写');
+            if (apiProvider === 'tl-lincoln') {
+                // TL-Lincoln 模式下生成临时订单号
+                existingOrderCode = 'TL' + Date.now() + Math.random().toString(36).substr(2, 4).toUpperCase();
+                console.log('📡 TL-Lincoln mode: 生成临时订单号:', existingOrderCode);
+            } else {
+                throw new Error('临时订单未创建，请先完成预订信息填写');
+            }
         }
-        console.log('使用已存在的临时订单 orderCode:', existingOrderCode);
+        console.log('使用订单号:', existingOrderCode);
 
         const orderData = {
             // 基本信息
@@ -1084,7 +1186,7 @@ async function proceedWithStripeQRPayment(paymentType) {
             addressLine: formData.addressLine || formData.address_line || '',
 
             // 房间信息
-            roomType: decodeURIComponent(urlParams.get('plan') || 'ツインルーム【セミダブルベッド】'),
+            roomType: formData.roomType || formData.room_type_name || window.currentTempOrderData?.room_type_name || '',
             roomTypeCode: formData.roomTypeCode || formData.room_type_code || '',
             checkinDate: formData.checkinDate,
             checkoutDate: formData.checkoutDate,
@@ -1156,6 +1258,13 @@ async function proceedWithStripeQRPayment(paymentType) {
             },
             body: JSON.stringify(paymentData)
         });
+
+        // 先检查 HTTP 状态码
+        if (!response.ok) {
+            const errorText = await response.text();
+            console.error('❌ API エラー:', response.status, errorText);
+            throw new Error(`サーバーエラー: ${response.status} ${response.statusText}`);
+        }
 
         const result = await response.json();
 
@@ -1411,7 +1520,7 @@ function displayStripeWeChatQRCode(qrData, amount, paymentIntentId) {
         if (timeLeft <= 0) {
             clearInterval(timerInterval);
             if (timerElement) {
-                timerElement.textContent = '期限切れ';
+                timerElement.textContent = window.i18n ? window.i18n.t('timer_short_expired') : '期限切れ';
             }
         }
     }, 1000);
@@ -1544,8 +1653,8 @@ async function createOrderAfterPayment(paymentData) {
             : null;
 
         if (tempOrderCode) {
-            // 使用临时订单系统 - 前端主动转移订单到 orders_pending
-            console.log('💾 检测到临时订单，开始转移到 orders_pending...');
+            // 使用临时订单系统 - 前端主动确认订单
+            console.log('💾 检测到临时订单，开始确认订单...');
             console.log('临时订单编号:', tempOrderCode);
             console.log('PaymentIntent ID:', paymentData.id);
 
@@ -1554,7 +1663,7 @@ async function createOrderAfterPayment(paymentData) {
             window.orderCreatedViaTemp = true;
 
             try {
-                // 调用 API 将临时订单转移到 orders_pending
+                // 调用 API 确认临时订单
                 const transferResponse = await fetch(window.getApiUrl(`/order-temp/${tempOrderCode}/complete-payment`), {
                     method: 'POST',
                     headers: {
@@ -1569,16 +1678,29 @@ async function createOrderAfterPayment(paymentData) {
                 const transferResult = await transferResponse.json();
 
                 if (transferResult.success) {
-                    console.log('✅ 临时订单已成功转移到 orders_pending');
+                    console.log('✅ 临时订单已成功确认');
                     console.log('新订单号:', transferResult.data.orderCode);
                     window.bookingOrderCode = transferResult.data.orderCode;
                     return; // 成功转移，返回继续轮询
                 } else {
                     console.error('❌ 临时订单转移失败:', transferResult.message);
+                    // 检查是否是库存不足错误
+                    const errorMsg = transferResult.message || '';
+                    if (errorMsg.includes('库存不足') || errorMsg.includes('在庫') || errorMsg.includes('inventory')) {
+                        // 跳转到失败页面 - 库存不足（使用不带 .html 后缀的 URL）
+                        window.location.href = `reservation-failed.html?error=inventory&orderCode=${tempOrderCode}&refunded=true`;
+                        return;
+                    }
                     throw new Error('临时订单转移失败: ' + transferResult.message);
                 }
             } catch (transferError) {
                 console.error('❌ 临时订单转移API调用失败:', transferError);
+                // 检查是否是库存不足错误
+                const errorMsg = transferError.message || '';
+                if (errorMsg.includes('库存不足') || errorMsg.includes('在庫') || errorMsg.includes('inventory')) {
+                    window.location.href = `reservation-failed.html?error=inventory&orderCode=${tempOrderCode}&refunded=true`;
+                    return;
+                }
                 throw transferError;
             }
         }
@@ -1586,10 +1708,18 @@ async function createOrderAfterPayment(paymentData) {
         // ==================== 传统订单创建流程（仅当没有临时订单时） ====================
         console.log('📝 未检测到临时订单，检查 metadata 中的订单号');
 
+        // 检查是否为 TL-Lincoln 模式
+        const apiProvider = window.getApiProvider ? window.getApiProvider() : 'local';
+        const isTLLincoln = apiProvider === 'tl-lincoln';
+
+        if (isTLLincoln) {
+            console.log('📡 TL-Lincoln mode: 使用 TL-Lincoln API 创建订单');
+        }
+
         // 从 metadata 中获取订单号（可能由 Webhook 已创建）
         const metadataOrderCode = metadata.order_code || metadata.orderCode;
 
-        if (metadataOrderCode && !metadataOrderCode.startsWith('YUZAWA')) {
+        if (metadataOrderCode && !metadataOrderCode.startsWith('YUZAWA') && !isTLLincoln) {
             // metadata 中有 TMP 开头的临时订单号，说明 Webhook 正在处理
             console.log('⚠️ 检测到 Webhook 正在处理订单，订单号:', metadataOrderCode);
             window.bookingOrderCode = metadataOrderCode;
@@ -1599,7 +1729,7 @@ async function createOrderAfterPayment(paymentData) {
 
         // 调用现有的订单创建函数（传统流程 - 仅在没有临时订单且 Webhook 未处理时）
         if (typeof window.submitFinalBooking === 'function') {
-            console.log('⚠️ 警告：使用传统订单创建流程（可能导致重复）');
+            console.log(isTLLincoln ? '📡 调用 TL-Lincoln API 创建订单...' : '⚠️ 警告：使用传统订单创建流程（可能导致重复）');
             console.log('调用 submitFinalBooking 创建订单...');
             try {
                 const orderResult = await window.submitFinalBooking();
@@ -1612,11 +1742,35 @@ async function createOrderAfterPayment(paymentData) {
                     console.error('orderResult:', orderResult);
                     throw new Error('订单创建失败：未获取到订单号');
                 }
+
+                // TL-Lincoln 模式：将订单数据存储到 sessionStorage，供成功页面使用
+                if (isTLLincoln) {
+                    console.log('📡 TL-Lincoln mode: 保存订单数据到 sessionStorage');
+                    const tlOrderData = {
+                        order_code: window.bookingOrderCode,
+                        ...window.bookingOrderData,
+                        // 合并 currentOrderData 中的客人信息
+                        ...(window.currentOrderData || {}),
+                        payment_status: 'paid',
+                        source: 'tl-lincoln'
+                    };
+                    try {
+                        sessionStorage.setItem('tl_lincoln_order', JSON.stringify(tlOrderData));
+                        console.log('✅ TL-Lincoln 订单数据已保存到 sessionStorage');
+                    } catch (e) {
+                        console.warn('⚠️ sessionStorage 保存失败:', e);
+                    }
+
+                    // 标记为 TL-Lincoln 订单，跳过后续的本地 API 调用
+                    window.isTLLincolnOrder = true;
+                    return; // 直接返回，不执行本地 API 调用
+                }
             } catch (submitError) {
                 console.error('❌ submitFinalBooking调用失败:', submitError);
                 throw submitError;
             }
 
+            // 以下代码仅适用于自社 API 模式
             // 更新 Stripe PaymentIntent 的 metadata，使用数据库中的真实订单号
             console.log('同步订单数据到 Stripe metadata...');
             try {
@@ -1660,7 +1814,7 @@ async function createOrderAfterPayment(paymentData) {
                     console.warn('无法获取用户信息:', e);
                 }
 
-                const response = await fetch(window.getApiUrl(`/orders/${window.bookingOrderCode}/status`), {
+                const response = await fetch(window.getApiUrl(`/user-orders/${window.bookingOrderCode}/status`), {
                     method: 'PATCH',
                     headers: {
                         'Content-Type': 'application/json'
@@ -1708,7 +1862,7 @@ function startQRCodeTimer() {
 
         if (timeLeft <= 0) {
             clearInterval(timerInterval);
-            qrcodeTimer.textContent = '有効期限が切れました';
+            qrcodeTimer.textContent = window.i18n ? window.i18n.t('timer_expired') : '有効期限が切れました';
             qrcodeTimer.style.color = '#dc3545';
         }
 
@@ -1786,6 +1940,15 @@ async function waitForOrderConfirmation(orderCode) {
         throw new Error('订单号缺失');
     }
 
+    // TL-Lincoln 模式：跳过轮询，直接跳转到成功页面
+    // 使用不带 .html 后缀的 URL，避免服务器 URL 重写导致参数丢失
+    if (window.isTLLincolnOrder) {
+        console.log('📡 TL-Lincoln mode: 跳过订单轮询，直接跳转到成功页面');
+        hideProcessingStatus();
+        window.location.href = `reservation-success.html?orderCode=${orderCode}&source=tl-lincoln`;
+        return;
+    }
+
     // 获取用户信息用于API请求
     let userId = null;
     let userEmail = null;
@@ -1836,11 +1999,11 @@ async function waitForOrderConfirmation(orderCode) {
                     });
 
                     // 检查是否完成（支付完成且数据库已保存）
-                    // 注意：临时订单(orderStatus='temp')需要等待 Webhook 转移到 orders_pending
+                    // 注意：临时订单(orderStatus='temp')需要等待 Webhook 确认
                     if (orderStatus === 'temp') {
-                        // 临时订单，检查是否已经被 Webhook 转移
+                        // 临时订单，检查是否已经被 Webhook 确认
                         if (paymentCompleted) {
-                            console.log('⏳ 临时订单支付完成，等待 Webhook 转移到 orders_pending...');
+                            console.log('⏳ 临时订单支付完成，等待 Webhook 确认...');
                         } else {
                             console.log('⏳ 临时订单等待支付确认...');
                         }
@@ -1849,7 +2012,7 @@ async function waitForOrderConfirmation(orderCode) {
                         clearInterval(checkInterval);
                         hideProcessingStatus();
 
-                        // 跳转到成功页面
+                        // 跳转到成功页面（使用不带 .html 后缀的 URL）
                         window.location.href = `reservation-success.html?orderCode=${orderCode}`;
                         resolve();
                     } else {
@@ -2128,36 +2291,85 @@ async function showLinkPaymentElement() {
         }
 
         // 获取临时订单编号
-        const tempOrderCode = window.OrderTemp && window.OrderTemp.getTempOrderCode
-            ? window.OrderTemp.getTempOrderCode()
-            : window.currentTempOrderCode;
+        const apiProvider = window.getApiProvider ? window.getApiProvider() : 'local';
+        let tempOrder = null;
 
-        if (!tempOrderCode) {
-            console.log('临时订单不存在');
-            sectionContainer.innerHTML = '<div style="text-align:center;padding:12px;color:#999;font-size:14px;">订单数据加载中...</div>';
-            return;
+        if (apiProvider === 'tl-lincoln') {
+            // TL-Lincoln 模式下从内存读取数据（客人信息已在 Step 1/2 保存到 window.currentOrderData）
+            console.log('=== TL-Lincoln mode: 从内存读取订单数据 ===');
+            const orderData = window.currentOrderData || window.currentTempOrderData || {};
+            const urlParams = new URLSearchParams(window.location.search);
+
+            tempOrder = {
+                order_code: 'TL' + Date.now() + Math.random().toString(36).substr(2, 4).toUpperCase(),
+                user_id: null,
+                // 客人信息从 orderData 读取（已在 saveOrderDraft 中保存）
+                guest_email: orderData.guest_email || '',
+                guest_last_name: orderData.guest_last_name || '',
+                guest_first_name: orderData.guest_first_name || '',
+                guest_last_name_katakana: orderData.guest_last_name_katakana || '',
+                guest_first_name_katakana: orderData.guest_first_name_katakana || '',
+                guest_phone: orderData.guest_phone || '',
+                phone_country_code: orderData.phone_country_code || '+81',
+                country: orderData.country || '',
+                postal_code: orderData.postal_code || '',
+                prefecture: orderData.prefecture || '',
+                city: orderData.city || '',
+                address_line: orderData.address_line || '',
+                // 预订信息
+                room_type_name: orderData.room_type_name || '',
+                room_type_code: orderData.room_type_code || urlParams.get('code') || '',
+                checkin_date: orderData.checkin_date || urlParams.get('checkin') || '',
+                checkout_date: orderData.checkout_date || urlParams.get('checkout') || '',
+                num_adults: orderData.num_adults || parseInt(urlParams.get('adults')) || 2,
+                num_children: orderData.num_children || parseInt(urlParams.get('children')) || 0,
+                num_children_preschool: orderData.num_children_preschool || parseInt(urlParams.get('childrenPreschool')) || 0,
+                num_children_elementary: orderData.num_children_elementary || parseInt(urlParams.get('childrenElementary')) || 0,
+                num_rooms: orderData.num_rooms || parseInt(urlParams.get('rooms')) || 1,
+                total_price: orderData.total_price || 0,
+                room_price: orderData.total_price || 0,
+                final_amount: orderData.total_price || 0,
+                points_used: 0,
+                service_cost: 0,
+                // TL-Lincoln 特有数据
+                tl_room_type_code: orderData.tl_room_type_code || '',
+                tl_rate_plan_code: orderData.tl_rate_plan_code || orderData.plan_code || ''
+            };
+            console.log('✅ TL-Lincoln 订单数据:', tempOrder);
+        } else {
+            // 自社 API 模式：从数据库读取
+            const tempOrderCode = window.OrderTemp && window.OrderTemp.getTempOrderCode
+                ? window.OrderTemp.getTempOrderCode()
+                : window.currentTempOrderCode;
+
+            if (!tempOrderCode) {
+                console.log('临时订单不存在');
+                sectionContainer.innerHTML = '<div style="text-align:center;padding:12px;color:#999;font-size:14px;">订单数据加载中...</div>';
+                return;
+            }
+
+            console.log('=== 挂载 Link Payment Element ===');
+            console.log('从数据库读取订单:', tempOrderCode);
+
+            // 从数据库读取临时订单数据
+            const response = await fetch(window.getApiUrl(`/order-temp/${tempOrderCode}`), {
+                credentials: 'include'
+            });
+            const result = await response.json();
+
+            if (!result.success || !result.data) {
+                console.log('无法读取订单数据');
+                sectionContainer.innerHTML = '<div style="text-align:center;padding:12px;color:#dc3545;font-size:14px;">订单数据加载失败</div>';
+                return;
+            }
+
+            tempOrder = result.data;
+            console.log('✅ 临时订单数据:', tempOrder);
         }
 
-        console.log('=== 挂载 Link Payment Element ===');
-        console.log('从数据库读取订单:', tempOrderCode);
-
-        // 从数据库读取临时订单数据
-        const response = await fetch(window.getApiUrl(`/order-temp/${tempOrderCode}`), {
-            credentials: 'include'
-        });
-        const result = await response.json();
-
-        if (!result.success || !result.data) {
-            console.log('无法读取订单数据');
-            sectionContainer.innerHTML = '<div style="text-align:center;padding:12px;color:#dc3545;font-size:14px;">订单数据加载失败</div>';
-            return;
-        }
-
-        const tempOrder = result.data;
-        console.log('✅ 临时订单数据:', tempOrder);
-
-        // 获取支付金额
-        const orderAmount = Math.round(parseFloat(tempOrder.final_amount) || parseFloat(tempOrder.total_price) || 0);
+        // 获取支付金额（注意：0 也是有效金额）
+        const orderAmountRaw = (tempOrder.final_amount ?? tempOrder.total_price ?? 0);
+        const orderAmount = Math.round(parseFloat(orderAmountRaw) || 0);
         console.log('💰 支付金额:', orderAmount, '日元');
 
         if (orderAmount <= 0) {
@@ -2428,37 +2640,75 @@ async function mountPaymentRequestButton() {
             applePayContainer.style.display = 'block';
         }
 
-        // 获取临时订单编号（与信用卡支付方式一致）
-        const tempOrderCode = window.OrderTemp && window.OrderTemp.getTempOrderCode
-            ? window.OrderTemp.getTempOrderCode()
-            : window.currentTempOrderCode;
+        // 获取订单数据
+        const apiProvider = window.getApiProvider ? window.getApiProvider() : 'local';
+        let tempOrder = null;
 
-        if (!tempOrderCode) {
-            console.log('临时订单不存在');
-            inlineContainer.innerHTML = '<div style="text-align:center;padding:12px;color:#999;font-size:14px;">订单数据加载中...</div>';
-            return;
+        if (apiProvider === 'tl-lincoln') {
+            // TL-Lincoln 模式下从内存读取数据（客人信息已在 saveOrderDraft 中保存）
+            console.log('=== TL-Lincoln mode: Payment Request Button 从内存读取 ===');
+            const orderData = window.currentOrderData || window.currentTempOrderData || {};
+            const urlParams = new URLSearchParams(window.location.search);
+
+            tempOrder = {
+                order_code: 'TL' + Date.now() + Math.random().toString(36).substr(2, 4).toUpperCase(),
+                user_id: null,
+                guest_email: orderData.guest_email || '',
+                guest_last_name: orderData.guest_last_name || '',
+                guest_first_name: orderData.guest_first_name || '',
+                guest_last_name_katakana: orderData.guest_last_name_katakana || '',
+                guest_first_name_katakana: orderData.guest_first_name_katakana || '',
+                guest_phone: orderData.guest_phone || '',
+                phone_country_code: orderData.phone_country_code || '+81',
+                room_type_name: orderData.room_type_name || '',
+                room_type_code: orderData.room_type_code || urlParams.get('code') || '',
+                checkin_date: orderData.checkin_date || urlParams.get('checkin') || '',
+                checkout_date: orderData.checkout_date || urlParams.get('checkout') || '',
+                num_adults: orderData.num_adults || parseInt(urlParams.get('adults')) || 2,
+                num_children: orderData.num_children || parseInt(urlParams.get('children')) || 0,
+                num_children_preschool: orderData.num_children_preschool || parseInt(urlParams.get('childrenPreschool')) || 0,
+                num_children_elementary: orderData.num_children_elementary || parseInt(urlParams.get('childrenElementary')) || 0,
+                num_rooms: orderData.num_rooms || parseInt(urlParams.get('rooms')) || 1,
+                total_price: orderData.total_price || 0,
+                final_amount: orderData.total_price || 0,
+                points_used: 0,
+                tl_room_type_code: orderData.tl_room_type_code || '',
+                tl_rate_plan_code: orderData.tl_rate_plan_code || orderData.plan_code || ''
+            };
+            console.log('✅ TL-Lincoln 订单数据:', tempOrder);
+        } else {
+            // 自社 API 模式：从数据库读取
+            const tempOrderCode = window.OrderTemp && window.OrderTemp.getTempOrderCode
+                ? window.OrderTemp.getTempOrderCode()
+                : window.currentTempOrderCode;
+
+            if (!tempOrderCode) {
+                console.log('临时订单不存在');
+                inlineContainer.innerHTML = '<div style="text-align:center;padding:12px;color:#999;font-size:14px;">订单数据加载中...</div>';
+                return;
+            }
+
+            console.log('=== 挂载 Payment Request Button ===');
+            console.log('从数据库读取订单:', tempOrderCode);
+
+            const response = await fetch(window.getApiUrl(`/order-temp/${tempOrderCode}`), {
+                credentials: 'include'
+            });
+            const result = await response.json();
+
+            if (!result.success || !result.data) {
+                console.log('无法读取订单数据');
+                inlineContainer.innerHTML = '<div style="text-align:center;padding:12px;color:#dc3545;font-size:14px;">订单数据加载失败</div>';
+                return;
+            }
+
+            tempOrder = result.data;
+            console.log('✅ 临时订单数据:', tempOrder);
         }
 
-        console.log('=== 挂载 Payment Request Button ===');
-        console.log('从数据库读取订单:', tempOrderCode);
-
-        // 从数据库读取临时订单数据（与信用卡支付方式一致）
-        const response = await fetch(window.getApiUrl(`/order-temp/${tempOrderCode}`), {
-            credentials: 'include'
-        });
-        const result = await response.json();
-
-        if (!result.success || !result.data) {
-            console.log('无法读取订单数据');
-            inlineContainer.innerHTML = '<div style="text-align:center;padding:12px;color:#dc3545;font-size:14px;">订单数据加载失败</div>';
-            return;
-        }
-
-        const tempOrder = result.data;
-        console.log('✅ 临时订单数据:', tempOrder);
-
-        // 获取支付金额（优先使用 final_amount，与信用卡支付一致）
-        const orderAmount = Math.round(parseFloat(tempOrder.final_amount) || parseFloat(tempOrder.total_price) || 0);
+        // 获取支付金额（优先使用 final_amount，与信用卡支付一致；注意：0 也是有效金额）
+        const orderAmountRaw = (tempOrder.final_amount ?? tempOrder.total_price ?? 0);
+        const orderAmount = Math.round(parseFloat(orderAmountRaw) || 0);
         console.log('💰 支付金额:', orderAmount, '日元');
         console.log('💰 final_amount:', tempOrder.final_amount);
         console.log('💰 total_price:', tempOrder.total_price);
@@ -2598,24 +2848,84 @@ async function mountPaymentRequestButton() {
                 ev.complete('success');
                 console.log('✓ Apple Pay / Google Pay 支付成功');
 
-                // 完成订单
-                if (tempOrder.order_code) {
-                    await fetch(window.getApiUrl(`/order-temp/${tempOrder.order_code}/complete-payment`), {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            paymentIntentId: paymentIntent.id,
-                            paymentMethod: expressPaymentType === 'applePay' ? 'apple_pay' : 'google_pay'
-                        })
-                    });
-                }
+                // 检查是否为 TL-Lincoln 模式
+                const isTLLincolnOrder = apiProvider === 'tl-lincoln' || (tempOrder.order_code && tempOrder.order_code.startsWith('TL'));
 
-                // 跳转到成功页面
-                window.location.href = `reservation-success.html?orderCode=${tempOrder.order_code || ''}&payment_intent=${paymentIntent.id}`;
+                if (isTLLincolnOrder) {
+                    // TL-Lincoln 模式：调用 TL-Lincoln API 创建订单
+                    console.log('📡 TL-Lincoln mode: 调用 TL-Lincoln API 创建订单');
+
+                    // 保存 PaymentIntent ID
+                    window.lastPaymentIntentId = paymentIntent.id;
+
+                    // 设置必要的全局变量
+                    window.currentOrderData = tempOrder;
+                    window.currentTempOrderData = tempOrder;
+
+                    // 调用 submitFinalBooking 创建 TL-Lincoln 订单
+                    if (typeof window.submitFinalBooking === 'function') {
+                        try {
+                            const orderResult = await window.submitFinalBooking();
+                            console.log('✅ TL-Lincoln 订单创建成功:', orderResult);
+
+                            // 存储订单数据到 sessionStorage
+                            const tlOrderData = {
+                                order_code: window.bookingOrderCode,
+                                ...window.bookingOrderData,
+                                ...tempOrder,
+                                payment_status: 'paid',
+                                source: 'tl-lincoln'
+                            };
+                            sessionStorage.setItem('tl_lincoln_order', JSON.stringify(tlOrderData));
+
+                            // 跳转到成功页面（使用不带 .html 后缀的 URL）
+                            window.location.href = `reservation-success.html?orderCode=${window.bookingOrderCode}&source=tl-lincoln`;
+                            return;
+                        } catch (tlError) {
+                            console.error('❌ TL-Lincoln 订单创建失败:', tlError);
+                            alert('決済は成功しましたが、予約の作成に失敗しました。\n\nお手数ですが、カスタマーサポートにお問い合わせください。\n\nエラー: ' + tlError.message);
+                            return;
+                        }
+                    }
+                } else {
+                    // 自社 API 模式：完成临时订单
+                    if (tempOrder.order_code) {
+                        const completeResponse = await fetch(window.getApiUrl(`/order-temp/${tempOrder.order_code}/complete-payment`), {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                paymentIntentId: paymentIntent.id,
+                                paymentMethod: expressPaymentType === 'applePay' ? 'apple_pay' : 'google_pay'
+                            })
+                        });
+                        const completeResult = await completeResponse.json();
+
+                        // 检查是否成功，处理库存不足等错误
+                        if (!completeResult.success) {
+                            const errorMsg = completeResult.message || '';
+                            if (errorMsg.includes('库存不足') || errorMsg.includes('在庫') || errorMsg.includes('inventory')) {
+                                window.location.href = `reservation-failed.html?error=inventory&orderCode=${tempOrder.order_code}&refunded=true`;
+                                return;
+                            }
+                            // 其他错误跳转到失败页面
+                            window.location.href = `reservation-failed.html?error=system&orderCode=${tempOrder.order_code}&message=${encodeURIComponent(errorMsg)}`;
+                            return;
+                        }
+                    }
+
+                    // 跳转到成功页面（使用不带 .html 后缀的 URL）
+                    window.location.href = `reservation-success.html?orderCode=${tempOrder.order_code || ''}&payment_intent=${paymentIntent.id}`;
+                }
 
             } catch (error) {
                 console.error('Apple Pay / Google Pay 支付失败:', error);
                 ev.complete('fail');
+                // 检查是否是库存不足错误
+                const errorMsg = error.message || '';
+                if (errorMsg.includes('库存不足') || errorMsg.includes('在庫') || errorMsg.includes('inventory')) {
+                    window.location.href = `reservation-failed.html?error=inventory&orderCode=${tempOrder?.order_code || ''}&refunded=true`;
+                    return;
+                }
                 alert('支払いに失敗しました: ' + error.message);
             }
         });
@@ -2699,10 +3009,10 @@ async function initializeExpressPayment(orderData, paymentType) {
         const title = document.getElementById('expressPayTitle');
         if (paymentType === 'applepay') {
             if (icon) icon.className = 'fab fa-apple';
-            if (title) title.textContent = 'Apple Pay で支払う';
+            if (title) title.textContent = window.i18n ? window.i18n.t('pay_with_apple') : 'Apple Pay で支払う';
         } else {
             if (icon) icon.className = 'fab fa-google';
-            if (title) title.textContent = 'Google Pay で支払う';
+            if (title) title.textContent = window.i18n ? window.i18n.t('pay_with_google') : 'Google Pay で支払う';
         }
 
         // 创建并挂载 Payment Request Button
@@ -2926,7 +3236,7 @@ async function proceedWithExpressPayment(paymentType) {
             prefecture: formData.prefecture || '',
             city: formData.city || '',
             addressLine: formData.addressLine || '',
-            roomType: decodeURIComponent(urlParams.get('plan') || ''),
+            roomType: formData.roomType || formData.room_type_name || window.currentTempOrderData?.room_type_name || '',
             roomTypeCode: formData.roomTypeCode || '',
             checkinDate: formData.checkinDate,
             checkoutDate: formData.checkoutDate,
@@ -3063,35 +3373,73 @@ async function initializeExpressCheckoutElement() {
             return Promise.resolve();
         }
 
-        // 获取临时订单编号
-        const tempOrderCode = window.OrderTemp && window.OrderTemp.getTempOrderCode
-            ? window.OrderTemp.getTempOrderCode()
-            : window.currentTempOrderCode;
+        // 获取订单数据
+        const apiProvider = window.getApiProvider ? window.getApiProvider() : 'local';
+        let tempOrder = null;
 
-        if (!tempOrderCode) {
-            console.log('临时订单不存在，等待...');
-            container.innerHTML = '<div style="text-align:center;padding:12px;color:#999;font-size:14px;">読み込み中...</div>';
-            expressCheckoutReady = true;
-            if (expressCheckoutReadyResolver) { expressCheckoutReadyResolver(); expressCheckoutReadyResolver = null; }
-            return Promise.resolve();
+        if (apiProvider === 'tl-lincoln') {
+            // TL-Lincoln 模式下从内存读取数据（客人信息已在 saveOrderDraft 中保存）
+            console.log('=== TL-Lincoln mode: Express Checkout 从内存读取 ===');
+            const orderData = window.currentOrderData || window.currentTempOrderData || {};
+            const urlParams = new URLSearchParams(window.location.search);
+
+            tempOrder = {
+                order_code: 'TL' + Date.now() + Math.random().toString(36).substr(2, 4).toUpperCase(),
+                user_id: null,
+                guest_email: orderData.guest_email || '',
+                guest_last_name: orderData.guest_last_name || '',
+                guest_first_name: orderData.guest_first_name || '',
+                guest_last_name_katakana: orderData.guest_last_name_katakana || '',
+                guest_first_name_katakana: orderData.guest_first_name_katakana || '',
+                guest_phone: orderData.guest_phone || '',
+                phone_country_code: orderData.phone_country_code || '+81',
+                room_type_name: orderData.room_type_name || '',
+                room_type_code: orderData.room_type_code || urlParams.get('code') || '',
+                checkin_date: orderData.checkin_date || urlParams.get('checkin') || '',
+                checkout_date: orderData.checkout_date || urlParams.get('checkout') || '',
+                num_adults: orderData.num_adults || parseInt(urlParams.get('adults')) || 2,
+                num_children: orderData.num_children || parseInt(urlParams.get('children')) || 0,
+                num_children_preschool: orderData.num_children_preschool || parseInt(urlParams.get('childrenPreschool')) || 0,
+                num_children_elementary: orderData.num_children_elementary || parseInt(urlParams.get('childrenElementary')) || 0,
+                num_rooms: orderData.num_rooms || parseInt(urlParams.get('rooms')) || 1,
+                total_price: orderData.total_price || 0,
+                final_amount: orderData.total_price || 0,
+                points_used: 0,
+                tl_room_type_code: orderData.tl_room_type_code || '',
+                tl_rate_plan_code: orderData.tl_rate_plan_code || orderData.plan_code || ''
+            };
+            console.log('✅ TL-Lincoln Express Checkout 订单数据:', tempOrder);
+        } else {
+            // 自社 API 模式：从数据库读取
+            const tempOrderCode = window.OrderTemp && window.OrderTemp.getTempOrderCode
+                ? window.OrderTemp.getTempOrderCode()
+                : window.currentTempOrderCode;
+
+            if (!tempOrderCode) {
+                console.log('临时订单不存在，等待...');
+                container.innerHTML = '<div style="text-align:center;padding:12px;color:#999;font-size:14px;">読み込み中...</div>';
+                expressCheckoutReady = true;
+                if (expressCheckoutReadyResolver) { expressCheckoutReadyResolver(); expressCheckoutReadyResolver = null; }
+                return Promise.resolve();
+            }
+
+            const response = await fetch(window.getApiUrl(`/order-temp/${tempOrderCode}`), {
+                credentials: 'include'
+            });
+            const result = await response.json();
+
+            if (!result.success || !result.data) {
+                console.log('无法读取订单数据');
+                container.innerHTML = '';
+                expressCheckoutReady = true;
+                if (expressCheckoutReadyResolver) { expressCheckoutReadyResolver(); expressCheckoutReadyResolver = null; }
+                return Promise.resolve();
+            }
+
+            tempOrder = result.data;
         }
-
-        // 从数据库读取临时订单数据
-        const response = await fetch(window.getApiUrl(`/order-temp/${tempOrderCode}`), {
-            credentials: 'include'
-        });
-        const result = await response.json();
-
-        if (!result.success || !result.data) {
-            console.log('无法读取订单数据');
-            container.innerHTML = '';
-            expressCheckoutReady = true;
-            if (expressCheckoutReadyResolver) { expressCheckoutReadyResolver(); expressCheckoutReadyResolver = null; }
-            return Promise.resolve();
-        }
-
-        const tempOrder = result.data;
-        const orderAmount = Math.round(parseFloat(tempOrder.final_amount) || parseFloat(tempOrder.total_price) || 0);
+        const orderAmountRaw = (tempOrder.final_amount ?? tempOrder.total_price ?? 0);
+        const orderAmount = Math.round(parseFloat(orderAmountRaw) || 0);
 
         console.log('💰 Express Checkout 金额:', orderAmount, '日元');
 
@@ -3204,9 +3552,28 @@ async function initializeExpressCheckoutElement() {
         expressCheckoutElement.on('confirm', async (event) => {
             console.log('>>> Express Checkout confirm 事件:', event);
 
+            // 检查是否为 TL-Lincoln 模式
+            const isTLLincolnOrder = apiProvider === 'tl-lincoln' || (tempOrder.order_code && tempOrder.order_code.startsWith('TL'));
+
             try {
                 // 在 Express Checkout 按钮上显示加载动画
                 showExpressCheckoutLoading();
+
+                // TL-Lincoln 模式：在 redirect 前保存数据到 sessionStorage
+                if (isTLLincolnOrder) {
+                    console.log('📡 TL-Lincoln mode: 保存订单数据到 sessionStorage (Express Checkout)');
+                    const tlOrderData = {
+                        ...tempOrder,
+                        source: 'tl-lincoln',
+                        pending_creation: true // 标记需要在成功页面创建订单
+                    };
+                    sessionStorage.setItem('tl_lincoln_order', JSON.stringify(tlOrderData));
+                }
+
+                // 确定重定向 URL
+                const returnUrl = isTLLincolnOrder
+                    ? `${window.location.origin}/reservation-success.html?orderCode=${tempOrder.order_code}&source=tl-lincoln`
+                    : getSuccessReturnUrl(tempOrder.order_code);
 
                 // 确认支付
                 const { error, paymentIntent } = await stripe.confirmPayment({
@@ -3214,13 +3581,17 @@ async function initializeExpressCheckoutElement() {
                     clientSecret: expressClientSecret,
                     redirect: 'always',
                     confirmParams: {
-                        return_url: getSuccessReturnUrl(tempOrder.order_code)
+                        return_url: returnUrl
                     }
                 });
 
                 if (error) {
                     console.error('Express Checkout 支付错误:', error);
                     hideProcessingStatus();
+                    // 清除 sessionStorage
+                    if (isTLLincolnOrder) {
+                        sessionStorage.removeItem('tl_lincoln_order');
+                    }
                     alert('決済エラー: ' + error.message);
                     return;
                 }
@@ -3261,6 +3632,10 @@ async function initializeExpressCheckoutElement() {
             } catch (err) {
                 console.error('Express Checkout 确认错误:', err);
                 hideProcessingStatus();
+                // 清除 sessionStorage
+                if (isTLLincolnOrder) {
+                    sessionStorage.removeItem('tl_lincoln_order');
+                }
                 alert('決済処理中にエラーが発生しました: ' + err.message);
             }
         });
@@ -3316,12 +3691,332 @@ function hideProcessingStatus() {
     }
 }
 
+// 处理支付宝支付
+async function proceedWithAlipayPayment() {
+    // 获取点击的按钮并显示加载状态
+    const clickedBtn = document.querySelector('.payment-btn[data-payment="alipay"]');
+    let originalBtnContent = '';
+    if (clickedBtn) {
+        originalBtnContent = clickedBtn.innerHTML;
+        clickedBtn.disabled = true;
+        clickedBtn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> <span class="payment-btn-text">処理中...</span>`;
+    }
+
+    try {
+        console.log('=== 开始支付宝支付流程 ===');
+        console.log('当前 stripe 对象:', stripe);
+        console.log('stripePublishableKey:', stripePublishableKey);
+
+        // 确保 Stripe 已初始化
+        if (!stripe) {
+            console.log('Stripe 未初始化，正在初始化...');
+
+            // 如果已有 publishableKey，直接创建 stripe 对象
+            if (stripePublishableKey) {
+                console.log('使用已有的 publishableKey 创建 Stripe 对象');
+                stripe = Stripe(stripePublishableKey);
+            } else {
+                // 否则从后端获取
+                try {
+                    console.log('从后端获取 Stripe 配置...');
+                    const response = await fetch(window.getApiUrl('/stripe/config'));
+                    console.log('API 响应状态:', response.status);
+                    const data = await response.json();
+                    console.log('API 响应数据:', data);
+
+                    if (data.success && data.data.publishableKey) {
+                        stripePublishableKey = data.data.publishableKey;
+                        stripe = Stripe(stripePublishableKey);
+                        console.log('Stripe 初始化成功');
+                    } else {
+                        throw new Error('获取 Stripe 配置失败: ' + JSON.stringify(data));
+                    }
+                } catch (initError) {
+                    console.error('Stripe 初始化异常:', initError);
+                    throw new Error('Stripe の初期化に失敗しました: ' + initError.message);
+                }
+            }
+        }
+
+        if (!stripe) {
+            throw new Error('Stripe の初期化に失敗しました。ページを再読み込みしてください。');
+        }
+
+        console.log('Stripe 初始化完成，继续支付流程');
+
+        // 收集订单数据
+        const formData = collectFormData();
+        console.log('收集到的表单数据:', formData);
+
+        // 获取用户信息（如果已登录）
+        let userId = null;
+        try {
+            const currentUser = window.safeStorage.getItem('currentUser');
+            if (currentUser) {
+                const userData = JSON.parse(currentUser);
+                userId = userData.user_id;
+            }
+        } catch (e) {
+            console.log('未找到登录用户');
+        }
+
+        // 使用已创建的临时订单的 orderCode，或者在 TL-Lincoln 模式下生成临时订单号
+        let existingOrderCode = window.currentTempOrderData?.order_code;
+        const apiProvider = window.getApiProvider ? window.getApiProvider() : 'local';
+        if (!existingOrderCode) {
+            if (apiProvider === 'tl-lincoln') {
+                existingOrderCode = 'TL' + Date.now() + Math.random().toString(36).substr(2, 4).toUpperCase();
+                console.log('📡 TL-Lincoln mode: 生成临时订单号:', existingOrderCode);
+            } else {
+                throw new Error('临时订单未创建，请先完成预订信息填写');
+            }
+        }
+        console.log('使用订单号:', existingOrderCode);
+
+        const urlParams = new URLSearchParams(window.location.search);
+
+        const orderData = {
+            userId: userId,
+            orderCode: existingOrderCode,
+            guestLastName: formData.guestLastName || '',
+            guestFirstName: formData.guestFirstName || '',
+            guestLastNameKatakana: formData.guestLastNameKatakana || formData.guestLastNameKana || '',
+            guestFirstNameKatakana: formData.guestFirstNameKatakana || formData.guestFirstNameKana || '',
+            bookerEmail: formData.bookerEmail,
+            guestEmail: formData.bookerEmail,
+            guestPhone: formData.guestPhone || formData.bookerPhone || '',
+            phoneCountryCode: formData.phoneCountryCode || formData.phone_country_code || '+81',
+            country: formData.country || '',
+            postalCode: formData.postalCode || formData.postal_code || '',
+            prefecture: formData.prefecture || '',
+            city: formData.city || '',
+            addressLine: formData.addressLine || formData.address_line || '',
+            roomType: formData.roomType || formData.room_type_name || window.currentTempOrderData?.room_type_name || '',
+            roomTypeCode: formData.roomTypeCode || formData.room_type_code || '',
+            checkinDate: formData.checkinDate,
+            checkoutDate: formData.checkoutDate,
+            numRooms: formData.numRooms || formData.num_rooms || 1,
+            adults: formData.adults,
+            children: formData.children || 0,
+            roomPrice: formData.roomPrice || 0,
+            final_amount: window.currentTempOrderData?.final_amount,
+            totalPrice: window.currentTempOrderData?.total_price,
+            points_used: window.currentTempOrderData?.points_used || 0,
+            breakfastSelected: formData.breakfast || false,
+            dinnerSelected: formData.dinner || false,
+            privateBathSelected: formData.privateBath || false,
+            serviceCost: formData.serviceCost || formData.service_cost || 0,
+            specialRequests: formData.specialRequests || formData.special_requests || '',
+            services: []
+        };
+
+        // 添加选择的服务
+        if (formData.breakfast) {
+            orderData.services.push({ name: '朝食バイキング', price: 2000, quantity: parseInt(formData.adults) });
+        }
+        if (formData.dinner) {
+            orderData.services.push({ name: '夕食コース', price: 4500, quantity: parseInt(formData.adults) });
+        }
+        if (formData.privateBath) {
+            orderData.services.push({ name: '貸切風呂', price: 3000, quantity: 1 });
+        }
+
+        console.log('订单数据:', orderData);
+
+        // 计算总金额
+        const totalAmount = calculateTotalAmount(orderData);
+        console.log('💳 支付宝支付金额:', totalAmount);
+
+        if (!totalAmount || totalAmount <= 0) {
+            throw new Error('金额计算错误 (Invalid amount calculated): ' + totalAmount);
+        }
+
+        // 准备支付数据 - 支付宝
+        const paymentData = {
+            amount: totalAmount,
+            currency: 'jpy',
+            paymentMethodType: 'alipay',
+            orderData: orderData
+        };
+
+        console.log('准备发送的支付数据:', JSON.stringify(paymentData, null, 2));
+
+        // 调用后端API创建PaymentIntent
+        const response = await fetch(window.getApiUrl('/stripe/create-payment-intent'), {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(paymentData)
+        });
+
+        // 先检查 HTTP 状态码
+        if (!response.ok) {
+            const errorText = await response.text();
+            console.error('❌ API エラー:', response.status, errorText);
+            throw new Error(`サーバーエラー: ${response.status} ${response.statusText}`);
+        }
+
+        const result = await response.json();
+
+        if (!result.success) {
+            throw new Error(result.message || 'PaymentIntentの作成に失敗しました');
+        }
+
+        const clientSecret = result.data.clientSecret;
+        const paymentIntentId = result.data.paymentIntentId;
+        console.log('PaymentIntent作成成功, client_secret:', clientSecret, 'paymentIntentId:', paymentIntentId);
+
+        // 支付宝は redirect 型の支付方式 — 確認後ブラウザがリダイレクトされる
+        // TL-Lincoln モードの場合、リダイレクト前にデータを sessionStorage に保存
+        const isTLLincolnOrder = apiProvider === 'tl-lincoln' || (existingOrderCode && existingOrderCode.startsWith('TL'));
+        let returnUrl;
+
+        if (isTLLincolnOrder) {
+            console.log('📡 TL-Lincoln mode: 保存订单数据到 sessionStorage (Alipay)');
+            const tlOrderData = {
+                ...window.currentTempOrderData,
+                source: 'tl-lincoln',
+                pending_creation: true
+            };
+            sessionStorage.setItem('tl_lincoln_order', JSON.stringify(tlOrderData));
+            returnUrl = `${window.location.origin}/reservation-success.html?orderCode=${existingOrderCode}&source=tl-lincoln`;
+        } else {
+            returnUrl = getSuccessReturnUrl(existingOrderCode);
+        }
+        console.log('支付宝回调URL:', returnUrl);
+
+        // 使用 Stripe.js 确认支付宝支付
+        // 支付宝会跳转到支付宝页面完成支付，之后重定向回 returnUrl
+        console.log('使用 confirmAlipayPayment...');
+        const confirmResult = await stripe.confirmAlipayPayment(
+            clientSecret,
+            {
+                return_url: returnUrl
+            }
+        );
+
+        console.log('支付确认结果:', confirmResult);
+
+        if (confirmResult.error) {
+            // 支付失败或用户取消（未发生重定向时）
+            // TL-Lincoln モードの場合、sessionStorage をクリア
+            if (isTLLincolnOrder) {
+                sessionStorage.removeItem('tl_lincoln_order');
+            }
+            throw new Error(confirmResult.error.message);
+        }
+
+        // 通常 Alipay はリダイレクトされるためここには到達しない
+        // 万が一リダイレクトなしで完了した場合のフォールバック
+        const paymentIntent = confirmResult.paymentIntent;
+        if (paymentIntent && paymentIntent.status === 'succeeded') {
+            console.log('✅ 支付宝支付成功（リダイレクトなし），开始创建订单...');
+
+            try {
+                window.lastPaymentIntentId = paymentIntent.id;
+
+                if (isTLLincolnOrder) {
+                    // TL-Lincoln: sessionStorage のデータを使って成功ページへ遷移
+                    window.location.href = returnUrl;
+                    return;
+                }
+
+                await createOrderAfterPayment(paymentIntent);
+
+                if (!window.bookingOrderCode) {
+                    throw new Error('订单创建成功但订单号未设置');
+                }
+
+                showProcessingStatus();
+                await waitForOrderConfirmation(window.bookingOrderCode);
+
+            } catch (orderError) {
+                console.error('订单创建失败:', orderError);
+                alert('決済は成功しましたが、予約の作成に失敗しました。\n\nお手数ですが、カスタマーサポートにお問い合わせください。\n\nエラー: ' + orderError.message);
+
+                if (clickedBtn && originalBtnContent) {
+                    clickedBtn.disabled = false;
+                    clickedBtn.innerHTML = originalBtnContent;
+                }
+            }
+        } else {
+            // 用户取消或支付未完成
+            console.log('支付未完成，状态:', paymentIntent?.status);
+            if (isTLLincolnOrder) {
+                sessionStorage.removeItem('tl_lincoln_order');
+            }
+            if (clickedBtn && originalBtnContent) {
+                clickedBtn.disabled = false;
+                clickedBtn.innerHTML = originalBtnContent;
+                clickedBtn.classList.remove('active');
+            }
+            const expressCheckoutEl = document.getElementById('express-checkout-element');
+            if (expressCheckoutEl) {
+                expressCheckoutEl.style.display = 'block';
+            }
+        }
+
+    } catch (error) {
+        console.error('支付宝支付错误:', error);
+
+        // エラー時は sessionStorage をクリア
+        sessionStorage.removeItem('tl_lincoln_order');
+
+        // 恢复按钮状态，让用户可以选择其他支付方式
+        if (clickedBtn && originalBtnContent) {
+            clickedBtn.disabled = false;
+            clickedBtn.innerHTML = originalBtnContent;
+            clickedBtn.classList.remove('active');
+        }
+
+        // 恢复显示 Express Checkout Element
+        const expressCheckoutEl = document.getElementById('express-checkout-element');
+        if (expressCheckoutEl) {
+            expressCheckoutEl.style.display = 'block';
+        }
+
+        // 隐藏二维码区域
+        const qrcodeSection = document.getElementById('qrcodeSection');
+        if (qrcodeSection) {
+            qrcodeSection.style.display = 'none';
+            qrcodeSection.innerHTML = '';
+        }
+
+        // 显示错误提示（短暂显示后消失，不阻挡用户选择其他支付方式）
+        const paymentMethodPrompt = document.getElementById('paymentMethodPrompt');
+        if (paymentMethodPrompt) {
+            paymentMethodPrompt.innerHTML = `
+                <p style="margin: 0; color: #dc3545; font-size: 14px; font-weight: 500;">
+                    <i class="fas fa-exclamation-circle" style="margin-right: 8px;"></i>
+                    Alipay決済に失敗しました。他の支払い方法をお選びください。
+                </p>
+            `;
+            paymentMethodPrompt.style.background = '#f8d7da';
+            paymentMethodPrompt.style.borderColor = '#f5c6cb';
+
+            // 5秒后恢复原始提示
+            setTimeout(() => {
+                paymentMethodPrompt.innerHTML = `
+                    <p style="margin: 0; color: #856404; font-size: 14px; font-weight: 500;">
+                        <i class="fas fa-hand-pointer" style="margin-right: 8px;"></i>
+                        お支払い方法を選択してください
+                    </p>
+                `;
+                paymentMethodPrompt.style.background = '#fff3cd';
+                paymentMethodPrompt.style.borderColor = '#ffc107';
+            }, 5000);
+        }
+    }
+}
+
 // 导出函数供全局使用
 window.initializeStripe = initializeStripe;
 window.createStripeCheckoutSession = createStripeCheckoutSession;
 window.initializeLinkPaymentForm = initializeLinkPaymentForm;
 window.verifyStripeSession = verifyStripeSession;
 window.proceedWithStripeQRPayment = proceedWithStripeQRPayment;
+window.proceedWithAlipayPayment = proceedWithAlipayPayment;
 window.showProcessingStatus = showProcessingStatus;
 window.waitForOrderConfirmation = waitForOrderConfirmation;
 window.updateCardBrandDisplay = updateCardBrandDisplay;

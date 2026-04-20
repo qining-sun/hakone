@@ -14,6 +14,10 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(html => {
                 navbarPlaceholder.innerHTML = html;
                 initializeNavbar();
+                // 在 navbar 加载完成后初始化语言切换器
+                initLanguageSwitcherAfterNavbar();
+                // 插入Fujir岩信息横幅
+                insertFujirBanner();
             })
             .catch(error => {
                 console.error('Error loading navbar:', error);
@@ -25,7 +29,130 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // 加载 AI Chat 服务脚本
     loadAiChatService();
+
+    // 加载 i18n 多语言脚本
+    loadI18nScript();
 });
+
+// 在 navbar 加载完成后初始化语言切换器
+function initLanguageSwitcherAfterNavbar() {
+    // 等待 i18n.js 加载完成
+    const checkAndInit = () => {
+        if (typeof initLanguageSwitcher === 'function') {
+            initLanguageSwitcher();
+            console.log('✅ 语言切换器已初始化');
+        } else {
+            // 如果 i18n.js 还没加载完，100ms 后重试
+            setTimeout(checkAndInit, 100);
+        }
+    };
+    checkAndInit();
+
+    // 初始化手机版语言下拉菜单
+    initMobileLanguageDropdown();
+
+    // 点击页面其他地方关闭语言下拉菜单
+    document.addEventListener('click', function(e) {
+        const switcher = document.getElementById('languageSwitcher');
+        if (switcher && !switcher.contains(e.target)) {
+            switcher.classList.remove('active');
+        }
+
+        // 关闭手机版语言下拉菜单
+        const mobileDropdown = document.getElementById('mobileLangDropdown');
+        if (mobileDropdown && !mobileDropdown.contains(e.target)) {
+            mobileDropdown.classList.remove('open');
+        }
+    });
+}
+
+// 初始化手机版语言下拉菜单
+function initMobileLanguageDropdown() {
+    const trigger = document.getElementById('mobileLangTrigger');
+    const dropdown = document.getElementById('mobileLangDropdown');
+    const options = document.querySelectorAll('.mobile-lang-option');
+    const currentLangSpan = document.querySelector('.mobile-current-lang');
+
+    if (!trigger || !dropdown) return;
+
+    // 语言名称映射
+    const langNames = {
+        'ja': '日本語',
+        'en': 'English',
+        'zh': '中文'
+    };
+
+    // 同步语言显示的函数
+    const syncMobileLang = () => {
+        // 优先从 i18n 获取，其次从 localStorage 获取
+        const currentLang = window.i18n?.currentLang || localStorage.getItem('language') || 'ja';
+        options.forEach(opt => {
+            opt.classList.toggle('active', opt.dataset.lang === currentLang);
+        });
+        if (currentLangSpan) {
+            currentLangSpan.textContent = langNames[currentLang] || currentLang;
+        }
+    };
+
+    // 立即同步一次（从 localStorage 读取）
+    syncMobileLang();
+
+    // 点击触发器展开/收起
+    trigger.addEventListener('click', function(e) {
+        e.stopPropagation();
+        dropdown.classList.toggle('open');
+    });
+
+    // 点击语言选项
+    options.forEach(option => {
+        option.addEventListener('click', function(e) {
+            e.stopPropagation();
+            const lang = this.dataset.lang;
+
+            // 更新选中状态
+            options.forEach(opt => opt.classList.remove('active'));
+            this.classList.add('active');
+
+            // 更新当前语言显示
+            if (currentLangSpan) {
+                currentLangSpan.textContent = langNames[lang] || lang;
+            }
+
+            // 切换语言
+            if (window.i18n && window.i18n.setLanguage) {
+                window.i18n.setLanguage(lang);
+            }
+
+            // 关闭下拉菜单
+            dropdown.classList.remove('open');
+        });
+    });
+
+    // i18n 初始化完成后再同步一次
+    window.addEventListener('i18nReady', syncMobileLang);
+
+    // 监听语言变化事件
+    window.addEventListener('languageChanged', syncMobileLang);
+}
+
+// 加载 i18n 多语言脚本
+function loadI18nScript() {
+    if (document.getElementById('i18n-script') || typeof i18n !== 'undefined') {
+        return;
+    }
+
+    const script = document.createElement('script');
+    script.id = 'i18n-script';
+    script.src = 'js/i18n.js?v=' + Date.now();
+    script.onload = function() {
+        console.log('✅ i18n 多语言脚本已加载');
+        // 初始化由 initLanguageSwitcherAfterNavbar 处理
+    };
+    script.onerror = function() {
+        console.warn('⚠️ i18n 多语言脚本加载失败');
+    };
+    document.head.appendChild(script);
+}
 
 // 加载 AI Chat 服务脚本
 function loadAiChatService() {
@@ -35,7 +162,7 @@ function loadAiChatService() {
 
     const script = document.createElement('script');
     script.id = 'ai-chat-service-script';
-    script.src = 'js/ai-chat-service.js';
+    script.src = 'js/ai-chat-service.js?v=20260318';
     script.onload = function() {
         console.log('✅ AI Chat 服务脚本已加载');
     };
@@ -63,10 +190,62 @@ function loadGoogleOneTap() {
 
 function initializeNavbar() {
     const navbar = document.getElementById('modernNavbar');
-    const navbarToggle = document.getElementById('navbarToggle');
     const navbarMenu = document.getElementById('navbarMenu');
     const navbarOverlay = document.querySelector('.navbar-overlay');
     const navItems = document.querySelectorAll('.nav-item');
+
+    // 初始化开发模式横条
+    initDevModeBar();
+
+    // 检测导航栏是否溢出，溢出时自动切换到移动端布局
+    function checkNavbarOverflow() {
+        const navbarContainer = document.querySelector('.modern-navbar.single-row .navbar-container');
+        const navbarMenuEl = document.querySelector('.modern-navbar.single-row .navbar-menu');
+        const navbarLogo = document.querySelector('.modern-navbar.single-row .navbar-logo');
+        const navbarActions = document.querySelector('.modern-navbar.single-row .navbar-actions');
+
+        if (!navbarContainer || !navbarMenuEl || !navbarLogo || !navbarActions) return;
+
+        // 临时移除溢出class以正确计算
+        document.body.classList.remove('navbar-overflow');
+
+        // 计算所需宽度
+        const containerWidth = navbarContainer.clientWidth;
+        const logoWidth = navbarLogo.offsetWidth;
+        const actionsWidth = navbarActions.offsetWidth;
+        const menuWidth = navbarMenuEl.scrollWidth;
+        const gap = 80; // 间距（安全余白）
+
+        const totalNeeded = logoWidth + menuWidth + actionsWidth + gap;
+
+        const needsOverflow = totalNeeded > containerWidth;
+
+        // 如果内容宽度超过容器宽度，添加溢出class，否则恢复桌面样式
+        if (needsOverflow) {
+            document.body.classList.add('navbar-overflow');
+        } else {
+            document.body.classList.remove('navbar-overflow');
+            if (navbarMenu && navbarMenu.classList.contains('active')) {
+                navbarMenu.classList.remove('active');
+                document.body.style.overflow = '';
+                document.documentElement.style.overflow = '';
+            }
+            if (navbarOverlay && navbarOverlay.classList.contains('active')) {
+                navbarOverlay.classList.remove('active');
+            }
+        }
+    }
+
+    // 初始检测（立即执行+延迟再检测一次确保准确）
+    checkNavbarOverflow();
+    setTimeout(checkNavbarOverflow, 50);
+
+    // 窗口大小改变时检测
+    let resizeTimeout;
+    window.addEventListener('resize', function() {
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(checkNavbarOverflow, 50);
+    });
 
     // Sticky navbar on scroll (桌面版)
     window.addEventListener('scroll', function() {
@@ -77,21 +256,13 @@ function initializeNavbar() {
         }
     });
     
-    // Mobile menu toggle
-    if (navbarToggle) {
-        navbarToggle.addEventListener('click', function() {
-            navbarMenu.classList.toggle('active');
-            navbarOverlay.classList.toggle('active');
-            navbarToggle.classList.toggle('active');
-        });
-    }
-    
     // Close mobile menu on overlay click
     if (navbarOverlay) {
         navbarOverlay.addEventListener('click', function() {
             navbarMenu.classList.remove('active');
             navbarOverlay.classList.remove('active');
-            navbarToggle.classList.remove('active');
+            document.body.style.overflow = '';
+            document.documentElement.style.overflow = '';
         });
     }
     
@@ -146,10 +317,12 @@ async function updateAuthButtons() {
 
     // 生成用户下拉菜单 HTML
     const getUserDropdownHtml = (user) => {
+        const defaultName = window.i18n ? window.i18n.t('user_default_name') : 'ユーザー';
+        const nameSuffix = window.i18n ? window.i18n.t('user_name_suffix') : 'さん';
         const userName = user.last_name && user.first_name
             ? `${user.last_name} ${user.first_name}`
-            : (user.email ? user.email.split('@')[0] : 'ユーザー');
-        const displayName = `${userName}さん`;
+            : (user.email ? user.email.split('@')[0] : defaultName);
+        const displayName = `${userName}${nameSuffix}`;
         return `
             <div class="user-dropdown">
                 <button class="auth-btn user-dropdown-btn">
@@ -168,28 +341,28 @@ async function updateAuthButtons() {
                     <div class="dropdown-divider"></div>
                     <a href="user-center.html#bookings" class="dropdown-item">
                         <i class="fas fa-calendar-check"></i>
-                        <span>予約管理</span>
+                        <span data-i18n="booking_management">予約管理</span>
                     </a>
                     <a href="user-center.html#wallet" class="dropdown-item">
                         <i class="fas fa-wallet"></i>
-                        <span>ポイントカード</span>
+                        <span data-i18n="point_card">ポイントカード</span>
                     </a>
                     <a href="user-center.html#profile" class="dropdown-item">
                         <i class="fas fa-user-edit"></i>
-                        <span>個人情報</span>
+                        <span data-i18n="personal_info">個人情報</span>
                     </a>
                     <a href="user-center.html#password" class="dropdown-item">
                         <i class="fas fa-key"></i>
-                        <span>パスワード変更</span>
+                        <span data-i18n="change_password">パスワード変更</span>
                     </a>
                     <a href="user-center.html#settings" class="dropdown-item">
                         <i class="fas fa-cog"></i>
-                        <span>設定</span>
+                        <span data-i18n="settings">設定</span>
                     </a>
                     <div class="dropdown-divider"></div>
                     <a href="#" class="dropdown-item dropdown-logout">
                         <i class="fas fa-sign-out-alt"></i>
-                        <span>ログアウト</span>
+                        <span data-i18n="logout">ログアウト</span>
                     </a>
                 </div>
             </div>
@@ -205,7 +378,7 @@ async function updateAuthButtons() {
             authButtonsContainer.innerHTML = `
                 <button class="auth-btn login-nav-btn">
                     <i class="fas fa-sign-in-alt"></i>
-                    <span>ログイン</span>
+                    <span data-i18n="login">ログイン/新規登録</span>
                 </button>
             `;
         }
@@ -218,17 +391,22 @@ async function updateAuthButtons() {
             mobileAuthButtonsContainer.innerHTML = `
                 <button class="mobile-auth-btn user-info-btn">
                     ${getAvatarHtml(currentUser, '24px')}
-                    <span>マイページ</span>
+                    <span data-i18n="my_page">マイページ</span>
                 </button>
             `;
         } else {
             mobileAuthButtonsContainer.innerHTML = `
                 <button class="mobile-auth-btn login-nav-btn">
                     <i class="fas fa-sign-in-alt"></i>
-                    <span>ログイン</span>
+                    <span data-i18n="login">ログイン/新規登録</span>
                 </button>
             `;
         }
+    }
+
+    // 重新应用翻译到动态生成的元素
+    if (window.i18n && typeof window.i18n.updatePageTranslations === 'function') {
+        window.i18n.updatePageTranslations();
     }
 
     // 更新移动端顶部头像
@@ -485,12 +663,12 @@ function initMobileBookingPanel() {
 
         // 关闭移动菜单（如果打开的话）
         const navbarMenu = document.getElementById('navbarMenu');
-        const navbarToggle = document.getElementById('navbarToggle');
         const navbarOverlay = document.getElementById('navbarOverlay');
         if (navbarMenu) navbarMenu.classList.remove('active');
-        if (navbarToggle) navbarToggle.classList.remove('active');
         if (navbarOverlay) navbarOverlay.classList.remove('active');
         document.body.classList.remove('navbar-open');
+        document.body.style.overflow = '';
+        document.documentElement.style.overflow = '';
     }
 
     // 关闭面板
@@ -575,8 +753,7 @@ function initMobileBookingPanel() {
         try {
             const fetchPromises = [];
             for (let i = 0; i < monthsToLoad; i++) {
-                const monthDate = new Date(currentDate);
-                monthDate.setMonth(monthDate.getMonth() + i);
+                const monthDate = new Date(currentDate.getFullYear(), currentDate.getMonth() + i, 1);
                 const year = monthDate.getFullYear();
                 const month = monthDate.getMonth() + 1;
 
@@ -622,8 +799,8 @@ function initMobileBookingPanel() {
         // 渲染12个月
         const monthsToRender = 12;
         for (let i = 0; i < monthsToRender; i++) {
-            const monthDate = new Date(currentDate);
-            monthDate.setMonth(monthDate.getMonth() + i);
+            // 使用年月构造日期，避免日期溢出（如1月31日+1月=3月3日导致重复月份）
+            const monthDate = new Date(currentDate.getFullYear(), currentDate.getMonth() + i, 1);
 
             const monthPanel = createMonthPanel(monthDate);
             calendarContainer.appendChild(monthPanel);
@@ -657,7 +834,8 @@ function initMobileBookingPanel() {
         // 星期标题
         const weekdays = document.createElement('div');
         weekdays.className = 'navbar-calendar-weekdays';
-        const weekdayNames = ['日', '月', '火', '水', '木', '金', '土'];
+        const weekdayKeys = ['weekday_sun', 'weekday_mon', 'weekday_tue', 'weekday_wed', 'weekday_thu', 'weekday_fri', 'weekday_sat'];
+        const weekdayNames = weekdayKeys.map(key => window.i18n ? window.i18n.t(key) : ['日', '月', '火', '水', '木', '金', '土'][weekdayKeys.indexOf(key)]);
         weekdayNames.forEach((name, index) => {
             const wd = document.createElement('div');
             wd.className = 'navbar-calendar-weekday';
@@ -694,7 +872,16 @@ function initMobileBookingPanel() {
 
             const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
             const dayPriceData = priceData[dateStr];
-            const hasInventory = dayPriceData?.hasInventory || false;
+            const hasPriceData = !!dayPriceData;
+            // 库存检查: 支持多种格式
+            let hasInventory = false;
+            if (dayPriceData) {
+                if (dayPriceData.hasInventory === true || dayPriceData.hasInventory === 1 || dayPriceData.hasInventory === '1') {
+                    hasInventory = true;
+                } else if (typeof dayPriceData.inventory === 'number' && dayPriceData.inventory > 0) {
+                    hasInventory = true;
+                }
+            }
             const price = dayPriceData?.price;
             const isHoliday = dayPriceData?.isHoliday || false;
 
@@ -713,10 +900,11 @@ function initMobileBookingPanel() {
 
             const isPast = date < todayDate;
 
-            // 禁用条件：过去日期或无库存
-            if (isPast || !hasInventory) {
+            // 禁用条件：过去日期 或 明确无库存（API有数据但无库存）
+            const explicitlyNoInventory = hasPriceData && !hasInventory;
+            if (isPast || explicitlyNoInventory) {
                 dayEl.classList.add('disabled');
-                if (!hasInventory && !isPast) {
+                if (explicitlyNoInventory) {
                     dayEl.classList.add('no-inventory');
                 }
             } else {
@@ -786,7 +974,7 @@ function initMobileBookingPanel() {
                 navCheckin.textContent = formatDateDisplay(selectedStart);
                 navCheckin.classList.add('has-date');
             } else {
-                navCheckin.textContent = '日付を選択';
+                navCheckin.textContent = window.i18n ? window.i18n.t('select_date') : '日付を選択';
                 navCheckin.classList.remove('has-date');
             }
         }
@@ -796,7 +984,7 @@ function initMobileBookingPanel() {
                 navCheckout.textContent = formatDateDisplay(selectedEnd);
                 navCheckout.classList.add('has-date');
             } else {
-                navCheckout.textContent = '日付を選択';
+                navCheckout.textContent = window.i18n ? window.i18n.t('select_date') : '日付を選択';
                 navCheckout.classList.remove('has-date');
             }
         }
@@ -829,7 +1017,7 @@ function initMobileBookingPanel() {
             }
         } else {
             if (checkoutDisplay) {
-                checkoutDisplay.textContent = '日付を選択';
+                checkoutDisplay.textContent = window.i18n ? window.i18n.t('select_date') : '日付を選択';
                 checkoutDisplay.classList.add('placeholder');
             }
             if (nightsBadge) nightsBadge.style.display = 'none';
@@ -839,8 +1027,8 @@ function initMobileBookingPanel() {
     function formatDateDisplay(date) {
         const month = date.getMonth() + 1;
         const day = date.getDate();
-        const weekdays = ['日', '月', '火', '水', '木', '金', '土'];
-        const weekday = weekdays[date.getDay()];
+        const weekdayKeys = ['weekday_sun', 'weekday_mon', 'weekday_tue', 'weekday_wed', 'weekday_thu', 'weekday_fri', 'weekday_sat'];
+        const weekday = window.i18n ? window.i18n.t(weekdayKeys[date.getDay()]) : ['日', '月', '火', '水', '木', '金', '土'][date.getDay()];
         return `${month}/${day}(${weekday})`;
     }
 
@@ -909,36 +1097,10 @@ function initMobileBottomNav() {
         });
     }
 
-    // 宿泊予約按钮 - 切换预约面板
+    // 宿泊予約按钮 - 直接跳转到预约页面
     if (reserveBtn) {
         reserveBtn.addEventListener('click', function() {
-            const panel = document.getElementById('mobileBookingPanel');
-            const overlay = document.getElementById('bookingPanelOverlay');
-
-            if (panel) {
-                // 切换面板状态
-                if (panel.classList.contains('active')) {
-                    // 关闭面板
-                    panel.classList.remove('active');
-                    if (overlay) overlay.classList.remove('active');
-                    reserveBtn.classList.remove('active');
-
-                    setTimeout(() => {
-                        panel.style.display = 'none';
-                        if (overlay) overlay.style.display = 'none';
-                    }, 300);
-                } else {
-                    // 打开面板
-                    panel.style.display = 'block';
-                    if (overlay) overlay.style.display = 'block';
-
-                    requestAnimationFrame(() => {
-                        panel.classList.add('active');
-                        if (overlay) overlay.classList.add('active');
-                        reserveBtn.classList.add('active');
-                    });
-                }
-            }
+            window.location.href = 'reservation.html';
         });
     }
 
@@ -963,10 +1125,19 @@ function initMobileBottomNav() {
             const navbarOverlay = document.querySelector('.navbar-overlay');
 
             if (navbarMenu) {
+                const isOpening = !navbarMenu.classList.contains('active');
                 navbarMenu.classList.toggle('active');
                 if (navbarOverlay) navbarOverlay.classList.toggle('active');
-                // 切换按钮状态
                 menuBtn.classList.toggle('active');
+
+                // 锁定/恢复页面滚动
+                if (isOpening) {
+                    document.body.style.overflow = 'hidden';
+                    document.documentElement.style.overflow = 'hidden';
+                } else {
+                    document.body.style.overflow = '';
+                    document.documentElement.style.overflow = '';
+                }
             }
         });
 
@@ -975,6 +1146,8 @@ function initMobileBottomNav() {
         if (navbarOverlay) {
             navbarOverlay.addEventListener('click', function() {
                 menuBtn.classList.remove('active');
+                document.body.style.overflow = '';
+                document.documentElement.style.overflow = '';
             });
         }
     }
@@ -1409,7 +1582,7 @@ function initAiChatPanel() {
             return `ご予約についてのお問い合わせありがとうございます。<br><br>
                     <b>🏨 ご予約方法</b><br>
                     • 公式サイトからのオンライン予約<br>
-                    • お電話でのご予約: 03-6404-8788<br><br>
+                    • お電話でのご予約: 025-788-1125<br><br>
                     <b>📅 チェックイン/アウト</b><br>
                     • チェックイン: 15:00〜<br>
                     • チェックアウト: 〜11:00<br><br>
@@ -1460,7 +1633,7 @@ function initAiChatPanel() {
         // デフォルトの応答
         return `お問い合わせありがとうございます。<br><br>
                 ご質問の内容について、詳しくお答えするために以下の方法でお問い合わせください。<br><br>
-                <b>📞 電話</b>: 03-6404-8788<br>
+                <b>📞 電話</b>: 025-788-1125<br>
                 <b>📧 メール</b>: info@trip7-yuzawa.com<br><br>
                 または、以下のボタンから該当するカテゴリをお選びください。`;
     }
@@ -1591,3 +1764,186 @@ initializeNavbar = function() {
     initMobileBottomNav();
     initAiChatPanel();
 };
+
+// ==================== 开发模式横条初始化 ====================
+function initDevModeBar() {
+    // 检查是否为开发环境
+    if (!window.isDevelopmentMode) {
+        return;
+    }
+
+    const devModeBar = document.getElementById('devModeBar');
+    if (!devModeBar) {
+        return;
+    }
+
+    // 检查是否已隐藏（从 localStorage 读取）
+    const isHidden = localStorage.getItem('devModeBarHidden') === 'true';
+    if (isHidden) {
+        console.log('🔧 開発モードバーは非表示に設定されています（Shift+Dで再表示）');
+        return;
+    }
+
+    // 显示开发模式横条
+    devModeBar.style.display = 'block';
+    document.body.classList.add('dev-mode-active');
+
+    // 设置数据库环境按钮状态
+    const dbEnv = window.getDbEnvironment ? window.getDbEnvironment() : 'test';
+    const dbTestBtn = document.getElementById('dbTestBtn');
+    const dbProdBtn = document.getElementById('dbProdBtn');
+
+    if (dbTestBtn && dbProdBtn) {
+        dbTestBtn.classList.toggle('active', dbEnv === 'test');
+        dbProdBtn.classList.toggle('active', dbEnv === 'production');
+    }
+
+    // 设置 Stripe 环境按钮状态
+    const stripeEnv = window.getStripeEnvironment ? window.getStripeEnvironment() : 'test';
+    const stripeTestBtn = document.getElementById('stripeTestBtn');
+    const stripeProdBtn = document.getElementById('stripeProdBtn');
+
+    if (stripeTestBtn && stripeProdBtn) {
+        stripeTestBtn.classList.toggle('active', stripeEnv === 'test');
+        stripeProdBtn.classList.toggle('active', stripeEnv === 'production');
+    }
+
+    // 设置 API Provider 按钮状态
+    const apiProvider = window.getApiProvider ? window.getApiProvider() : 'local';
+    const apiLocalBtn = document.getElementById('apiLocalBtn');
+    const apiTLLincolnBtn = document.getElementById('apiTLLincolnBtn');
+
+    if (apiLocalBtn && apiTLLincolnBtn) {
+        apiLocalBtn.classList.toggle('active', apiProvider === 'local');
+        apiTLLincolnBtn.classList.toggle('active', apiProvider === 'tl-lincoln');
+    }
+
+    console.log('🔧 开发模式横条已初始化');
+    console.log('   DB 环境:', dbEnv);
+    console.log('   Stripe 环境:', stripeEnv);
+    console.log('   API Provider:', apiProvider);
+}
+
+// 隐藏开发模式横条
+window.hideDevModeBar = function() {
+    const devModeBar = document.getElementById('devModeBar');
+    if (devModeBar) {
+        devModeBar.style.display = 'none';
+        document.body.classList.remove('dev-mode-active');
+        localStorage.setItem('devModeBarHidden', 'true');
+        console.log('🔧 開発モードバーを非表示にしました（Shift+Dで再表示）');
+    }
+};
+
+// 显示开发模式横条
+window.showDevModeBar = function() {
+    if (!window.isDevelopmentMode) {
+        console.warn('⚠️ 開発環境でのみ使用可能です');
+        return;
+    }
+    const devModeBar = document.getElementById('devModeBar');
+    if (devModeBar) {
+        devModeBar.style.display = 'block';
+        document.body.classList.add('dev-mode-active');
+        localStorage.removeItem('devModeBarHidden');
+        console.log('🔧 開発モードバーを表示しました');
+    }
+};
+
+// 键盘快捷键：Shift+D 切换开发模式横条
+document.addEventListener('keydown', function(e) {
+    if (e.shiftKey && e.key === 'D') {
+        if (!window.isDevelopmentMode) return;
+
+        const devModeBar = document.getElementById('devModeBar');
+        if (devModeBar) {
+            const isVisible = devModeBar.style.display !== 'none';
+            if (isVisible) {
+                window.hideDevModeBar();
+            } else {
+                window.showDevModeBar();
+            }
+        }
+    }
+});
+
+// ==================== Fujir岩信息横幅 ====================
+// yuzawa（hotel_id=1）限定：休館通知 + FUJI ROCK 案内
+// 他酒店（hakone 等）ではこれらは表示しない
+function insertFujirBanner() {
+    // 酒店 ID チェック: yuzawa (1) 以外はスキップ
+    const hotelId = window.HOTEL_ID || 1;
+    if (hotelId !== 1) {
+        return;
+    }
+
+    const navbarPlaceholder = document.getElementById('navbar-placeholder');
+    if (!navbarPlaceholder) return;
+
+    // 创建横幅 HTML（不包含内联脚本）
+    const bannerHTML = `
+        <div id="fujir-banner" class="fujir-banner">
+            <div class="fujir-banner-maintenance">
+                <i class="fas fa-tools"></i>
+                <span>4月13日〜24日の間、館内一部施設の休館・メンテナンスがございます。ご不明点は025-788-1125または080-4777-8876 までご連絡ください。</span>
+            </div>
+            <div class="fujir-banner-inner">
+                <div class="fujir-banner-text">
+                    <i class="fas fa-mountain"></i>
+                    <span>FUJI ROCK FESTIVAL 26（7/24-26）をご宿泊予定の方へ</span>
+                </div>
+                <div class="fujir-banner-items">
+                    <div class="fujir-banner-item"><i class="fas fa-check"></i> 24hチェックイン</div>
+                    <div class="fujir-banner-item"><i class="fas fa-check"></i> 24h大浴場利用</div>
+                </div>
+                <button class="fujir-banner-toggle" id="fujir-toggle-btn">
+                    <span id="fujir-toggle-text">詳細</span> <i id="fujir-toggle-icon" class="fas fa-chevron-down"></i>
+                </button>
+            </div>
+            <div class="fujir-banner-details">
+                <div class="fujir-banner-details-inner">
+                    <div class="fujir-banner-detail-item">
+                        <i class="fas fa-car"></i>
+                        <div><strong>駐車場</strong> お部屋1台まで。チェックイン時にフロントでParkingカードをお受け取りください。</div>
+                    </div>
+                    <div class="fujir-banner-detail-item">
+                        <i class="fas fa-clock"></i>
+                        <div><strong>24時間チェックイン</strong> 深夜・早朝のご到着もOK。</div>
+                    </div>
+                    <div class="fujir-banner-detail-item">
+                        <i class="fas fa-bath"></i>
+                        <div><strong>24時間大浴場</strong> 疲れを残さず湯沢の温泉をお楽しみください。</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+
+    // 插入到导航栏后面
+    navbarPlaceholder.insertAdjacentHTML('afterend', bannerHTML);
+
+    // 显示横幅
+    document.getElementById('fujir-banner').classList.add('active');
+
+    // 绑定点击事件（使用事件委托）
+    document.getElementById('fujir-toggle-btn').addEventListener('click', toggleFujirBanner);
+}
+
+// 切换Fujir横幅详情显示
+function toggleFujirBanner() {
+    var banner = document.getElementById('fujir-banner');
+    var toggleText = document.getElementById('fujir-toggle-text');
+    var toggleIcon = document.getElementById('fujir-toggle-icon');
+
+    if (!banner) return;
+
+    banner.classList.toggle('expanded');
+
+    if (banner.classList.contains('expanded')) {
+        toggleText.textContent = '閉じる';
+        toggleIcon.className = 'fas fa-chevron-up';
+    } else {
+        toggleText.textContent = '詳細';
+        toggleIcon.className = 'fas fa-chevron-down';
+    }
+}
