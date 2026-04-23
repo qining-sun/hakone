@@ -28,7 +28,13 @@
 
             let authUrl = window.getApiUrl ? window.getApiUrl(`/auth/${provider}`) : `http://localhost:5000/api/auth/${provider}`;
 
-            // 如果有预约跳转参数，将预约信息传递给后端
+            // OAuth はトップレベル遷移なので X-Hotel-ID ヘッダが失われる。
+            // hotel_id はクエリパラメータで渡す必要がある。
+            const hotelId = window.HOTEL_ID || 1;
+            const query = new URLSearchParams();
+            query.set('hotel_id', String(hotelId));
+
+            // 预约跳转参数があれば pending として後端に渡す
             if (redirect === 'booking') {
                 const pendingData = {
                     redirect: 'booking',
@@ -40,9 +46,10 @@
                     adults: urlParams.get('adults') || '',
                     children: urlParams.get('children') || ''
                 };
-                authUrl += `?pending=${encodeURIComponent(JSON.stringify(pendingData))}`;
+                query.set('pending', JSON.stringify(pendingData));
                 console.log('SNS登录：携带预约信息', pendingData);
             }
+            authUrl += (authUrl.includes('?') ? '&' : '?') + query.toString();
 
             console.log('最终OAuth URL:', authUrl);
             window.location.href = authUrl;
@@ -1445,7 +1452,12 @@
             console.log('当前URL:', window.location.href);
             console.log('redirect参数:', redirect);
 
-            // 如果有预约跳转参数，将预约信息传递给后端
+            // OAuth はトップレベル遷移で X-Hotel-ID ヘッダが失われるため、
+            // hotel_id はクエリで必ず渡す。
+            const hotelId = window.HOTEL_ID || 1;
+            const query = new URLSearchParams();
+            query.set('hotel_id', String(hotelId));
+
             if (redirect === 'booking') {
                 const pendingData = {
                     redirect: 'booking',
@@ -1457,14 +1469,13 @@
                     adults: urlParams.get('adults') || '',
                     children: urlParams.get('children') || ''
                 };
-                const finalUrl = baseAuthUrl + `?pending=${encodeURIComponent(JSON.stringify(pendingData))}`;
+                query.set('pending', JSON.stringify(pendingData));
                 console.log('SNS登录：携带预约信息', pendingData);
-                console.log('最终OAuth URL:', finalUrl);
-                return finalUrl;
             }
 
-            console.log('没有预约参数，使用基础URL:', baseAuthUrl);
-            return baseAuthUrl;
+            const finalUrl = baseAuthUrl + (baseAuthUrl.includes('?') ? '&' : '?') + query.toString();
+            console.log('最终OAuth URL:', finalUrl);
+            return finalUrl;
         }
 
         // 检查是否已登录 - 使用 sessionService
