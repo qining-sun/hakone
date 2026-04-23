@@ -10,7 +10,7 @@ if "%1"=="" (
 )
 
 set DOCKERHUB_USERNAME=%1
-set IMAGE_NAME=hotel-web
+set IMAGE_NAME=hakone-web
 set VERSION=%2
 if "%VERSION%"=="" set VERSION=latest
 
@@ -34,7 +34,7 @@ echo.
 
 REM 打标签
 echo 步骤 2/3: 打标签...
-docker tag hotel-web:latest %DOCKERHUB_USERNAME%/%IMAGE_NAME%:%VERSION%
+docker tag hakone-web:latest %DOCKERHUB_USERNAME%/%IMAGE_NAME%:%VERSION%
 if errorlevel 1 (
     echo 错误: 打标签失败
     exit /b 1

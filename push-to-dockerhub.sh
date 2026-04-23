@@ -10,7 +10,7 @@ if [ -z "$1" ]; then
 fi
 
 DOCKERHUB_USERNAME=$1
-IMAGE_NAME="hotel-web"
+IMAGE_NAME="hakone-web"
 VERSION=${2:-"latest"}
 
 echo "========================================="
@@ -32,7 +32,7 @@ fi
 
 # 打标签
 echo "步骤 2/3: 打标签..."
-docker tag hotel-web:latest $DOCKERHUB_USERNAME/$IMAGE_NAME:$VERSION
+docker tag hakone-web:latest $DOCKERHUB_USERNAME/$IMAGE_NAME:$VERSION
 
 if [ $? -ne 0 ]; then
     echo "错误: 打标签失败"

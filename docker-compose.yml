@@ -1,25 +1,25 @@
 version: '3.8'
 
 services:
-  hotel-web:
+  hakone-web:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: hotel-web
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - letsencrypt:/etc/letsencrypt
+    container_name: hakone-web
+    expose:
+      - "80"
     restart: unless-stopped
     networks:
-      - hotel-network
+      - webnet
     environment:
       - TZ=Asia/Tokyo
-
-volumes:
-  letsencrypt:
+      # nginx-proxy 路由
+      - VIRTUAL_HOST=trip7.me,www.trip7.me
+      - VIRTUAL_PORT=80
+      # acme-companion SSL 自动申请
+      - LETSENCRYPT_HOST=trip7.me,www.trip7.me
+      - LETSENCRYPT_EMAIL=info@lgdhome.com
 
 networks:
-  hotel-network:
-    driver: bridge
+  webnet:
+    external: true
