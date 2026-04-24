@@ -450,6 +450,29 @@
     font-size: 12px;
 }
 
+.policy-link-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 20px;
+    background: #8a7a5e;
+    color: white;
+    text-decoration: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    transition: background 0.3s ease;
+}
+
+.policy-link-btn:hover {
+    background: #6d5e48;
+    color: white;
+}
+
+.policy-link-btn i {
+    font-size: 12px;
+}
+
 /* 侧边栏 */
 .order-detail-sidebar {
     position: sticky;
