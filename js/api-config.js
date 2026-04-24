@@ -110,12 +110,26 @@ if (useProxy) {
 // 兼容旧的 API_BASE_URL
 window.API_BASE_URL = window.API_CONFIG.BOOKING_API;
 
+// OAuth (Google/LINE/Facebook) は OAuth provider に登録済みの callback URL
+// (https://yuzawamd.com/api/auth/xxx/callback) を使うので、発起リクエストも
+// 同じホスト (yuzawamd.com) 経由にしないと session cookie がつながらない。
+// 開発環境ではローカル API と同じ。
+window.OAUTH_API_BASE = useProxy
+    ? 'https://yuzawamd.com/api'
+    : window.API_CONFIG.BOOKING_API;
+
 // ==================== API URL 辅助函数 ====================
 window.getApiUrl = function(path) {
     // 移除开头的斜杠（如果有）
     const cleanPath = path.startsWith('/') ? path.substring(1) : path;
     // API_CONFIG.BOOKING_API 已经包含 /api，不需要再添加
     return `${window.API_CONFIG.BOOKING_API}/${cleanPath}`;
+};
+
+// OAuth 発起専用の URL ビルダー
+window.getOAuthUrl = function(path) {
+    const cleanPath = path.startsWith('/') ? path.substring(1) : path;
+    return `${window.OAUTH_API_BASE}/${cleanPath}`;
 };
 
 // ==================== 输出配置信息 ====================

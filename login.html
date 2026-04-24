@@ -26,7 +26,11 @@
             console.log('当前URL:', window.location.href);
             console.log('redirect参数:', redirect);
 
-            let authUrl = window.getApiUrl ? window.getApiUrl(`/auth/${provider}`) : `http://localhost:5000/api/auth/${provider}`;
+            // OAuth は常に canonical ドメイン (yuzawamd.com) 経由で発起する。
+            // callback もそのドメインに返ってくるので session cookie が正しく機能する。
+            let authUrl = window.getOAuthUrl
+                ? window.getOAuthUrl(`/auth/${provider}`)
+                : (window.getApiUrl ? window.getApiUrl(`/auth/${provider}`) : `http://localhost:5000/api/auth/${provider}`);
 
             // OAuth はトップレベル遷移なので X-Hotel-ID ヘッダが失われる。
             // hotel_id はクエリパラメータで渡す必要がある。
@@ -1483,21 +1487,20 @@
             // 社交登录按钮事件绑定（必须在 DOMContentLoaded 内部）
             const socialBtns = document.querySelectorAll('.social-auth-btn');
             console.log('[登录页] 找到社交登录按钮数量:', socialBtns.length);
+            // OAuth は常に canonical ドメイン (yuzawamd.com) 経由
+            const oauthBase = (p) => window.getOAuthUrl ? window.getOAuthUrl(p) : window.getApiUrl(p);
             socialBtns.forEach(btn => {
                 btn.addEventListener('click', () => {
                     if (btn.classList.contains('google-auth')) {
-                        // Google OAuth 登录 - 携带预约信息
-                        const googleUrl = getOAuthUrlWithPending(window.getApiUrl('/auth/google'));
+                        const googleUrl = getOAuthUrlWithPending(oauthBase('/auth/google'));
                         console.log('Google登录URL:', googleUrl);
                         window.location.href = googleUrl;
                     } else if (btn.classList.contains('facebook-auth')) {
-                        // Facebook Login - 携带预约信息
-                        const facebookUrl = getOAuthUrlWithPending(window.getApiUrl('/auth/facebook'));
+                        const facebookUrl = getOAuthUrlWithPending(oauthBase('/auth/facebook'));
                         console.log('Facebook登录URL:', facebookUrl);
                         window.location.href = facebookUrl;
                     } else if (btn.classList.contains('line-auth')) {
-                        // LINE Login - 携带预约信息
-                        const lineUrl = getOAuthUrlWithPending(window.getApiUrl('/auth/line'));
+                        const lineUrl = getOAuthUrlWithPending(oauthBase('/auth/line'));
                         console.log('LINE登录URL:', lineUrl);
                         window.location.href = lineUrl;
                     }
