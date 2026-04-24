@@ -7,5 +7,15 @@
     } else {
         base = (window.API_BASE_URL || '/api') + '/shared';
     }
-    document.write('<script src="' + base + '/liquid-glass.js?v=20260424"></scr' + 'ipt>');
+    var url = base + '/liquid-glass.js?v=20260424';
+    if (document.readyState === 'loading') {
+        // 文档还在解析：document.write 保持同步执行顺序
+        document.write('<script src="' + url + '"></scr' + 'ipt>');
+    } else {
+        // 已解析完毕（动态注入场景）：用异步追加避免 document.write 报错
+        var s = document.createElement('script');
+        s.src = url;
+        s.async = false;
+        document.head.appendChild(s);
+    }
 })();
