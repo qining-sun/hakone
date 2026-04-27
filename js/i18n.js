@@ -640,8 +640,8 @@ const i18n = {
             reservation_search_hint: 'チェックイン・チェックアウト日、人数を入力して検索ボタンを押してください',
 
             // Login Page
-            login_info_title: '会員登録で便利にご予約',
-            login_info_desc: 'Trip7箱根仙石原温泉ホテルの会員になると、様々な特典をお楽しみいただけます。',
+            login_info_title: 'Trip7会員登録で便利にご予約',
+            login_info_desc: '会員になると、様々な特典をお楽しみいただけます。',
             login_benefits_title: '会員特典',
             login_benefit1_title: 'ポイント還元',
             login_benefit1_desc: 'ご宿泊ごとにポイント還元（宿泊料金の1%）。貯まったポイントは次回のご予約でご利用いただけます。',
@@ -2360,8 +2360,8 @@ const i18n = {
             reservation_search_hint: 'Enter check-in/check-out dates and number of guests, then click the search button',
 
             // Login Page
-            login_info_title: 'Register for Easy Booking',
-            login_info_desc: 'Become a member of Trip7 Yuzawa Sky Onsen Hotel and enjoy various benefits.',
+            login_info_title: 'Trip7 Member Registration for Easy Booking',
+            login_info_desc: 'Enjoy various benefits as a member.',
             login_benefits_title: 'Member Benefits',
             login_benefit1_title: 'Point Rewards',
             login_benefit1_desc: 'Earn points with every stay (1% of room rate). Use accumulated points for your next reservation.',
@@ -4080,8 +4080,8 @@ const i18n = {
             reservation_search_hint: '请输入入住/退房日期和人数，然后点击搜索按钮',
 
             // Login Page
-            login_info_title: '注册会员，轻松预订',
-            login_info_desc: '成为Trip7汤泽天空温泉酒店会员，享受多种专属优惠。',
+            login_info_title: '注册 Trip7 会员，轻松预订',
+            login_info_desc: '成为会员后即可享受各种特典。',
             login_benefits_title: '会员权益',
             login_benefit1_title: '积分回馈',
             login_benefit1_desc: '每次入住可获得积分回馈（房费的1%）。积累的积分可用于下次预订。',
