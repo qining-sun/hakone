@@ -102,6 +102,14 @@
             // 获取URL参数
             const urlParams = new URLSearchParams(window.location.search);
 
+            // 予約リンク（token）の場合、日付チェックをスキップ
+            // 日付・部屋タイプ等は booking-user.js が verify-token で取得して埋める
+            const bookingToken = urlParams.get('token');
+            if (bookingToken) {
+                console.log('予約リンク(token)アクセス、日付チェックをスキップ');
+                return;
+            }
+
             // 如果有临时订单编号，允许访问（游客预订流程）
             const tempOrderCode = urlParams.get('temp_order') || urlParams.get('order_code');
             if (tempOrderCode) {
