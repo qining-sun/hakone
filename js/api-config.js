@@ -198,7 +198,7 @@ window.getDbEnvironment = function() {
     if (window.isProductionMode) {
         return 'production';
     }
-    return localStorage.getItem('dbEnvironment') || 'production';
+    return localStorage.getItem('dbEnvironment') || 'test';
 };
 
 window.setDbEnvironment = function(env) {
@@ -258,6 +258,19 @@ window.switchStripeEnvironment = function(env) {
         return true;
     }
     return false;
+};
+
+// 一键切换整个环境（DB + Stripe 同时切）。点「テスト」= 数据库和支付都连测试环境。
+window.switchAllEnvironment = function(env) {
+    if (window.isProductionMode) {
+        console.warn('⚠️ 生産環境では環境切り替えは無効です');
+        return false;
+    }
+    // 两个都用 set*(不各自 reload)，最后统一 reload 一次
+    window.setDbEnvironment(env);
+    window.setStripeEnvironment(env);
+    window.location.reload();
+    return true;
 };
 
 // 获取 API Provider
@@ -351,3 +364,18 @@ window.fetch = function(url, options = {}) {
 console.log('🏨 Hotel ID:', window.HOTEL_ID, '(箱根)');
 console.log('📤 API Environment Headers:', window.getApiHeaders());
 console.log('✅ Fetch interceptor installed - API requests will include environment headers');
+
+// 「🌍 全体」按钮高亮:navbar 由 shared JS 异步注入，等按钮出现后按当前环境高亮。
+// (shared 的 initDevModeBar 只高亮 DB/Stripe 按钮，不认识全体按钮，这里补上)
+if (window.isDevelopmentMode) {
+    let __tries = 0;
+    (function highlightAllEnvBtns() {
+        const t = document.getElementById('allTestBtn');
+        const p = document.getElementById('allProdBtn');
+        if ((!t || !p) && __tries++ < 40) { setTimeout(highlightAllEnvBtns, 300); return; }
+        if (!t || !p) return;
+        const allTest = window.getDbEnvironment() === 'test' && window.getStripeEnvironment() === 'test';
+        t.classList.toggle('active', allTest);
+        p.classList.toggle('active', !allTest);
+    })();
+}

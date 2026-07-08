@@ -4,6 +4,13 @@
         <span class="dev-mode-label">🔧 テストモード</span>
         <div class="dev-mode-switches">
             <div class="dev-switch-group">
+                <span class="dev-switch-label">🌍 全体:</span>
+                <div class="dev-switch-buttons">
+                    <button id="allTestBtn" class="dev-switch-btn" onclick="window.switchAllEnvironment('test')">テスト</button>
+                    <button id="allProdBtn" class="dev-switch-btn prod" onclick="window.switchAllEnvironment('production')">本番</button>
+                </div>
+            </div>
+            <div class="dev-switch-group">
                 <span class="dev-switch-label">🗄️ DB:</span>
                 <div class="dev-switch-buttons">
                     <button id="dbTestBtn" class="dev-switch-btn" onclick="window.switchDbEnvironment('test')">テスト</button>
