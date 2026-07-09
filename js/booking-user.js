@@ -7,7 +7,7 @@
     } else {
         base = (window.API_BASE_URL || '/api') + '/shared';
     }
-    var url = base + '/booking-user.js?v=20260424';
+    var url = base + '/booking-user.js?v=20260709';
     if (document.readyState === 'loading') {
         // 文档还在解析：document.write 保持同步执行顺序
         document.write('<script src="' + url + '"></scr' + 'ipt>');
