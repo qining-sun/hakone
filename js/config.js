@@ -69,8 +69,8 @@ function getFallbackConfig() {
     return {
         CONTACT: {
             EMAIL: {
-                SUPPORT: 'info@lgdhome.com',
-                SOLUTION: 'info@lgdhome.com'
+                SUPPORT: 'hakone@trip7.me',
+                SOLUTION: 'hakone@trip7.me'
             },
             TEL: '0460-83-8434',
             ADDRESS: '〒250-0631 神奈川県足柄下郡箱根町仙石原1245-325',
