@@ -180,10 +180,13 @@
     <div class="booking-section">
         <div class="container">
             <!-- Expiration Timer -->
-            <div class="expiration-timer" id="expirationTimer">
+            <!-- 既定は非表示。startExpirationTimer() が実際に動き出した時だけ表示する
+                 (以前は常時表示だったため、タイマーが動いていない画面でも「30:00」が
+                 固定表示され、あたかも猶予が30分あるかのように見えていた) -->
+            <div class="expiration-timer" id="expirationTimer" style="display: none;">
                 <i class="fas fa-clock"></i>
                 <span data-i18n="booking_expiration">予約有効期限：</span>
-                <span id="timerDisplay" class="timer-display">30:00</span>
+                <span id="timerDisplay" class="timer-display">--:--</span>
             </div>
 
             <!-- Step Indicator -->
