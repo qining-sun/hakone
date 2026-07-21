@@ -1522,19 +1522,31 @@
         const guestSummary = document.getElementById('guestSummary');
         const confirmBtn = document.getElementById('guestConfirmBtn');
 
+        // 人数上限は「ベッドを使う人数」で決める。
+        //   ベッド利用 = 大人 + 小学生 (小学生は大人と同じく1床を使う)
+        //   未就学児   = ベッドを使わないため定員に含めない(別枠で最大2名)
+        // MAX_BEDS はこのホテルの最大客室定員に合わせる(箱根: max_occupancy=7)。
+        // 以前はカテゴリ別に固定(大人4/未就学2/小学生2・合計8)で、小学生だけ2名に
+        // 制限されており「小学生は大人と同じ扱い」という運用と噛み合っていなかった。
+        // 未就学児の上限は大人の人数と同期する(大人1名につき1名まで。updateCounter で追従)。
+        const MAX_BEDS = 7;
+
         // Get initial values from URL parameters (clamped to limits)
         const urlParams = new URLSearchParams(window.location.search);
-        const initialAdults = Math.min(Math.max(parseInt(urlParams.get('adults')) || 2, 1), 4);
-        const initialPreschool = Math.min(Math.max(parseInt(urlParams.get('childrenPreschool')) || 0, 0), 2);
-        const initialElementary = Math.min(Math.max(parseInt(urlParams.get('childrenElementary')) || 0, 0), 2);
+        let initialAdults = Math.min(Math.max(parseInt(urlParams.get('adults')) || 2, 1), MAX_BEDS);
+        let initialElementary = Math.min(Math.max(parseInt(urlParams.get('childrenElementary')) || 0, 0), MAX_BEDS - 1);
+        // 大人+小学生がベッド数を超えないよう調整(大人を優先して残りを小学生に割当)
+        if (initialAdults + initialElementary > MAX_BEDS) {
+            initialElementary = Math.max(0, MAX_BEDS - initialAdults);
+        }
+        // 未就学児は大人の人数まで
+        const initialPreschool = Math.min(Math.max(parseInt(urlParams.get('childrenPreschool')) || 0, 0), initialAdults);
 
-        // Guest counts
-        // 人数上限: 大人のみ=計4名, 大人+子ども=計8名(大人4,就学前2,小学生2)
-        const MAX_TOTAL = 8;
+        // Guest counts (bed: true = ベッドを使う = 定員にカウントする)
         const guests = {
-            adults: { min: 1, max: 4, value: initialAdults },
-            childrenPreschool: { min: 0, max: 2, value: initialPreschool },
-            childrenElementary: { min: 0, max: 2, value: initialElementary }
+            adults: { min: 1, max: MAX_BEDS, value: initialAdults, bed: true },
+            childrenPreschool: { min: 0, max: initialAdults, value: initialPreschool, bed: false },
+            childrenElementary: { min: 0, max: MAX_BEDS - 1, value: initialElementary, bed: true }
         };
 
         // Create overlay for mobile
@@ -1619,19 +1631,27 @@
 
         // Update counter display and button states
         function updateCounter(target) {
-            const countEl = document.getElementById(target + 'Count');
-            const guest = guests[target];
-            countEl.textContent = guest.value;
+            // 未就学児の上限は大人の人数と同期する(大人1名につき1名まで)。
+            // 大人を減らした場合は未就学児も自動的に切り下げる。
+            guests.childrenPreschool.max = guests.adults.value;
+            if (guests.childrenPreschool.value > guests.childrenPreschool.max) {
+                guests.childrenPreschool.value = guests.childrenPreschool.max;
+            }
 
-            const totalGuests = guests.adults.value + guests.childrenPreschool.value + guests.childrenElementary.value;
+            // ベッド利用者数(大人+小学生)が定員に達したら、ベッドを使う項目の「＋」を止める。
+            // 未就学児はベッドを使わないため定員の制限は受けない(上限は大人数と同期)。
+            const bedsUsed = guests.adults.value + guests.childrenElementary.value;
 
-            // Update all button states (total limit affects all plus buttons)
             Object.keys(guests).forEach(key => {
                 const g = guests[key];
+                // 連動して値が変わりうるため、全項目の表示を更新する
+                const countEl = document.getElementById(key + 'Count');
+                if (countEl) countEl.textContent = g.value;
+
                 const minusBtn = document.querySelector(`.counter-btn.minus[data-target="${key}"]`);
                 const plusBtn = document.querySelector(`.counter-btn.plus[data-target="${key}"]`);
-                minusBtn.disabled = g.value <= g.min;
-                plusBtn.disabled = g.value >= g.max || totalGuests >= MAX_TOTAL;
+                if (minusBtn) minusBtn.disabled = g.value <= g.min;
+                if (plusBtn) plusBtn.disabled = g.value >= g.max || (g.bed && bedsUsed >= MAX_BEDS);
             });
         }
 
