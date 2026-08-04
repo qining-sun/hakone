@@ -463,10 +463,8 @@
         document.getElementById('specialRequests').textContent = order.special_requests;
       }
 
-      // 印刷日時
-      const now = new Date();
-      document.getElementById('printDate').textContent =
-        `${now.getFullYear()}年${String(now.getMonth() + 1).padStart(2, '0')}月${String(now.getDate()).padStart(2, '0')}日 ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+      // 印刷日時(日本時間 JST で表示。末尾に (JST) を明記)
+      document.getElementById('printDate').textContent = formatDateTime(new Date());
 
       // 隐藏loading,显示内容
       document.getElementById('loading').style.display = 'none';
@@ -500,10 +498,17 @@
     }
 
     // 格式化日期时间
+    // 固定日本时区 JST。以前は端末ローカル時間だったため海外予約者に現地時間が出ていた
     function formatDateTime(dateString) {
       if (!dateString) return 'N/A';
       const date = new Date(dateString);
-      return `${date.getFullYear()}年${String(date.getMonth() + 1).padStart(2, '0')}月${String(date.getDate()).padStart(2, '0')}日 ${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
+      const parts = new Intl.DateTimeFormat('ja-JP', {
+        timeZone: 'Asia/Tokyo',
+        year: 'numeric', month: '2-digit', day: '2-digit',
+        hour: '2-digit', minute: '2-digit', hour12: false
+      }).formatToParts(date);
+      const p = (t) => (parts.find(x => x.type === t) || {}).value || '';
+      return `${p('year')}年${p('month')}月${p('day')}日 ${p('hour')}:${p('minute')}（JST）`;
     }
 
     // 格式化数字
